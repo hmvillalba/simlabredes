@@ -86,7 +86,7 @@ Ver el documento completo del plan. Resumen de fases:
 | Fase | Descripción | Estado |
 |------|-------------|--------|
 | 0 | Preparación del repositorio | ✅ Completa |
-| 1 | Auditoría de textos | 🔄 Pendiente |
+| 1 | Auditoría de textos | 🔄 En curso (inventario generado en `docs/auditoria-textos.csv`) |
 | 2 | Sistema i18n (`t()` + `data-i18n`) | ⏳ Pendiente |
 | 3 | Extracción del español a `lang/es.js` | ⏳ Pendiente |
 | 4 | Traducción al inglés (`lang/en.js`) | ⏳ Pendiente |
@@ -104,3 +104,4 @@ Abrí un [Issue](https://github.com/hmvillalba/simlabredes/issues) describiendo:
 2. Qué pasó en realidad
 3. Pasos para reproducirlo
 4. Navegador y sistema operativo
+
