@@ -4,11 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador de Redes Educativo</title>
+    <title data-i18n="app.title">Simulador de Redes Educativo</title>
     <meta name="author" content="Hugo Martin Villalba">
     <meta name="copyright" content="© Hugo Martin Villalba. Licencia MIT.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- i18n (Fase 2): diccionario base + motor. Archivos locales: funcionan también con file:// -->
+    <script src="lang/es.js"></script>
+    <script src="js/i18n.js"></script>
     <style id="app-style">
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -285,8 +288,7 @@
                         id="topology-name-label"
                         class="ml-2 text-emerald-500 font-semibold inline-block max-w-[160px] truncate align-bottom"></span>
                 </h1>
-                <p class="hidden xl:block text-[11px] text-slate-400 mt-0.5 whitespace-nowrap">Simulador de Redes
-                    Interactivo para Estudiantes</p>
+                <p data-i18n="app.tagline" class="hidden xl:block text-[11px] text-slate-400 mt-0.5 whitespace-nowrap">Simulador de Redes Interactivo para Estudiantes</p>
             </div>
         </div>
 
@@ -432,6 +434,17 @@
                         title="Pantalla completa con textos grandes (Esc para salir)"><i
                             class="fa-solid fa-expand w-4"></i><span>Proyectar en clase</span></button>
                 </div>
+            </div>
+
+            <!-- Selector de idioma (i18n, Fase 2) -->
+            <div class="relative" title="Idioma / Language" data-i18n-title="ui.langSelector">
+                <select id="lang-select" onchange="I18N.setLang(this.value)"
+                    class="px-2 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium rounded-md text-slate-200 transition cursor-pointer">
+                    <option value="es">ES</option>
+                    <option value="en">EN</option>
+                    <option value="pt">PT</option>
+                    <option value="fr">FR</option>
+                </select>
             </div>
         </div>
     </header>
@@ -2816,7 +2829,10 @@
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
         }
-        function addTrafficLog(message, color = 'text-slate-300') {
+        function addTrafficLog(message, color = 'text-slate-300', i18n = null) {
+            // i18n (Fase 2): el log se registra como entrada (clave+variables o texto fijo)
+            // para poder re-renderizarlo al cambiar de idioma. Sin I18N, comportamiento original.
+            if (window.I18N) { window.I18N.logEntry({ text: message, i18n: i18n, color: color }); return; }
             const log = document.getElementById('traffic-log');
             if (!log) return;
             const li = document.createElement('li');
