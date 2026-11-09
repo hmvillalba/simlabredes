@@ -69,9 +69,15 @@ test:  scripts de control de calidad
 ```
 /
 ├── index.html          # Simulador principal (SPA)
-├── lang/               # Diccionarios por idioma (a crear en Fase 2)
-│   ├── es.js
-│   └── en.js
+├── lang/               # Diccionarios por idioma (window.I18N_DICTS, cargados con <script>)
+│   ├── es.js           # español: base y respaldo
+│   └── en.js           # Fase 4 (luego pt.js y fr.js en Fase 8)
+├── js/
+│   └── i18n.js         # Motor: t(), data-i18n, selector de idioma, log como claves+variables
+├── tools/
+│   ├── audit_texts.py  # Fase 1: auditoría de textos
+│   └── test_i18n.mjs   # tests del motor: node tools/test_i18n.mjs
+├── docs/               # auditoría (auditoria-textos.csv, auditoria-resumen.md)
 ├── README.md
 ├── CONTRIBUTING.md     # Este archivo
 └── LICENSE
@@ -87,7 +93,7 @@ Ver el documento completo del plan. Resumen de fases:
 |------|-------------|--------|
 | 0 | Preparación del repositorio | ✅ Completa |
 | 1 | Auditoría de textos | 🔄 Pendiente |
-| 2 | Sistema i18n (`t()` + `data-i18n`) | ⏳ Pendiente |
+| 2 | Sistema i18n (`t()` + `data-i18n`) | ✅ Completa (motor en `js/i18n.js`, solo `es` por ahora; en/pt/fr en Fases 4 y 8) |
 | 3 | Extracción del español a `lang/es.js` | ⏳ Pendiente |
 | 4 | Traducción al inglés (`lang/en.js`) | ⏳ Pendiente |
 | 5 | Script de control de calidad de claves | ⏳ Pendiente |
