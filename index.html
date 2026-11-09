@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador de Redes Educativo</title>
-    <meta name="author" content="Hugo Martin Villala">
-    <meta name="copyright" content="© Hugo Martin Villala.">
+    <meta name="author" content="Hugo Martin Villalba">
+    <meta name="copyright" content="© Hugo Martin Villalba. Licencia MIT.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style id="app-style">
@@ -469,8 +469,8 @@
             <h3 class="text-base font-bold text-slate-100">NetSim Lab</h3>
             <p class="text-xs text-slate-400 mt-0.5">Simulador de Redes Educativo · versión 26</p>
             <div class="mt-4 py-3 border-y border-slate-800">
-                <p class="text-sm font-semibold text-slate-100"><span class="text-lg align-middle">©</span> <span class="js-year">2026</span> Hugo Martin Villala</p>
-                <p class="text-[11px] text-slate-400 mt-1">Todos los derechos reservados.</p>
+                <p class="text-sm font-semibold text-slate-100"><span class="text-lg align-middle">©</span> <span class="js-year">2026</span> Hugo Martin Villalba</p>
+                <p class="text-[11px] text-slate-400 mt-1">Distribuido bajo Licencia MIT</p>
             </div>
             <p class="text-[11px] text-slate-500 mt-3">Si te gusta el Simulador queda a tu criterio una Menci&oacute;n o Donaci&oacute;n para el autor.</p>
             <button onclick="closeAbout()" class="mt-4 px-4 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200">Cerrar</button>
@@ -2911,7 +2911,7 @@
                 css = css.replace(/,\s*url\([^)]*\.ttf[^)]*\)\s*format\(["']truetype["']\)/g, '');
                 const SC_OPEN = '<scr' + 'ipt>', SC_CLOSE = '</scr' + 'ipt>';
                 const style = PRISTINE_STYLE.replace(/@import url\([^)]*\);?/g, '');
-                const html = `<!DOCTYPE html>\n<html lang="es" class="${PRISTINE_HTML_CLASS}">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>Simulador de Redes Educativo</title>\n<meta name="author" content="Hugo Martin Villala">\n<meta name="copyright" content="© ${new Date().getFullYear()} Hugo Martin Villala. Todos los derechos reservados.">\n${SC_OPEN}${tw.replace(/<\/script/gi, '<\\/script')}${SC_CLOSE}\n<style>${css}</style>\n<style id="app-style">${style}</style>\n</head>\n<body class="${PRISTINE_BODY_CLASS}">${PRISTINE_BODY}</body>\n</html>`;
+                const html = `<!DOCTYPE html>\n<html lang="es" class="${PRISTINE_HTML_CLASS}">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>Simulador de Redes Educativo</title>\n<meta name="author" content="Hugo Martin Villalba">\n<meta name="copyright" content="© ${new Date().getFullYear()} Hugo Martin Villalba. Licencia MIT.">\n${SC_OPEN}${tw.replace(/<\/script/gi, '<\\/script')}${SC_CLOSE}\n<style>${css}</style>\n<style id="app-style">${style}</style>\n</head>\n<body class="${PRISTINE_BODY_CLASS}">${PRISTINE_BODY}</body>\n</html>`;
                 downloadBlob(new Blob([html], { type: 'text/html' }), 'Simulador-de-Redes-sin-internet.html');
                 showToast('Copia descargada: ese archivo funciona sin conexión. Guardalo en una carpeta o pendrive.', 'success');
             } catch (e) {
@@ -2921,11 +2921,11 @@
 
         // ===== DERECHOS DE AUTOR =====
         // El año se toma siempre de la fecha actual de la computadora.
-        function copyrightText() { return `© ${new Date().getFullYear()} Hugo Martin Villala · Todos los derechos reservados`; }
+        function copyrightText() { return `© ${new Date().getFullYear()} Hugo Martin Villalba · Licencia MIT`; }
         function updateCopyrightYear() {
             const y = String(new Date().getFullYear());
             document.querySelectorAll('.js-year').forEach(el => { el.textContent = y; });
-            const m = document.querySelector('meta[name="copyright"]'); if (m) m.setAttribute('content', `© ${y} Hugo Martin Villala. Todos los derechos reservados.`);
+            const m = document.querySelector('meta[name="copyright"]'); if (m) m.setAttribute('content', `© ${y} Hugo Martin Villalba. Licencia MIT.`);
         }
         function openAbout() { document.getElementById('about-modal').classList.remove('hidden'); }
         function closeAbout() { document.getElementById('about-modal').classList.add('hidden'); }

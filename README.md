@@ -78,10 +78,21 @@ Disponible directamente en Netlify:
 
 ## 👤 Autor
 
-- **Hugo Martín Villalba**
+- **Hugo Martín Villalba** ([@hmvillalba](https://github.com/hmvillalba))
+
+---
+
+## ☕ Apoyo al Proyecto
+
+> **"Si te gusta el Simulador queda a tu criterio una Mención o Donación para el autor."**
+
+Si utilizas este simulador para tus clases, proyectos educativos o aprendizaje personal y deseas apoyar su desarrollo:
+- ⭐ Dale una estrella al repositorio en [GitHub](https://github.com/hmvillalba/simlabredes).
+- 📢 Menciona y comparte la herramienta con tus colegas o estudiantes.
+- 💡 Si deseas realizar una donación o proponer mejoras, puedes comunicarte directamente con el autor a través de su perfil de GitHub.
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto está bajo los derechos de autor de su creador. Consulta los detalles de propiedad intelectual en la sección "Acerca de / Derechos" dentro de la propia aplicación.
+Este proyecto se distribuye bajo los términos de la **Licencia MIT**. Consulta el archivo [LICENSE](LICENSE) para más información.
