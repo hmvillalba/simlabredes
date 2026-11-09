@@ -26,8 +26,55 @@ window.I18N_DICTS.es = {
         langSelector: 'Idioma / Language'
     },
 
+    // Fase 3 · zona 1 — cabecera y menús:
+    header: {
+        toolSelect: 'Mover / Seleccionar',
+        toolCable: 'Conectar Cable',
+        toolDeleteCable: 'Eliminar Cable',
+        undo: 'Deshacer (Ctrl+Z)',
+        redo: 'Rehacer (Ctrl+Y)',
+        deliver: 'Entregar',
+        deliverTitle: 'Guardar tu trabajo con tu nombre para entregárselo al profe',
+        studentDefault: 'Alumno',
+        studentTitle: 'Tu nombre: queda guardado en las redes y actividades que guardes',
+        activities: 'Actividades',
+        activitiesTitle: 'Redes con fallas para resolver',
+        support: 'Apoyar',
+        supportTitle: 'Acerca del simulador y apoyar al autor'
+    },
+    menu: {
+        file: 'Archivo',
+        view: 'Ver',
+        saveNetwork: 'Guardar red…',
+        openNetwork: 'Abrir red…',
+        exportAs: 'Exportar la red como…',
+        imagePng: 'Imagen PNG',
+        imageJpg: 'Imagen JPG',
+        docPdf: 'Documento PDF (con lista de equipos)',
+        offlineCopy: 'Guardar copia para usar sin internet',
+        offlineCopyTitle: 'Descarga una versión de este simulador que funciona sin internet (hace falta conexión una sola vez)',
+        forTeacher: 'Para el profesor',
+        makeActivity: 'Crear actividad con esta red…',
+        gradeDeliveries: 'Corregir entregas…',
+        loadDemo: 'Cargar ejemplo',
+        demoVpnLocal: 'Ejemplo: VPN local (abrir puertos)',
+        demoVpnLocalTitle: 'VPN dentro de la red de la oficina: para llegar desde afuera hay que abrir un puerto en el router',
+        demoVpnCloud: 'Ejemplo: 2 redes unidas por VPN',
+        demoVpnCloudTitle: 'Casa y oficina, cada una con su router e Internet, unidas por una VPN en la nube',
+        demoTwoNetworks: 'Ejemplo 2 redes',
+        demoTwoNetworksTitle: 'Dos redes unidas por un router con varias interfaces',
+        clearAll: 'Limpiar todo',
+        devicesPanel: 'Panel de dispositivos',
+        simPanel: 'Panel de simulación',
+        themeLight: 'Modo claro',
+        themeDark: 'Modo oscuro',
+        tour: 'Recorrido guiado',
+        aboutRights: 'Acerca de · Derechos',
+        project: 'Proyectar en clase',
+        projectTitle: 'Pantalla completa con textos grandes (Esc para salir)'
+    },
+
     // Áreas reservadas (se completan en la Fase 3):
-    menu: {},    // menús de la cabecera (Archivo, Ver…)
     device: {},  // panel de dispositivos, nombres por defecto, propiedades
     log: {},     // log de tráfico (claves + variables)
     tour: {},    // recorrido guiado

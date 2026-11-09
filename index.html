@@ -294,26 +294,26 @@
 
         <!-- Mode Selectors -->
         <div class="flex items-center space-x-2 bg-slate-950 p-1 rounded-lg border border-slate-800">
-            <button id="tool-select" onclick="setToolMode('select')" title="Mover / Seleccionar"
+            <button id="tool-select" onclick="setToolMode('select')" title="Mover / Seleccionar" data-i18n-title="header.toolSelect"
                 class="tool-btn px-3 py-1.5 rounded-md text-xs font-medium flex items-center space-x-2 transition border border-blue-500 bg-blue-600/20 text-blue-300">
                 <i class="fa-solid fa-arrow-pointer"></i>
-                <span class="hidden lg:inline">Mover / Seleccionar</span>
+                <span class="hidden lg:inline" data-i18n="header.toolSelect">Mover / Seleccionar</span>
             </button>
-            <button id="tool-cable" onclick="setToolMode('cable')" title="Conectar Cable"
+            <button id="tool-cable" onclick="setToolMode('cable')" title="Conectar Cable" data-i18n-title="header.toolCable"
                 class="tool-btn px-3 py-1.5 rounded-md text-xs font-medium flex items-center space-x-2 transition border border-slate-700 text-slate-300 hover:bg-slate-800">
                 <i class="fa-solid fa-plug"></i>
-                <span class="hidden lg:inline">Conectar Cable</span>
+                <span class="hidden lg:inline" data-i18n="header.toolCable">Conectar Cable</span>
             </button>
-            <button id="tool-delete-cable" onclick="setToolMode('delete-cable')" title="Eliminar Cable"
+            <button id="tool-delete-cable" onclick="setToolMode('delete-cable')" title="Eliminar Cable" data-i18n-title="header.toolDeleteCable"
                 class="tool-btn px-3 py-1.5 rounded-md text-xs font-medium flex items-center space-x-2 transition border border-slate-700 text-rose-400 hover:bg-rose-950/40 hover:border-rose-800">
                 <i class="fa-solid fa-scissors"></i>
-                <span class="hidden lg:inline">Eliminar Cable</span>
+                <span class="hidden lg:inline" data-i18n="header.toolDeleteCable">Eliminar Cable</span>
             </button>
             <span class="w-px h-5 bg-slate-700 mx-0.5"></span>
-            <button id="undo-btn" onclick="undoAction()" title="Deshacer (Ctrl+Z)"
+            <button id="undo-btn" onclick="undoAction()" title="Deshacer (Ctrl+Z)" data-i18n-title="header.undo"
                 class="tool-btn px-2.5 py-1.5 rounded-md text-xs border border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-30"
                 disabled><i class="fa-solid fa-rotate-left"></i></button>
-            <button id="redo-btn" onclick="redoAction()" title="Rehacer (Ctrl+Y)"
+            <button id="redo-btn" onclick="redoAction()" title="Rehacer (Ctrl+Y)" data-i18n-title="header.redo"
                 class="tool-btn px-2.5 py-1.5 rounded-md text-xs border border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-30"
                 disabled><i class="fa-solid fa-rotate-right"></i></button>
         </div>
@@ -322,84 +322,84 @@
         <div class="flex items-center gap-2 shrink-0">
             <button id="deliver-btn" onclick="deliverWork()"
                 class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 border border-emerald-600 text-xs font-bold rounded-md text-white flex items-center gap-1.5 transition whitespace-nowrap"
-                title="Guardar tu trabajo con tu nombre para entregárselo al profe"><i
-                    class="fa-solid fa-paper-plane"></i><span class="hidden md:inline">Entregar</span></button>
+                title="Guardar tu trabajo con tu nombre para entregárselo al profe" data-i18n-title="header.deliverTitle"><i
+                    class="fa-solid fa-paper-plane"></i><span class="hidden md:inline" data-i18n="header.deliver">Entregar</span></button>
             <button id="student-btn" onclick="openStudentDialog()"
                 class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium rounded-md text-slate-200 flex items-center gap-1.5 transition whitespace-nowrap"
-                title="Tu nombre: queda guardado en las redes y actividades que guardes"><i
+                title="Tu nombre: queda guardado en las redes y actividades que guardes" data-i18n-title="header.studentTitle"><i
                     class="fa-solid fa-user"></i><span id="student-label" class="hidden md:inline truncate"
-                    style="max-width:120px">Alumno</span></button>
+                    style="max-width:120px" data-i18n="header.studentDefault">Alumno</span></button>
             <button onclick="openActivities()"
                 class="px-3 py-1.5 bg-amber-700 hover:bg-amber-600 border border-amber-600 text-xs font-bold rounded-md text-white flex items-center gap-1.5 transition whitespace-nowrap"
-                title="Redes con fallas para resolver"><i class="fa-solid fa-graduation-cap"></i><span
-                    class="hidden md:inline">Actividades</span></button>
+                title="Redes con fallas para resolver" data-i18n-title="header.activitiesTitle"><i class="fa-solid fa-graduation-cap"></i><span
+                    class="hidden md:inline" data-i18n="header.activities">Actividades</span></button>
             <button onclick="openAbout()"
                 class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium rounded-md text-amber-300 flex items-center gap-1.5 transition whitespace-nowrap"
-                title="Acerca del simulador y apoyar al autor"><i class="fa-solid fa-mug-hot text-amber-400"></i><span
-                    class="hidden md:inline">Apoyar</span></button>
+                title="Acerca del simulador y apoyar al autor" data-i18n-title="header.supportTitle"><i class="fa-solid fa-mug-hot text-amber-400"></i><span
+                    class="hidden md:inline" data-i18n="header.support">Apoyar</span></button>
 
             <div class="relative">
                 <button onclick="toggleMenu(event, 'menu-file')"
                     class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium rounded-md text-slate-200 flex items-center gap-1.5 transition whitespace-nowrap"><i
-                        class="fa-solid fa-folder-open"></i><span class="hidden md:inline">Archivo</span><i
+                        class="fa-solid fa-folder-open"></i><span class="hidden md:inline" data-i18n="menu.file">Archivo</span><i
                         class="fa-solid fa-chevron-down text-[9px]"></i></button>
                 <div id="menu-file"
                     class="menu-panel absolute right-0 top-full mt-1 w-56 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl z-50 p-1">
                     <button onclick="closeMenus();openSaveDialog()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
-                            class="fa-solid fa-download w-4 text-emerald-400"></i>Guardar red…</button>
+                            class="fa-solid fa-download w-4 text-emerald-400"></i><span data-i18n="menu.saveNetwork">Guardar red…</span></button>
                     <button onclick="closeMenus();document.getElementById('topology-file-input').click()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
-                            class="fa-solid fa-upload w-4"></i>Abrir red…</button>
-                    <div class="px-3 pt-1 pb-0.5 text-[10px] uppercase tracking-wider text-slate-500">Exportar la red
+                            class="fa-solid fa-upload w-4"></i><span data-i18n="menu.openNetwork">Abrir red…</span></button>
+                    <div class="px-3 pt-1 pb-0.5 text-[10px] uppercase tracking-wider text-slate-500" data-i18n="menu.exportAs">Exportar la red
                         como…</div>
                     <button onclick="closeMenus();exportNetwork('png')"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
-                            class="fa-solid fa-image w-4 text-sky-400"></i>Imagen PNG</button>
+                            class="fa-solid fa-image w-4 text-sky-400"></i><span data-i18n="menu.imagePng">Imagen PNG</span></button>
                     <button onclick="closeMenus();exportNetwork('jpg')"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
-                            class="fa-solid fa-file-image w-4 text-sky-400"></i>Imagen JPG</button>
+                            class="fa-solid fa-file-image w-4 text-sky-400"></i><span data-i18n="menu.imageJpg">Imagen JPG</span></button>
                     <button onclick="closeMenus();exportNetwork('pdf')"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
-                            class="fa-solid fa-file-pdf w-4 text-rose-400"></i>Documento PDF (con lista de
-                        equipos)</button>
+                            class="fa-solid fa-file-pdf w-4 text-rose-400"></i><span data-i18n="menu.docPdf">Documento PDF (con lista de
+                            equipos)</span></button>
                     <div class="my-1 border-t border-slate-800"></div>
                     <button onclick="closeMenus();saveOfflineCopy()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
-                        title="Descarga una versión de este simulador que funciona sin internet (hace falta conexión una sola vez)"><i
-                            class="fa-solid fa-plane w-4 text-sky-400"></i>Guardar copia para usar sin internet</button>
+                        title="Descarga una versión de este simulador que funciona sin internet (hace falta conexión una sola vez)" data-i18n-title="menu.offlineCopyTitle"><i
+                            class="fa-solid fa-plane w-4 text-sky-400"></i><span data-i18n="menu.offlineCopy">Guardar copia para usar sin internet</span></button>
                     <div class="my-1 border-t border-slate-800"></div>
-                    <div class="px-3 pt-1 pb-0.5 text-[10px] uppercase tracking-wider text-slate-500">Para el profesor
+                    <div class="px-3 pt-1 pb-0.5 text-[10px] uppercase tracking-wider text-slate-500" data-i18n="menu.forTeacher">Para el profesor
                     </div>
                     <button onclick="closeMenus();openMakeActivity()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
-                            class="fa-solid fa-wand-magic-sparkles w-4 text-amber-400"></i>Crear actividad con esta
-                        red…</button>
+                            class="fa-solid fa-wand-magic-sparkles w-4 text-amber-400"></i><span data-i18n="menu.makeActivity">Crear actividad con esta
+                        red…</span></button>
                     <button onclick="closeMenus();openGrader()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
-                            class="fa-solid fa-clipboard-check w-4 text-emerald-400"></i>Corregir entregas…</button>
+                            class="fa-solid fa-clipboard-check w-4 text-emerald-400"></i><span data-i18n="menu.gradeDeliveries">Corregir entregas…</span></button>
                     <div class="my-1 border-t border-slate-800"></div>
                     <button onclick="closeMenus();loadDemoTopology()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
-                            class="fa-solid fa-rotate-left w-4"></i>Cargar ejemplo</button>
+                            class="fa-solid fa-rotate-left w-4"></i><span data-i18n="menu.loadDemo">Cargar ejemplo</span></button>
                     <button onclick="closeMenus();loadDemoVpn('local')"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
-                        title="VPN dentro de la red de la oficina: para llegar desde afuera hay que abrir un puerto en el router"><i
-                            class="fa-solid fa-door-open w-4 text-indigo-400"></i>Ejemplo: VPN local (abrir
-                        puertos)</button>
+                        title="VPN dentro de la red de la oficina: para llegar desde afuera hay que abrir un puerto en el router" data-i18n-title="menu.demoVpnLocalTitle"><i
+                            class="fa-solid fa-door-open w-4 text-indigo-400"></i><span data-i18n="menu.demoVpnLocal">Ejemplo: VPN local (abrir
+                        puertos)</span></button>
                     <button onclick="closeMenus();loadDemoVpn()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
-                        title="Casa y oficina, cada una con su router e Internet, unidas por una VPN en la nube"><i
-                            class="fa-solid fa-shield-halved w-4 text-violet-400"></i>Ejemplo: 2 redes unidas por
-                        VPN</button>
+                        title="Casa y oficina, cada una con su router e Internet, unidas por una VPN en la nube" data-i18n-title="menu.demoVpnCloudTitle"><i
+                            class="fa-solid fa-shield-halved w-4 text-violet-400"></i><span data-i18n="menu.demoVpnCloud">Ejemplo: 2 redes unidas por
+                        VPN</span></button>
                     <button onclick="closeMenus();loadDemoTwoNetworks()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
-                        title="Dos redes unidas por un router con varias interfaces"><i
-                            class="fa-solid fa-route w-4"></i>Ejemplo 2 redes</button>
+                        title="Dos redes unidas por un router con varias interfaces" data-i18n-title="menu.demoTwoNetworksTitle"><i
+                            class="fa-solid fa-route w-4"></i><span data-i18n="menu.demoTwoNetworks">Ejemplo 2 redes</span></button>
                     <div class="my-1 border-t border-slate-800"></div>
                     <button onclick="closeMenus();clearAll()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-rose-950/40 text-xs text-rose-300 flex items-center gap-2 transition"><i
-                            class="fa-solid fa-trash-can w-4"></i>Limpiar todo</button>
+                            class="fa-solid fa-trash-can w-4"></i><span data-i18n="menu.clearAll">Limpiar todo</span></button>
                 </div>
                 <input id="topology-file-input" type="file" accept=".json,application/json" class="hidden"
                     onchange="loadTopologyFromFile(event)">
@@ -408,16 +408,16 @@
             <div class="relative">
                 <button onclick="toggleMenu(event, 'menu-view')"
                     class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium rounded-md text-slate-200 flex items-center gap-1.5 transition whitespace-nowrap"><i
-                        class="fa-solid fa-sliders"></i><span class="hidden md:inline">Ver</span><i
+                        class="fa-solid fa-sliders"></i><span class="hidden md:inline" data-i18n="menu.view">Ver</span><i
                         class="fa-solid fa-chevron-down text-[9px]"></i></button>
                 <div id="menu-view"
                     class="menu-panel absolute right-0 top-full mt-1 w-56 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl z-50 p-1">
                     <button id="toggle-devices-btn" onclick="togglePanel('devices')"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
-                            class="fa-solid fa-eye w-4"></i><span>Panel de dispositivos</span></button>
+                            class="fa-solid fa-eye w-4"></i><span data-i18n="menu.devicesPanel">Panel de dispositivos</span></button>
                     <button id="toggle-sim-btn" onclick="togglePanel('sim')"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
-                            class="fa-solid fa-eye w-4"></i><span>Panel de simulación</span></button>
+                            class="fa-solid fa-eye w-4"></i><span data-i18n="menu.simPanel">Panel de simulación</span></button>
                     <div class="my-1 border-t border-slate-800"></div>
                     <button id="theme-toggle" onclick="closeMenus();toggleTheme()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
@@ -425,14 +425,14 @@
                             claro</span></button>
                     <button onclick="closeMenus();startTour()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
-                            class="fa-solid fa-route w-4"></i><span>Recorrido guiado</span></button>
+                            class="fa-solid fa-route w-4"></i><span data-i18n="menu.tour">Recorrido guiado</span></button>
                     <button onclick="closeMenus();openAbout()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
-                            class="fa-regular fa-copyright w-4"></i><span>Acerca de · Derechos</span></button>
+                            class="fa-regular fa-copyright w-4"></i><span data-i18n="menu.aboutRights">Acerca de · Derechos</span></button>
                     <button id="projection-btn" onclick="closeMenus();toggleProjection()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
-                        title="Pantalla completa con textos grandes (Esc para salir)"><i
-                            class="fa-solid fa-expand w-4"></i><span>Proyectar en clase</span></button>
+                        title="Pantalla completa con textos grandes (Esc para salir)" data-i18n-title="menu.projectTitle"><i
+                            class="fa-solid fa-expand w-4"></i><span data-i18n="menu.project">Proyectar en clase</span></button>
                 </div>
             </div>
 
@@ -2796,7 +2796,7 @@
             const icon = document.getElementById('theme-toggle-icon');
             const label = document.getElementById('theme-toggle-label');
             if (icon) icon.className = `fa-solid ${light ? 'fa-moon' : 'fa-sun'}`;
-            if (label) label.textContent = light ? 'Modo oscuro' : 'Modo claro';
+            if (label) label.textContent = window.I18N ? I18N.t(light ? 'menu.themeDark' : 'menu.themeLight') : (light ? 'Modo oscuro' : 'Modo claro');
             try { localStorage.setItem('netsim-theme', light ? 'light' : 'dark'); } catch (_) { }
         }
         function toggleTheme() {
@@ -4379,6 +4379,8 @@
             let savedTheme = 'dark';
             try { savedTheme = localStorage.getItem('netsim-theme') || 'dark'; } catch (_) { }
             applyTheme(savedTheme);
+            // i18n (Fase 3): al cambiar de idioma se re-aplica el texto del botón de tema
+            if (window.I18N) window.I18N.onChange(() => applyTheme(document.body.classList.contains('light-mode') ? 'light' : 'dark'));
             restorePanels();
             restoreSimMode();
             initStudent();
