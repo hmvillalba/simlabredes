@@ -4,6 +4,8 @@ Simulador interactivo y pedagógico de redes de computadoras diseñado para la e
 
 Desarrollado como una aplicación web autónoma (Single Page Application) basada en tecnologías web estándar, sin dependencias pesadas de servidor ni requerimientos de instalación compleja.
 
+> 🌐 **Acceso en línea:** Puedes utilizar el simulador directamente desde tu navegador en **[https://simlabredes.netlify.app](https://simlabredes.netlify.app/)**
+
 ---
 
 ## 🚀 Características Principales
@@ -51,16 +53,20 @@ Desarrollado como una aplicación web autónoma (Single Page Application) basada
 
 ---
 
-## 💻 Instalación y Uso
+## 💻 Acceso e Instalación
 
-### Opción 1: Abrir directamente en el navegador
+### Opción 1: En línea (Recomendada - Sin instalación)
+Disponible directamente en Netlify:
+👉 **[https://simlabredes.netlify.app](https://simlabredes.netlify.app/)**
+
+### Opción 2: Abrir localmente en el navegador
 1. Clona el repositorio:
    ```bash
    git clone https://github.com/hmvillalba/simlabredes.git
    ```
 2. Abre el archivo `index.html` en cualquier navegador web moderno (Google Chrome, Mozilla Firefox, Microsoft Edge o Safari).
 
-### Opción 2: Usar con un servidor local (XAMPP / Apache / Live Server)
+### Opción 3: Servidor local (XAMPP / Apache / Live Server)
 1. Coloca la carpeta en el directorio web (por ejemplo `C:\xampp\htdocs\simulador\redes`).
 2. Inicia el servidor Apache.
 3. Accede desde el navegador a:
