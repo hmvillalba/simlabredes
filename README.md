@@ -86,10 +86,14 @@ Disponible directamente en Netlify:
 
 > **"Si te gusta el Simulador queda a tu criterio una Mención o Donación para el autor."**
 
-Si utilizas este simulador para tus clases, proyectos educativos o aprendizaje personal y deseas apoyar su desarrollo:
+Si utilizas este simulador para tus clases, proyectos educativos o aprendizaje personal y deseas apoyar su desarrollo continuo:
+
+[![Invitame un cafecito](https://img.shields.io/badge/Cafecito-Invitame%20uno-blue?style=for-the-badge&logo=coffeescript&logoColor=white)](https://cafecito.app/hmvillalba)
+[![Apóyame en Ko-fi](https://img.shields.io/badge/Ko--fi-Apóyame-FF5E5B?style=for-the-badge&logo=ko-fi&logoColor=white)](https://ko-fi.com/hmvillalba)
+
 - ⭐ Dale una estrella al repositorio en [GitHub](https://github.com/hmvillalba/simlabredes).
 - 📢 Menciona y comparte la herramienta con tus colegas o estudiantes.
-- 💡 Si deseas realizar una donación o proponer mejoras, puedes comunicarte directamente con el autor a través de su perfil de GitHub.
+- ☕ Si deseas colaborar económicamente, podés invitar un café mediante **[Cafecito](https://cafecito.app/hmvillalba)** (Argentina / Mercado Pago) o **[Ko-fi](https://ko-fi.com/hmvillalba)** (Internacional).
 
 ---
 
