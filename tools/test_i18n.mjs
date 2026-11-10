@@ -185,5 +185,25 @@ console.log('\n[8] diccionario en portugués: se carga y tiene las mismas claves
     ok(es.size === pt.size && es.size > 500, `ambos diccionarios tienen ${es.size} claves`);
 }
 
+console.log('\n[9] diccionario en francés: se carga y tiene las mismas claves que es');
+{
+    const b = makeBrowser({ lang: 'fr-FR' });
+    const I18N = loadEngine(b, ['lang/es.js', 'lang/fr.js', 'js/i18n.js']);
+    ok(I18N.lang === 'fr', 'navigator fr-FR -> fr con el diccionario fr cargado');
+    ok(I18N.t('app.title') === 'Simulateur de Réseaux Éducatif', "t('app.title') devuelve el texto en francés");
+    ok(I18N.t('menu.file') === 'Fichier', "t('menu.file') devuelve el texto en francés");
+    ok(I18N.t('sim.text.icmp.req', { s: 'PC1', d: 'PC2' }).includes('PC1'), 'interpolación en francés');
+    ok(I18N.t('tour.step', { step: 2, total: 9 }) === 'Étape 2 sur 9', 'interpolación de varios {vars} en francés');
+    const flat = (o, p = '') => Object.entries(o).flatMap(([k, v]) =>
+        typeof v === 'string' ? [[p + k, v]] : (v && typeof v === 'object' ? flat(v, p + k + '.') : []));
+    const es = new Set(flat(window.I18N_DICTS.es).map(x => x[0]));
+    const fr = new Set(flat(window.I18N_DICTS.fr).map(x => x[0]));
+    const soloEs = [...es].filter(k => !fr.has(k));
+    const soloFr = [...fr].filter(k => !es.has(k));
+    ok(soloEs.length === 0, 'no hay claves que falten en fr' + (soloEs.length ? ': ' + soloEs.slice(0, 5).join(', ') : ''));
+    ok(soloFr.length === 0, 'no hay claves sobrantes en fr' + (soloFr.length ? ': ' + soloFr.slice(0, 5).join(', ') : ''));
+    ok(es.size === fr.size && es.size > 500, `ambos diccionarios tienen ${es.size} claves`);
+}
+
 console.log(`\nResultado: ${passed} ok, ${failed} fallidos`);
 process.exit(failed ? 1 : 0);

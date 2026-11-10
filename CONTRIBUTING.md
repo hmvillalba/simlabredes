@@ -73,7 +73,7 @@ test:  scripts de control de calidad
 │   ├── es.js           # español: base y respaldo
 │   ├── en.js           # inglés (Fase 4)
 │   ├── pt.js           # portugués (Fase 8)
-│   └── (fr.js)         # francés: pendiente (Fase 8)
+│   └── fr.js           # francés (Fase 8)
 ├── js/
 │   └── i18n.js         # Motor: t(), data-i18n, selector de idioma, log como claves+variables
 ├── tools/
@@ -115,7 +115,7 @@ Ver el documento completo del plan. Resumen de fases:
 | 5 | Script de control de calidad de claves | ✅ Completa (`tools/check_keys.mjs` valida claves y texto fallback) |
 | 6 | Producción: Tailwind compilado, assets locales | ⏳ Pendiente |
 | 7 | Landing page web propia | ⏳ Pendiente |
-| 8 | Portugués y francés | 🔶 En curso: portugués ✅ Completa (`lang/pt.js`, 756 claves, mismas que `es`); francés ⏳ Pendiente |
+| 8 | Portugués y francés | ✅ Completa (`lang/pt.js` y `lang/fr.js`, 756 claves cada uno, mismas que `es`) |
 
 ---
 
