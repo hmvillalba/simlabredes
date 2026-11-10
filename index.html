@@ -846,10 +846,10 @@
         <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-5">
             <div class="flex items-center justify-between mb-2">
                 <h3 class="text-sm font-bold text-slate-100"><i
-                        class="fa-solid fa-paper-plane text-emerald-400 mr-2"></i>Entregar mi trabajo</h3><button
+                        class="fa-solid fa-paper-plane text-emerald-400 mr-2"></i><span data-i18n="modal.deliver.title">Entregar mi trabajo</span></h3><button
                     onclick="closeDeliver()"
                     class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center"
-                    title="Cerrar (Esc)"><i class="fa-solid fa-xmark"></i></button>
+                    title="Cerrar (Esc)" data-i18n-title="modal.closeTitle"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="deliver-body" class="text-xs text-slate-300"></div>
         </div>
@@ -864,26 +864,26 @@
                 class="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center text-2xl mb-3">
                 <i class="fa-solid fa-network-wired"></i></div>
             <h3 class="text-base font-bold text-slate-100">NetSim Lab</h3>
-            <p class="text-xs text-slate-400 mt-0.5">Simulador de Redes Educativo · versión 35</p>
+            <p class="text-xs text-slate-400 mt-0.5" data-i18n="modal.about.subtitle">Simulador de Redes Educativo · versión 35</p>
             <div class="mt-4 py-3 border-y border-slate-800">
                 <p class="text-sm font-semibold text-slate-100"><span class="text-lg align-middle">©</span> <span
                         class="js-year">2026</span> Hugo Martin Villalba</p>
-                <p class="text-[11px] text-slate-400 mt-1">Distribuido bajo Licencia MIT</p>
+                <p class="text-[11px] text-slate-400 mt-1" data-i18n="modal.about.license">Distribuido bajo Licencia MIT</p>
             </div>
-            <p class="text-[11px] text-slate-500 mt-3">Si te gusta el Simulador queda a tu criterio una Menci&oacute;n o
-                Donaci&oacute;n para el autor.</p>
+            <p class="text-[11px] text-slate-500 mt-3" data-i18n="modal.about.donation">Si te gusta el Simulador queda a tu criterio una Mención o
+                Donación para el autor.</p>
             <div class="mt-4 flex flex-col sm:flex-row items-center justify-center gap-2.5">
                 <a href="https://cafecito.app/hmvillalba" target="_blank" rel="noopener noreferrer"
                     class="w-full sm:w-auto px-4 py-2 bg-sky-500 hover:bg-sky-400 text-white font-semibold rounded-lg text-xs shadow-md shadow-sky-500/20 inline-flex items-center justify-center gap-2 transition transform hover:-translate-y-0.5">
-                    <i class="fa-solid fa-mug-hot text-sm"></i> Invitame un Cafecito
+                    <i class="fa-solid fa-mug-hot text-sm"></i> <span data-i18n="modal.about.cafecito">Invitame un Cafecito</span>
                 </a>
                 <a href="https://ko-fi.com/hugomartinvillalba" target="_blank" rel="noopener noreferrer"
                     class="w-full sm:w-auto px-4 py-2 bg-[#ff5e5b] hover:bg-[#ff423e] text-white font-semibold rounded-lg text-xs shadow-md shadow-rose-500/20 inline-flex items-center justify-center gap-2 transition transform hover:-translate-y-0.5">
-                    <i class="fa-solid fa-heart text-sm"></i> Apoyar en Ko-fi
+                    <i class="fa-solid fa-heart text-sm"></i> <span data-i18n="modal.about.kofi">Apoyar en Ko-fi</span>
                 </a>
             </div>
             <button onclick="closeAbout()"
-                class="mt-4 px-4 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200">Cerrar</button>
+                class="mt-4 px-4 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200" data-i18n="modal.close">Cerrar</button>
         </div>
     </div>
 
@@ -893,17 +893,17 @@
         style="z-index:70">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-5">
             <h3 class="text-sm font-bold text-slate-100 mb-1"><i
-                    class="fa-solid fa-clock-rotate-left text-emerald-400 mr-2"></i>Encontramos tu trabajo anterior</h3>
+                    class="fa-solid fa-clock-rotate-left text-emerald-400 mr-2"></i><span data-i18n="modal.restore.title">Encontramos tu trabajo anterior</span></h3>
             <p id="restore-info" class="text-xs text-slate-300 mb-3"></p>
-            <p class="text-[11px] text-slate-500 mb-4">El simulador guarda tu red automáticamente en este navegador.
+            <p class="text-[11px] text-slate-500 mb-4" data-i18n="modal.restore.hint">El simulador guarda tu red automáticamente en este navegador.
                 Para entregarla o compartirla, usá Archivo → Guardar red.</p>
             <div class="flex justify-end gap-2">
                 <button onclick="discardAutosave()"
-                    class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200">Empezar
-                    de cero</button>
+                    class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200"><span data-i18n="modal.restore.startOver">Empezar
+                    de cero</span></button>
                 <button onclick="restoreAutosave()"
                     class="px-3 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-600 text-xs font-bold text-white"><i
-                        class="fa-solid fa-rotate-left mr-1"></i>Continuar donde estaba</button>
+                        class="fa-solid fa-rotate-left mr-1"></i><span data-i18n="modal.restore.continue">Continuar donde estaba</span></button>
             </div>
         </div>
     </div>
@@ -912,20 +912,20 @@
     <div id="student-modal"
         class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-5">
-            <h3 class="text-sm font-bold text-slate-100 mb-1"><i class="fa-solid fa-user text-sky-400 mr-2"></i>¿Cómo te
-                llamás?</h3>
-            <p class="text-[11px] text-slate-400 mb-3">Tu nombre se guarda dentro de las redes y actividades que
+            <h3 class="text-sm font-bold text-slate-100 mb-1"><i class="fa-solid fa-user text-sky-400 mr-2"></i><span data-i18n="modal.student.title">¿Cómo te
+                llamás?</span></h3>
+            <p class="text-[11px] text-slate-400 mb-3" data-i18n="modal.student.hint">Tu nombre se guarda dentro de las redes y actividades que
                 guardes, así tu profe sabe de quién es cada entrega.</p>
-            <input id="student-name" type="text" maxlength="60" placeholder="Ej: Ana Pérez"
+            <input id="student-name" type="text" maxlength="60" placeholder="Ej: Ana Pérez" data-i18n-placeholder="modal.student.placeholder"
                 class="w-full rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-sm p-2.5 select-text"
                 onkeydown="if(event.key==='Enter')confirmStudent();if(event.key==='Escape')closeStudentDialog();">
             <div class="flex justify-end gap-2 mt-4">
                 <button onclick="closeStudentDialog()"
-                    class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200">Ahora
-                    no</button>
+                    class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200"><span data-i18n="modal.student.notNow">Ahora
+                    no</span></button>
                 <button onclick="confirmStudent()"
-                    class="px-3 py-1.5 rounded-md bg-sky-700 hover:bg-sky-600 text-xs font-bold text-white">Guardar
-                    nombre</button>
+                    class="px-3 py-1.5 rounded-md bg-sky-700 hover:bg-sky-600 text-xs font-bold text-white"><span data-i18n="modal.student.save">Guardar
+                    nombre</span></button>
             </div>
         </div>
     </div>
@@ -937,41 +937,41 @@
             style="max-height:calc(100vh - 2rem);display:flex;flex-direction:column;">
             <div class="flex items-center justify-between mb-1" style="flex-shrink:0">
                 <h3 class="text-sm font-bold text-slate-100"><i
-                        class="fa-solid fa-wand-magic-sparkles text-amber-400 mr-2"></i>Crear actividad con esta red
+                        class="fa-solid fa-wand-magic-sparkles text-amber-400 mr-2"></i><span data-i18n="modal.mkact.title">Crear actividad con esta red</span>
                 </h3><button onclick="closeMakeActivity()"
                     class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center"><i
                         class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-[11px] text-slate-400 mb-3" style="flex-shrink:0">Armá la red, rompé algo a propósito (una
+            <p class="text-[11px] text-slate-400 mb-3" style="flex-shrink:0" data-i18n="modal.mkact.hint">Armá la red, rompé algo a propósito (una
                 IP, un cable, una ruta…) y definí qué tiene que lograr el alumno. Se guarda como un archivo que el
                 alumno abre con «Abrir red».</p>
             <div style="overflow-y:auto;min-height:0;flex:1 1 auto;padding-right:4px"
                 class="space-y-2.5 text-xs text-slate-300">
-                <label class="block">Título<input id="mk-title" type="text" maxlength="60"
-                        placeholder="Ej: La PC de Secretaría no sale a Internet"
+                <label class="block"><span data-i18n="modal.mkact.labelTitle">Título</span><input id="mk-title" type="text" maxlength="60"
+                        placeholder="Ej: La PC de Secretaría no sale a Internet" data-i18n-placeholder="modal.mkact.placeholderTitle"
                         class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-2 select-text"></label>
-                <label class="block">Dificultad<select id="mk-lvl"
+                <label class="block"><span data-i18n="modal.mkact.labelLevel">Dificultad</span><select id="mk-lvl"
                         class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-2">
-                        <option>Fácil</option>
-                        <option selected>Medio</option>
-                        <option>Difícil</option>
+                        <option data-i18n="modal.mkact.level.easy">Fácil</option>
+                        <option selected data-i18n="modal.mkact.level.medium">Medio</option>
+                        <option data-i18n="modal.mkact.level.hard">Difícil</option>
                     </select></label>
-                <label class="block">Consigna (qué le pasa a la red)<textarea id="mk-story" rows="2"
+                <label class="block"><span data-i18n="modal.mkact.labelStory">Consigna (qué le pasa a la red)</span><textarea id="mk-story" rows="2"
                         class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-2 select-text"
-                        placeholder="Ej: Desde ayer, nadie del laboratorio puede abrir la página del colegio."></textarea></label>
-                <label class="block">Pista (opcional)<textarea id="mk-hint" rows="2"
+                        placeholder="Ej: Desde ayer, nadie del laboratorio puede abrir la página del colegio." data-i18n-placeholder="modal.mkact.placeholderStory"></textarea></label>
+                <label class="block"><span data-i18n="modal.mkact.labelHint">Pista (opcional)</span><textarea id="mk-hint" rows="2"
                         class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-2 select-text"
-                        placeholder="Ej: Revisá la puerta de enlace de las PC."></textarea></label>
-                <div><span class="block mb-1">Objetivos: ¿quiénes tienen que poder comunicarse?</span>
+                        placeholder="Ej: Revisá la puerta de enlace de las PC." data-i18n-placeholder="modal.mkact.placeholderHint"></textarea></label>
+                <div><span class="block mb-1" data-i18n="modal.mkact.goals">Objetivos: ¿quiénes tienen que poder comunicarse?</span>
                     <div id="mk-goals" class="space-y-1.5"></div>
                 </div>
             </div>
             <div class="flex justify-end gap-2 mt-4" style="flex-shrink:0">
                 <button onclick="closeMakeActivity()"
-                    class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200">Cancelar</button>
+                    class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200" data-i18n="ui.cancel">Cancelar</button>
                 <button onclick="saveCustomActivity()"
                     class="px-3 py-1.5 rounded-md bg-amber-600 hover:bg-amber-500 text-xs font-bold text-white"><i
-                        class="fa-solid fa-download mr-1"></i>Guardar actividad</button>
+                        class="fa-solid fa-download mr-1"></i><span data-i18n="modal.mkact.save">Guardar actividad</span></button>
             </div>
         </div>
     </div>
@@ -984,22 +984,22 @@
             style="max-height:calc(100vh - 2rem);display:flex;flex-direction:column;">
             <div class="flex items-center justify-between mb-1" style="flex-shrink:0">
                 <h3 class="text-sm font-bold text-slate-100"><i
-                        class="fa-solid fa-clipboard-check text-emerald-400 mr-2"></i>Corregir entregas</h3><button
+                        class="fa-solid fa-clipboard-check text-emerald-400 mr-2"></i><span data-i18n="modal.grade.title">Corregir entregas</span></h3><button
                     onclick="closeGrader()"
                     class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center"
-                    title="Cerrar (Esc)"><i class="fa-solid fa-xmark"></i></button>
+                    title="Cerrar (Esc)" data-i18n-title="modal.closeTitle"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-[11px] text-slate-400 mb-3" style="flex-shrink:0">Elegí uno o varios archivos que guardaron
+            <p class="text-[11px] text-slate-400 mb-3" style="flex-shrink:0" data-i18n="modal.grade.hint">Elegí uno o varios archivos que guardaron
                 tus alumnos. El simulador vuelve a verificar cada red y te muestra quién la resolvió. Con «Ver» abrís la
                 red del alumno para revisarla.</p>
             <div class="flex flex-wrap gap-2 mb-3" style="flex-shrink:0">
                 <label
                     class="px-3 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-600 text-xs font-bold text-white cursor-pointer"><i
-                        class="fa-solid fa-folder-open mr-1"></i>Elegir archivos…<input type="file"
+                        class="fa-solid fa-folder-open mr-1"></i><span data-i18n="modal.grade.chooseFiles">Elegir archivos…</span><input type="file"
                         accept=".json,application/json" multiple class="hidden" onchange="gradeFiles(event)"></label>
                 <button onclick="downloadGradesCsv()"
                     class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200"><i
-                        class="fa-solid fa-file-csv mr-1"></i>Descargar resumen (Excel)</button>
+                        class="fa-solid fa-file-csv mr-1"></i><span data-i18n="modal.grade.downloadCsv">Descargar resumen (Excel)</span></button>
             </div>
             <div id="grade-table" style="overflow:auto;min-height:0;flex:1 1 auto" class="text-xs"></div>
         </div>
@@ -1011,7 +1011,7 @@
         style="top:4.5rem;left:50%;transform:translateX(-50%);z-index:60;width:min(460px, calc(100vw - 2rem))">
         <div class="flex items-center justify-between gap-2"><span id="tour-step"
                 class="text-[10px] font-bold uppercase tracking-widest text-amber-400"></span><button
-                onclick="endTour(true)" class="text-slate-400 hover:text-white text-xs" title="Cerrar recorrido"><i
+                onclick="endTour(true)" class="text-slate-400 hover:text-white text-xs" title="Cerrar recorrido" data-i18n-title="tour.closeTitle"><i
                     class="fa-solid fa-xmark"></i></button></div>
         <h3 id="tour-title" class="text-sm font-bold mt-1"></h3>
         <p id="tour-text" class="text-xs text-slate-300 mt-1.5"></p>
@@ -1019,9 +1019,9 @@
             <button id="tour-action" onclick="tourAction()"
                 class="hidden px-3 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-600 text-xs font-bold text-white"></button>
             <div class="flex gap-2 ml-auto"><button id="tour-prev" onclick="tourGo(-1)"
-                    class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200">Anterior</button><button
+                    class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200" data-i18n="tour.prev">Anterior</button><button
                     id="tour-next" onclick="tourGo(1)"
-                    class="px-3 py-1.5 rounded-md bg-amber-600 hover:bg-amber-500 text-xs font-bold text-white">Siguiente</button>
+                    class="px-3 py-1.5 rounded-md bg-amber-600 hover:bg-amber-500 text-xs font-bold text-white" data-i18n="tour.next">Siguiente</button>
             </div>
         </div>
     </div>
@@ -1034,12 +1034,12 @@
             style="max-height:calc(100vh - 2rem);display:flex;flex-direction:column;">
             <div class="flex items-center justify-between mb-1" style="flex-shrink:0">
                 <h3 class="text-sm font-bold text-slate-100"><i
-                        class="fa-solid fa-graduation-cap text-amber-400 mr-2"></i>Actividades: ¡arreglá la red!</h3>
+                        class="fa-solid fa-graduation-cap text-amber-400 mr-2"></i><span data-i18n="modal.activities.title">Actividades: ¡arreglá la red!</span></h3>
                 <button onclick="closeActivitiesModal()"
                     class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center"
-                    title="Cerrar (Esc)"><i class="fa-solid fa-xmark"></i></button>
+                    title="Cerrar (Esc)" data-i18n-title="modal.closeTitle"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-[11px] text-slate-400 mb-3" style="flex-shrink:0">Cada actividad carga una red con una falla
+            <p class="text-[11px] text-slate-400 mb-3" style="flex-shrink:0" data-i18n="modal.activities.hint">Cada actividad carga una red con una falla
                 escondida. Encontrala, arreglala y verificá.</p>
             <div id="act-list" class="space-y-2" style="overflow-y:auto;min-height:0;flex:1 1 auto;padding-right:4px;">
             </div>
@@ -1051,17 +1051,17 @@
         class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-5">
             <h3 class="text-sm font-bold text-slate-100 mb-1"><i
-                    class="fa-solid fa-floppy-disk text-emerald-400 mr-2"></i>Guardar red</h3>
-            <p class="text-[11px] text-slate-400 mb-3">Elegí un nombre para identificar tu red.</p>
-            <input id="save-name" type="text" maxlength="60" placeholder="Ej: Red del aula"
+                    class="fa-solid fa-floppy-disk text-emerald-400 mr-2"></i><span data-i18n="modal.save.title">Guardar red</span></h3>
+            <p class="text-[11px] text-slate-400 mb-3" data-i18n="modal.save.hint">Elegí un nombre para identificar tu red.</p>
+            <input id="save-name" type="text" maxlength="60" placeholder="Ej: Red del aula" data-i18n-placeholder="modal.save.placeholder"
                 class="w-full rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-sm p-2.5 select-text"
                 onkeydown="if(event.key==='Enter')confirmSave();if(event.key==='Escape')closeSaveDialog();">
             <div class="flex justify-end gap-2 mt-4">
                 <button onclick="closeSaveDialog()"
-                    class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200">Cancelar</button>
+                    class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200" data-i18n="ui.cancel">Cancelar</button>
                 <button onclick="confirmSave()"
                     class="px-3 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-600 text-xs font-bold text-white"><i
-                        class="fa-solid fa-download mr-1"></i>Guardar</button>
+                        class="fa-solid fa-download mr-1"></i><span data-i18n="modal.save.save">Guardar</span></button>
             </div>
         </div>
     </div>
@@ -1085,9 +1085,9 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <button onclick="deleteDevice(state.selectedDeviceId)" title="Eliminar este dispositivo de la red"
+                    <button onclick="deleteDevice(state.selectedDeviceId)" title="Eliminar este dispositivo de la red" data-i18n-title="modal.device.deleteTitle"
                         class="px-3 h-8 rounded-lg bg-rose-950/50 hover:bg-rose-900/60 border border-rose-800/60 text-rose-300 text-xs font-medium flex items-center gap-1.5 transition"><i
-                            class="fa-solid fa-trash-can"></i><span>Eliminar</span></button>
+                            class="fa-solid fa-trash-can"></i><span data-i18n="modal.device.delete">Eliminar</span></button>
                     <button onclick="closeModal()"
                         class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition">
                         <i class="fa-solid fa-xmark"></i>

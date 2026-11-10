@@ -174,7 +174,77 @@ window.I18N_DICTS.es = {
         deliverTitle: 'Guardar y entregar'
     },
     log: {},     // log de tráfico (claves + variables)
-    tour: {},    // recorrido guiado
     error: {},   // validaciones y alertas
-    modal: {}    // modales (dispositivo, actividad, entregar, corregir…)
+
+    // Fase 3 · zona 3 — modales y diálogos:
+    modal: {
+        close: 'Cerrar',
+        closeTitle: 'Cerrar (Esc)',
+        deliver: {
+            title: 'Entregar mi trabajo'
+        },
+        about: {
+            subtitle: 'Simulador de Redes Educativo · versión 35',
+            license: 'Distribuido bajo Licencia MIT',
+            donation: 'Si te gusta el Simulador queda a tu criterio una Mención o Donación para el autor.',
+            cafecito: 'Invitame un Cafecito',
+            kofi: 'Apoyar en Ko-fi'
+        },
+        restore: {
+            title: 'Encontramos tu trabajo anterior',
+            hint: 'El simulador guarda tu red automáticamente en este navegador. Para entregarla o compartirla, usá Archivo → Guardar red.',
+            startOver: 'Empezar de cero',
+            continue: 'Continuar donde estaba'
+        },
+        student: {
+            title: '¿Cómo te llamás?',
+            hint: 'Tu nombre se guarda dentro de las redes y actividades que guardes, así tu profe sabe de quién es cada entrega.',
+            placeholder: 'Ej: Ana Pérez',
+            notNow: 'Ahora no',
+            save: 'Guardar nombre'
+        },
+        mkact: {
+            title: 'Crear actividad con esta red',
+            hint: 'Armá la red, rompé algo a propósito (una IP, un cable, una ruta…) y definí qué tiene que lograr el alumno. Se guarda como un archivo que el alumno abre con «Abrir red».',
+            labelTitle: 'Título',
+            placeholderTitle: 'Ej: La PC de Secretaría no sale a Internet',
+            labelLevel: 'Dificultad',
+            level: {
+                easy: 'Fácil',
+                medium: 'Medio',
+                hard: 'Difícil'
+            },
+            labelStory: 'Consigna (qué le pasa a la red)',
+            placeholderStory: 'Ej: Desde ayer, nadie del laboratorio puede abrir la página del colegio.',
+            labelHint: 'Pista (opcional)',
+            placeholderHint: 'Ej: Revisá la puerta de enlace de las PC.',
+            goals: 'Objetivos: ¿quiénes tienen que poder comunicarse?',
+            save: 'Guardar actividad'
+        },
+        grade: {
+            title: 'Corregir entregas',
+            hint: 'Elegí uno o varios archivos que guardaron tus alumnos. El simulador vuelve a verificar cada red y te muestra quién la resolvió. Con «Ver» abrís la red del alumno para revisarla.',
+            chooseFiles: 'Elegir archivos…',
+            downloadCsv: 'Descargar resumen (Excel)'
+        },
+        activities: {
+            title: 'Actividades: ¡arreglá la red!',
+            hint: 'Cada actividad carga una red con una falla escondida. Encontrala, arreglala y verificá.'
+        },
+        save: {
+            title: 'Guardar red',
+            hint: 'Elegí un nombre para identificar tu red.',
+            placeholder: 'Ej: Red del aula',
+            save: 'Guardar'
+        },
+        device: {
+            delete: 'Eliminar',
+            deleteTitle: 'Eliminar este dispositivo de la red'
+        }
+    },
+    tour: {
+        prev: 'Anterior',
+        next: 'Siguiente',
+        closeTitle: 'Cerrar recorrido'
+    }
 };
