@@ -71,7 +71,9 @@ test:  scripts de control de calidad
 ├── index.html          # Simulador principal (SPA)
 ├── lang/               # Diccionarios por idioma (window.I18N_DICTS, cargados con <script>)
 │   ├── es.js           # español: base y respaldo
-│   └── en.js           # inglés (Fase 4); pt.js y fr.js en Fase 8
+│   ├── en.js           # inglés (Fase 4)
+│   ├── pt.js           # portugués (Fase 8)
+│   └── (fr.js)         # francés: pendiente (Fase 8)
 ├── js/
 │   └── i18n.js         # Motor: t(), data-i18n, selector de idioma, log como claves+variables
 ├── tools/
@@ -89,8 +91,11 @@ test:  scripts de control de calidad
 
 - **Se traduce**: toda la interfaz del simulador (menús, paneles, modales, mensajes, avisos,
   textos de la simulación, actividades, entregas, calificador, exportación y recorrido guiado).
-- **No se traduce**: la salida de la consola/CLI de los dispositivos (`ping`, `tracert`,
-  `ipconfig`, `nslookup`, `arp`, `help`): va en inglés, como en un equipo real.
+- **No se traduce (por ahora)**: la salida de la consola/CLI simulada de los dispositivos
+  (`ping`, `tracert`, `ipconfig`, `nslookup`, `arp`, `help`). Ese texto sigue tal como se
+  escribió en el simulador original, **en español**, y no pasa por `I18N.t()`. Queda
+  pendiente pasarlo a inglés (como en un equipo real, según la propuesta de `docs/auditoria-resumen.md`)
+  en una tarea aparte; hasta entonces es la única parte de la interfaz que no cambia de idioma.
 - **No se traducen** los términos técnicos (DHCP, ARP, MAC, VLAN, gateway…) ni los nombres
   propios de los equipos.
 
@@ -104,13 +109,13 @@ Ver el documento completo del plan. Resumen de fases:
 |------|-------------|--------|
 | 0 | Preparación del repositorio | ✅ Completa |
 | 1 | Auditoría de textos | ✅ Completa (inventario en `docs/auditoria-textos.csv` + resumen en `docs/auditoria-resumen.md`) |
-| 2 | Sistema i18n (`t()` + `data-i18n`) | ✅ Completa (motor en `js/i18n.js`, solo `es` por ahora; en/pt/fr en Fases 4 y 8) |
+| 2 | Sistema i18n (`t()` + `data-i18n`) | ✅ Completa (motor en `js/i18n.js`; idiomas soportados: es, en, pt, fr) |
 | 3 | Extracción del español a `lang/es.js` | ✅ Completa (cabecera/menús, paneles, modales y textos dinámicos del JS) |
 | 4 | Traducción al inglés (`lang/en.js`) | ✅ Completa (756 claves, mismas que `es`) |
 | 5 | Script de control de calidad de claves | ✅ Completa (`tools/check_keys.mjs` valida claves y texto fallback) |
 | 6 | Producción: Tailwind compilado, assets locales | ⏳ Pendiente |
 | 7 | Landing page web propia | ⏳ Pendiente |
-| 8 | Portugués y francés | ⏳ Pendiente |
+| 8 | Portugués y francés | 🔶 En curso: portugués ✅ Completa (`lang/pt.js`, 756 claves, mismas que `es`); francés ⏳ Pendiente |
 
 ---
 

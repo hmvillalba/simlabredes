@@ -165,5 +165,25 @@ console.log('\n[7] diccionario en inglés: se carga y tiene las mismas claves qu
     ok(es.size === en.size && es.size > 500, `ambos diccionarios tienen ${es.size} claves`);
 }
 
+console.log('\n[8] diccionario en portugués: se carga y tiene las mismas claves que es');
+{
+    const b = makeBrowser({ lang: 'pt-BR' });
+    const I18N = loadEngine(b, ['lang/es.js', 'lang/pt.js', 'js/i18n.js']);
+    ok(I18N.lang === 'pt', 'navigator pt-BR -> pt con el diccionario pt cargado');
+    ok(I18N.t('app.title') === 'Simulador de Redes Educativo', "t('app.title') devuelve el texto en portugués");
+    ok(I18N.t('menu.file') === 'Arquivo', "t('menu.file') devuelve el texto en portugués");
+    ok(I18N.t('sim.text.icmp.req', { s: 'PC1', d: 'PC2' }).includes('PC1'), 'interpolación en portugués');
+    ok(I18N.t('tour.step', { step: 2, total: 9 }) === 'Passo 2 de 9', 'interpolación de varios {vars} en portugués');
+    const flat = (o, p = '') => Object.entries(o).flatMap(([k, v]) =>
+        typeof v === 'string' ? [[p + k, v]] : (v && typeof v === 'object' ? flat(v, p + k + '.') : []));
+    const es = new Set(flat(window.I18N_DICTS.es).map(x => x[0]));
+    const pt = new Set(flat(window.I18N_DICTS.pt).map(x => x[0]));
+    const soloEs = [...es].filter(k => !pt.has(k));
+    const soloPt = [...pt].filter(k => !es.has(k));
+    ok(soloEs.length === 0, 'no hay claves que falten en pt' + (soloEs.length ? ': ' + soloEs.slice(0, 5).join(', ') : ''));
+    ok(soloPt.length === 0, 'no hay claves sobrantes en pt' + (soloPt.length ? ': ' + soloPt.slice(0, 5).join(', ') : ''));
+    ok(es.size === pt.size && es.size > 500, `ambos diccionarios tienen ${es.size} claves`);
+}
+
 console.log(`\nResultado: ${passed} ok, ${failed} fallidos`);
 process.exit(failed ? 1 : 0);
