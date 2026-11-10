@@ -75,6 +75,16 @@ while ((m = callRe.exec(html))) {
         const line = html.slice(0, m.index).split('\n').length;
         problems.push(`${call.key}: faltan {${miss.join('}, {')}} (línea ~${line})`);
     }
+    // La misma clave puede existir en otros idiomas: sus variables también
+    // tienen que estar entre las que se pasan.
+    for (const [lang, keys] of Object.entries(need)) {
+        if (lang === 'es' || !keys[call.key]) continue;
+        const missLang = [...keys[call.key]].filter(v => !given.has(v));
+        if (missLang.length) {
+            const line = html.slice(0, m.index).split('\n').length;
+            problems.push(`${call.key} [${lang}]: faltan {${missLang.join('}, {')}} (línea ~${line})`);
+        }
+    }
 }
 
 console.log(`claves con variables en lang/es.js: ${Object.keys(need.es || {}).length}`);

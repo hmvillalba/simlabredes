@@ -54,7 +54,7 @@ function makeBrowser({ lang = 'es-ES', saved = null } = {}) {
     return { window, document, CustomEvent, store, logEl, documentElementAttrs, listeners };
 }
 
-function loadEngine(browser) {
+function loadEngine(browser, files = ['lang/es.js', 'js/i18n.js']) {
     globalThis.window = browser.window;
     globalThis.document = browser.document;
     // en Node >= 21 globalThis.navigator existe y es de solo lectura: hay que redefinirlo
@@ -62,7 +62,7 @@ function loadEngine(browser) {
         value: browser.window.navigator, configurable: true, writable: true
     });
     globalThis.CustomEvent = browser.CustomEvent;
-    for (const f of ['lang/es.js', 'js/i18n.js']) {
+    for (const f of files) {
         const code = fs.readFileSync(path.join(ROOT, f), 'utf8');
         vm.runInThisContext(code, { filename: f });
     }
@@ -144,6 +144,25 @@ console.log('\n[6] log como claves+variables: re-render en vivo al cambiar idiom
     ok(/Sent from PC1 to SW1/.test(b.logEl.children[0].textContent), 'al cambiar a en re-renderiza en inglés');
     for (let i = 0; i < 30; i++) I18N.log('log.sent', { from: 'a', to: 'b' });
     ok(b.logEl.children.length === 20, 'tope de 20 entradas en el log');
+}
+
+console.log('\n[7] diccionario en inglés: se carga y tiene las mismas claves que es');
+{
+    const b = makeBrowser({ lang: 'en-US' });
+    const I18N = loadEngine(b, ['lang/es.js', 'lang/en.js', 'js/i18n.js']);
+    ok(I18N.lang === 'en', 'navigator en-US -> en con el diccionario en cargado');
+    ok(I18N.t('app.title') === 'Educational Network Simulator', "t('app.title') devuelve el texto en inglés");
+    ok(I18N.t('menu.file') === 'File', "t('menu.file') devuelve el texto en inglés");
+    ok(I18N.t('sim.text.icmp.req', { s: 'PC1', d: 'PC2' }).includes('PC1'), 'interpolación en inglés');
+    const flat = (o, p = '') => Object.entries(o).flatMap(([k, v]) =>
+        typeof v === 'string' ? [[p + k, v]] : (v && typeof v === 'object' ? flat(v, p + k + '.') : []));
+    const es = new Set(flat(window.I18N_DICTS.es).map(x => x[0]));
+    const en = new Set(flat(window.I18N_DICTS.en).map(x => x[0]));
+    const soloEs = [...es].filter(k => !en.has(k));
+    const soloEn = [...en].filter(k => !es.has(k));
+    ok(soloEs.length === 0, 'no hay claves que falten en en' + (soloEs.length ? ': ' + soloEs.slice(0, 5).join(', ') : ''));
+    ok(soloEn.length === 0, 'no hay claves sobrantes en en' + (soloEn.length ? ': ' + soloEn.slice(0, 5).join(', ') : ''));
+    ok(es.size === en.size && es.size > 500, `ambos diccionarios tienen ${es.size} claves`);
 }
 
 console.log(`\nResultado: ${passed} ok, ${failed} fallidos`);

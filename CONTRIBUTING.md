@@ -71,7 +71,7 @@ test:  scripts de control de calidad
 ├── index.html          # Simulador principal (SPA)
 ├── lang/               # Diccionarios por idioma (window.I18N_DICTS, cargados con <script>)
 │   ├── es.js           # español: base y respaldo
-│   └── en.js           # Fase 4 (luego pt.js y fr.js en Fase 8)
+│   └── en.js           # inglés (Fase 4); pt.js y fr.js en Fase 8
 ├── js/
 │   └── i18n.js         # Motor: t(), data-i18n, selector de idioma, log como claves+variables
 ├── tools/
@@ -106,7 +106,7 @@ Ver el documento completo del plan. Resumen de fases:
 | 1 | Auditoría de textos | ✅ Completa (inventario en `docs/auditoria-textos.csv` + resumen en `docs/auditoria-resumen.md`) |
 | 2 | Sistema i18n (`t()` + `data-i18n`) | ✅ Completa (motor en `js/i18n.js`, solo `es` por ahora; en/pt/fr en Fases 4 y 8) |
 | 3 | Extracción del español a `lang/es.js` | ✅ Completa (cabecera/menús, paneles, modales y textos dinámicos del JS) |
-| 4 | Traducción al inglés (`lang/en.js`) | ⏳ Pendiente |
+| 4 | Traducción al inglés (`lang/en.js`) | ✅ Completa (756 claves, mismas que `es`) |
 | 5 | Script de control de calidad de claves | ✅ Completa (`tools/check_keys.mjs` valida claves y texto fallback) |
 | 6 | Producción: Tailwind compilado, assets locales | ⏳ Pendiente |
 | 7 | Landing page web propia | ⏳ Pendiente |
