@@ -23,7 +23,8 @@ window.I18N_DICTS.es = {
     },
 
     ui: {
-        langSelector: 'Idioma / Language'
+        langSelector: 'Idioma / Language',
+        cancel: 'Cancelar'
     },
 
     // Fase 3 · zona 1 — cabecera y menús:
@@ -75,7 +76,103 @@ window.I18N_DICTS.es = {
     },
 
     // Áreas reservadas (se completan en la Fase 3):
-    device: {},  // panel de dispositivos, nombres por defecto, propiedades
+    // Fase 3 · zona 2 — paneles (paleta, lienzo, simulación, actividad):
+    device: {
+        paletteTitle: 'Agregar Dispositivos',
+        paletteHint: 'Haz clic en un equipo para añadirlo. Doble clic sobre un equipo de la red abre sus propiedades; la tecla Supr lo elimina.',
+        legendTitle: 'Leyenda de Estados:',
+        legendOk: 'Conexión OK / IP Válida',
+        legendApipa: 'APIPA (Sin IP / Sin DHCP)',
+        legendError: 'Desconectado / Error Subred',
+        aboutTitle: 'Acerca de este simulador',
+        type: {
+            router: 'Router WiFi', routerDesc: 'Gateway + DHCP + WiFi',
+            lrouter: 'Router (varias redes)', lrouterDesc: 'Interfaces + tabla de rutas',
+            notebook: 'Notebook', notebookDesc: 'Cable o WiFi',
+            netbook: 'Netbook', netbookDesc: 'Portátil pequeña, cable o WiFi',
+            tv: 'Smart TV', tvDesc: 'WiFi o cable · navegador',
+            vpncloud: 'VPN en la nube (VPS)', vpncloudDesc: 'Tipo Tailscale / ZeroTier',
+            vpnlocal: 'Servidor VPN local', vpnlocalDesc: 'Tipo WireGuard / OpenVPN',
+            dns: 'Servidor DNS', dnsDesc: 'Tabla de nombres → IP',
+            switch: 'Switch (L2 / L3)', switchDesc: 'Capa 2 o Capa 3 (Multicapa)',
+            pc: 'Computadora (PC)', pcDesc: 'Ethernet / Consola / Web',
+            phone: 'Smartphone WiFi', phoneDesc: 'Conexión Inalámbrica',
+            cloud: 'Internet (ISP Cloud)', cloudDesc: 'Acceso a la Red Mundial'
+        },
+        // Nombres por defecto de los equipos en el lienzo ({id} = número).
+        // Se generan en el idioma activo; al exportar/importar se conservan tal cual.
+        defaultName: {
+            notebook: 'Notebook_{id}',
+            netbook: 'Netbook_{id}',
+            tv: 'SmartTV_{id}',
+            router: 'Router_WiFi_{id}',
+            lrouter: 'Router_{id}',
+            dns: 'DNS_{id}',
+            vpnCloud: 'VPN_Nube_{id}',
+            vpnLocal: 'VPN_Local_{id}',
+            switch: 'Switch_LAN_{id}',
+            pc: 'PC_Alumno_{id}',
+            phone: 'Smartphone_{id}',
+            cloud: 'Internet_ISP',
+            other: 'Dispositivo_{id}'
+        }
+    },
+    canvas: {
+        cableMode: 'Modo Cable: Haz clic en dos dispositivos para conectarlos',
+        deleteCableMode: 'Modo Eliminar Cable: Haz clic sobre cualquier cable en la pantalla para cortarlo',
+        emptyTitle: 'Tu área de trabajo está vacía',
+        emptyHintA: 'Agregá equipos desde el panel de la izquierda, o abrí un ejemplo desde',
+        zoomIn: 'Acercar (tecla +)',
+        zoomReset: 'Volver al 100%',
+        zoomOut: 'Alejar (tecla -)',
+        fitView: 'Ver toda la red (tecla 0)',
+        projectExit: 'Salir de proyección'
+    },
+    sim: {
+        title: 'Simular comunicación',
+        hidePanel: 'Ocultar panel',
+        start: 'Iniciar',
+        pause: 'Pausar / continuar',
+        stop: 'Detener simulación',
+        all: 'Todos navegando a la vez',
+        allTitle: 'Todos los equipos se comunican a la vez, hasta que decidas detenerlo',
+        modeLabel: 'Modo de simulación',
+        modeSimple: '🟢 Modo simple: solo el recorrido',
+        modeAdvanced: '🔬 Modo avanzado: capas, ARP, MAC, DNS y rutas',
+        source: 'Origen',
+        destination: 'Destino',
+        protocolLabel: 'Tipo de comunicación',
+        protocol: {
+            icmp: 'ICMP / Ping',
+            arp: 'ARP / Buscar MAC',
+            dns: 'DNS / Resolver nombre',
+            http: 'HTTP / Solicitud web',
+            dhcp: 'DHCP / Pedir IP'
+        },
+        auto: 'Automático',
+        noDevices: 'Sin dispositivos',
+        site: 'Nombre del sitio (HTTP/DNS)',
+        dnsServer: 'Servidor DNS',
+        tcpHandshake: 'Mostrar el saludo TCP (SYN, SYN-ACK, ACK) antes de HTTP',
+        speed: 'Velocidad',
+        speedSlow: 'Más lenta',
+        speedFast: 'Más rápida',
+        speedLabel: 'Velocidad de la simulación',
+        layers: 'Ver capas',
+        vpn: 'Enviar por la VPN (túnel con IP VPN)',
+        vpnTitle: 'Si origen y destino están en la misma VPN, el paquete viaja dentro del túnel cifrado',
+        step: 'Paso a paso (espera mi OK en cada cartel)',
+        stepTitle: 'La simulación se detiene en cada paso hasta que presiones ▶ (o la barra espaciadora)',
+        clearTables: 'Borrar tablas (ARP, MAC, DNS)',
+        clearTablesTitle: 'Vacía las tablas ARP de los equipos y las tablas MAC de los switches',
+        statusIdle: 'Selecciona origen, destino y protocolo para visualizar el recorrido.'
+    },
+    act: {
+        close: 'Cerrar actividad',
+        verify: 'Verificar',
+        hint: 'Pista',
+        deliverTitle: 'Guardar y entregar'
+    },
     log: {},     // log de tráfico (claves + variables)
     tour: {},    // recorrido guiado
     error: {},   // validaciones y alertas

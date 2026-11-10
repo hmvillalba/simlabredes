@@ -456,8 +456,8 @@
         <aside id="devices-panel"
             class="w-64 bg-slate-900/95 border-r border-slate-800 p-4 flex flex-col justify-between shrink-0 z-10 backdrop-blur-sm">
             <div>
-                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Agregar Dispositivos</h2>
-                <p class="text-[11px] text-slate-500 mb-4">Haz clic en un equipo para añadirlo. Doble clic sobre un
+                <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3" data-i18n="device.paletteTitle">Agregar Dispositivos</h2>
+                <p class="text-[11px] text-slate-500 mb-4" data-i18n="device.paletteHint">Haz clic en un equipo para añadirlo. Doble clic sobre un
                     equipo de la red abre sus propiedades; la tecla Supr lo elimina.</p>
 
                 <div class="space-y-2.5">
@@ -469,8 +469,8 @@
                             <i class="fa-solid fa-wifi"></i>
                         </div>
                         <div>
-                            <span class="text-xs font-semibold text-slate-200 block">Router WiFi</span>
-                            <span class="text-[10px] text-slate-400">Gateway + DHCP + WiFi</span>
+                            <span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.router">Router WiFi</span>
+                            <span class="text-[10px] text-slate-400" data-i18n="device.type.routerDesc">Gateway + DHCP + WiFi</span>
                         </div>
                     </div>
 
@@ -480,8 +480,8 @@
                         <div
                             class="w-10 h-10 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-400 flex items-center justify-center text-lg group-hover:scale-105 transition">
                             <i class="fa-solid fa-route"></i></div>
-                        <div><span class="text-xs font-semibold text-slate-200 block">Router (varias redes)</span><span
-                                class="text-[10px] text-slate-400">Interfaces + tabla de rutas</span></div>
+                        <div><span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.lrouter">Router (varias redes)</span><span
+                                class="text-[10px] text-slate-400" data-i18n="device.type.lrouterDesc">Interfaces + tabla de rutas</span></div>
                     </div>
 
                     <div onclick="createDevice('notebook')"
@@ -489,24 +489,24 @@
                         <div
                             class="w-10 h-10 rounded-lg bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center text-lg group-hover:scale-105 transition">
                             <i class="fa-solid fa-laptop"></i></div>
-                        <div><span class="text-xs font-semibold text-slate-200 block">Notebook</span><span
-                                class="text-[10px] text-slate-400">Cable o WiFi</span></div>
+                        <div><span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.notebook">Notebook</span><span
+                                class="text-[10px] text-slate-400" data-i18n="device.type.notebookDesc">Cable o WiFi</span></div>
                     </div>
                     <div onclick="createDevice('netbook')"
                         class="device-drag-item group p-3 bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-pink-500/50 rounded-xl cursor-pointer transition shadow-sm hover:shadow-md flex items-center space-x-3">
                         <div
                             class="w-10 h-10 rounded-lg bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center text-lg group-hover:scale-105 transition">
                             <i class="fa-solid fa-laptop-file"></i></div>
-                        <div><span class="text-xs font-semibold text-slate-200 block">Netbook</span><span
-                                class="text-[10px] text-slate-400">Portátil pequeña, cable o WiFi</span></div>
+                        <div><span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.netbook">Netbook</span><span
+                                class="text-[10px] text-slate-400" data-i18n="device.type.netbookDesc">Portátil pequeña, cable o WiFi</span></div>
                     </div>
                     <div onclick="createDevice('tv')"
                         class="device-drag-item group p-3 bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-rose-500/50 rounded-xl cursor-pointer transition shadow-sm hover:shadow-md flex items-center space-x-3">
                         <div
                             class="w-10 h-10 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center text-lg group-hover:scale-105 transition">
                             <i class="fa-solid fa-tv"></i></div>
-                        <div><span class="text-xs font-semibold text-slate-200 block">Smart TV</span><span
-                                class="text-[10px] text-slate-400">WiFi o cable · navegador</span></div>
+                        <div><span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.tv">Smart TV</span><span
+                                class="text-[10px] text-slate-400" data-i18n="device.type.tvDesc">WiFi o cable · navegador</span></div>
                     </div>
 
                     <div onclick="createDevice('vpncloud')"
@@ -514,16 +514,16 @@
                         <div
                             class="w-10 h-10 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-400 flex items-center justify-center text-lg group-hover:scale-105 transition">
                             <i class="fa-solid fa-shield-halved"></i></div>
-                        <div><span class="text-xs font-semibold text-slate-200 block">VPN en la nube (VPS)</span><span
-                                class="text-[10px] text-slate-400">Tipo Tailscale / ZeroTier</span></div>
+                        <div><span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.vpncloud">VPN en la nube (VPS)</span><span
+                                class="text-[10px] text-slate-400" data-i18n="device.type.vpncloudDesc">Tipo Tailscale / ZeroTier</span></div>
                     </div>
                     <div onclick="createDevice('vpnlocal')"
                         class="device-drag-item group p-3 bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-indigo-500/50 rounded-xl cursor-pointer transition shadow-sm hover:shadow-md flex items-center space-x-3">
                         <div
                             class="w-10 h-10 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center text-lg group-hover:scale-105 transition">
                             <i class="fa-solid fa-lock"></i></div>
-                        <div><span class="text-xs font-semibold text-slate-200 block">Servidor VPN local</span><span
-                                class="text-[10px] text-slate-400">Tipo WireGuard / OpenVPN</span></div>
+                        <div><span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.vpnlocal">Servidor VPN local</span><span
+                                class="text-[10px] text-slate-400" data-i18n="device.type.vpnlocalDesc">Tipo WireGuard / OpenVPN</span></div>
                     </div>
 
                     <!-- Servidor DNS -->
@@ -532,8 +532,8 @@
                         <div
                             class="w-10 h-10 rounded-lg bg-teal-500/10 border border-teal-500/20 text-teal-400 flex items-center justify-center text-lg group-hover:scale-105 transition">
                             <i class="fa-solid fa-address-book"></i></div>
-                        <div><span class="text-xs font-semibold text-slate-200 block">Servidor DNS</span><span
-                                class="text-[10px] text-slate-400">Tabla de nombres → IP</span></div>
+                        <div><span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.dns">Servidor DNS</span><span
+                                class="text-[10px] text-slate-400" data-i18n="device.type.dnsDesc">Tabla de nombres → IP</span></div>
                     </div>
 
                     <!-- Switch -->
@@ -544,8 +544,8 @@
                             <i class="fa-solid fa-network-wired"></i>
                         </div>
                         <div>
-                            <span class="text-xs font-semibold text-slate-200 block">Switch (L2 / L3)</span>
-                            <span class="text-[10px] text-slate-400">Capa 2 o Capa 3 (Multicapa)</span>
+                            <span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.switch">Switch (L2 / L3)</span>
+                            <span class="text-[10px] text-slate-400" data-i18n="device.type.switchDesc">Capa 2 o Capa 3 (Multicapa)</span>
                         </div>
                     </div>
 
@@ -557,8 +557,8 @@
                             <i class="fa-solid fa-desktop"></i>
                         </div>
                         <div>
-                            <span class="text-xs font-semibold text-slate-200 block">Computadora (PC)</span>
-                            <span class="text-[10px] text-slate-400">Ethernet / Consola / Web</span>
+                            <span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.pc">Computadora (PC)</span>
+                            <span class="text-[10px] text-slate-400" data-i18n="device.type.pcDesc">Ethernet / Consola / Web</span>
                         </div>
                     </div>
 
@@ -570,8 +570,8 @@
                             <i class="fa-solid fa-mobile-screen-button"></i>
                         </div>
                         <div>
-                            <span class="text-xs font-semibold text-slate-200 block">Smartphone WiFi</span>
-                            <span class="text-[10px] text-slate-400">Conexión Inalámbrica</span>
+                            <span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.phone">Smartphone WiFi</span>
+                            <span class="text-[10px] text-slate-400" data-i18n="device.type.phoneDesc">Conexión Inalámbrica</span>
                         </div>
                     </div>
 
@@ -583,8 +583,8 @@
                             <i class="fa-solid fa-cloud"></i>
                         </div>
                         <div>
-                            <span class="text-xs font-semibold text-slate-200 block">Internet (ISP Cloud)</span>
-                            <span class="text-[10px] text-slate-400">Acceso a la Red Mundial</span>
+                            <span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.cloud">Internet (ISP Cloud)</span>
+                            <span class="text-[10px] text-slate-400" data-i18n="device.type.cloudDesc">Acceso a la Red Mundial</span>
                         </div>
                     </div>
                 </div>
@@ -592,23 +592,23 @@
 
             <!-- Legend Box -->
             <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px] space-y-2">
-                <span class="font-semibold text-slate-300 block mb-1">Leyenda de Estados:</span>
+                <span class="font-semibold text-slate-300 block mb-1" data-i18n="device.legendTitle">Leyenda de Estados:</span>
                 <div class="flex items-center space-x-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                    <span class="text-slate-400">Conexión OK / IP Válida</span>
+                    <span class="text-slate-400" data-i18n="device.legendOk">Conexión OK / IP Válida</span>
                 </div>
                 <div class="flex items-center space-x-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                    <span class="text-slate-400">APIPA (Sin IP / Sin DHCP)</span>
+                    <span class="text-slate-400" data-i18n="device.legendApipa">APIPA (Sin IP / Sin DHCP)</span>
                 </div>
                 <div class="flex items-center space-x-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                    <span class="text-slate-400">Desconectado / Error Subred</span>
+                    <span class="text-slate-400" data-i18n="device.legendError">Desconectado / Error Subred</span>
                 </div>
             </div>
             <div class="pt-3 mt-1 border-t border-slate-800 text-center" style="flex-shrink:0">
                 <button onclick="openAbout()" class="text-[10px] text-slate-500 hover:text-slate-300 transition"
-                    title="Acerca de este simulador">© <span class="js-year">2026</span> Hugo Martin Villalba</button>
+                    title="Acerca de este simulador" data-i18n-title="device.aboutTitle">© <span class="js-year">2026</span> Hugo Martin Villalba</button>
             </div>
         </aside>
 
@@ -618,9 +618,9 @@
             <div id="cable-mode-indicator"
                 class="hidden absolute top-4 left-1/2 -translate-x-1/2 bg-blue-600/90 text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-xl border border-blue-400 backdrop-blur-md z-30 flex items-center space-x-2">
                 <i class="fa-solid fa-plug animate-bounce"></i>
-                <span id="cable-mode-text">Modo Cable: Haz clic en dos dispositivos para conectarlos</span>
+                <span id="cable-mode-text" data-i18n="canvas.cableMode">Modo Cable: Haz clic en dos dispositivos para conectarlos</span>
                 <button onclick="setToolMode('select')"
-                    class="ml-2 bg-blue-800 hover:bg-blue-950 text-white px-2 py-0.5 rounded text-[10px]">Cancelar</button>
+                    class="ml-2 bg-blue-800 hover:bg-blue-950 text-white px-2 py-0.5 rounded text-[10px]" data-i18n="ui.cancel">Cancelar</button>
             </div>
 
             <!-- SVG layer for rendering network cables -->
@@ -646,9 +646,9 @@
                 <div
                     class="text-center max-w-sm px-6 py-5 rounded-2xl border border-dashed border-slate-600 bg-slate-900/70">
                     <i class="fa-solid fa-network-wired text-3xl text-emerald-400 mb-2"></i>
-                    <p class="text-sm font-semibold text-slate-100">Tu área de trabajo está vacía</p>
-                    <p class="text-xs text-slate-400 mt-1">Agregá equipos desde el panel de la izquierda, o abrí un
-                        ejemplo desde <b>Archivo → Cargar ejemplo</b>.</p>
+                    <p class="text-sm font-semibold text-slate-100" data-i18n="canvas.emptyTitle">Tu área de trabajo está vacía</p>
+                    <p class="text-xs text-slate-400 mt-1"><span data-i18n="canvas.emptyHintA">Agregá equipos desde el panel de la izquierda, o abrí un
+                        ejemplo desde</span> <b><span data-i18n="menu.file">Archivo</span> → <span data-i18n="menu.loadDemo">Cargar ejemplo</span></b>.</p>
                 </div>
             </div>
 
@@ -657,16 +657,16 @@
                 class="absolute left-3 top-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-1 bg-slate-900/95 border border-slate-700 rounded-xl p-1 shadow-xl">
                 <button onclick="zoomAt(1.25)"
                     class="w-8 h-8 rounded-lg hover:bg-slate-800 text-slate-200 text-sm flex items-center justify-center"
-                    title="Acercar (tecla +)"><i class="fa-solid fa-plus"></i></button>
+                    title="Acercar (tecla +)" data-i18n-title="canvas.zoomIn"><i class="fa-solid fa-plus"></i></button>
                 <button onclick="resetView()" id="zoom-label"
                     class="w-8 text-[10px] font-semibold text-slate-400 hover:text-white"
-                    title="Volver al 100%">100%</button>
+                    title="Volver al 100%" data-i18n-title="canvas.zoomReset">100%</button>
                 <button onclick="zoomAt(0.8)"
                     class="w-8 h-8 rounded-lg hover:bg-slate-800 text-slate-200 text-sm flex items-center justify-center"
-                    title="Alejar (tecla -)"><i class="fa-solid fa-minus"></i></button>
+                    title="Alejar (tecla -)" data-i18n-title="canvas.zoomOut"><i class="fa-solid fa-minus"></i></button>
                 <div class="w-6 border-t border-slate-700 my-0.5"></div>
                 <button onclick="fitView()" class="w-8 h-8 rounded-lg hover:bg-slate-800 text-sky-400 text-sm"
-                    title="Ver toda la red (tecla 0)"><i class="fa-solid fa-expand"></i></button>
+                    title="Ver toda la red (tecla 0)" data-i18n-title="canvas.fitView"><i class="fa-solid fa-expand"></i></button>
             </div>
 
             <!-- Cartel grande con el paso actual -->
@@ -698,7 +698,7 @@
                 style="width:min(300px, calc(100vw - 2rem));max-height:calc(100% - 2rem);overflow-y:auto;">
                 <div class="flex items-start justify-between gap-2">
                     <div id="act-title" class="text-xs font-bold text-amber-400"></div><button onclick="closeActivity()"
-                        class="text-slate-400 hover:text-white text-xs" title="Cerrar actividad"><i
+                        class="text-slate-400 hover:text-white text-xs" title="Cerrar actividad" data-i18n-title="act.close"><i
                             class="fa-solid fa-xmark"></i></button>
                 </div>
                 <p id="act-student" class="text-[10px] text-sky-300 mt-1"></p>
@@ -711,13 +711,13 @@
                 <div class="flex gap-2 mt-2.5">
                     <button onclick="verifyActivity()"
                         class="flex-1 px-2 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-600 text-white text-[11px] font-bold"><i
-                            class="fa-solid fa-circle-check mr-1"></i>Verificar</button>
+                            class="fa-solid fa-circle-check mr-1"></i><span data-i18n="act.verify">Verificar</span></button>
                     <button onclick="nextHint()"
                         class="px-2 py-1.5 rounded-md bg-slate-700 hover:bg-slate-600 text-white text-[11px]"><i
-                            class="fa-solid fa-lightbulb mr-1"></i>Pista</button>
+                            class="fa-solid fa-lightbulb mr-1"></i><span data-i18n="act.hint">Pista</span></button>
                     <button onclick="deliverWork()"
                         class="px-2 py-1.5 rounded-md bg-sky-700 hover:bg-sky-600 text-white text-[11px] font-bold"
-                        title="Guardar y entregar"><i class="fa-solid fa-paper-plane mr-1"></i>Entregar</button>
+                        title="Guardar y entregar" data-i18n-title="act.deliverTitle"><i class="fa-solid fa-paper-plane mr-1"></i><span data-i18n="header.deliver">Entregar</span></button>
                 </div>
             </div>
 
@@ -737,96 +737,96 @@
                 <div class="p-3 pb-2 border-b border-slate-700" style="flex-shrink:0">
                     <div class="flex items-center justify-between gap-2 mb-2">
                         <div class="flex items-center gap-2"><i class="fa-solid fa-tower-broadcast text-cyan-400"></i>
-                            <h2 class="text-xs font-bold">Simular comunicación</h2>
+                            <h2 class="text-xs font-bold" data-i18n="sim.title">Simular comunicación</h2>
                         </div>
                         <button onclick="togglePanel('sim')"
-                            class="traffic-muted text-slate-400 hover:text-white text-xs px-1" title="Ocultar panel"><i
+                            class="traffic-muted text-slate-400 hover:text-white text-xs px-1" title="Ocultar panel" data-i18n-title="sim.hidePanel"><i
                                 class="fa-solid fa-chevron-down"></i></button>
                     </div>
                     <div class="flex gap-2">
                         <button id="traffic-start" onclick="startTrafficSimulation()"
                             class="flex-1 px-3 py-2 rounded-md bg-cyan-700 hover:bg-cyan-600 text-white text-xs font-bold whitespace-nowrap"><i
-                                class="fa-solid fa-play mr-1"></i>Iniciar</button>
+                                class="fa-solid fa-play mr-1"></i><span data-i18n="sim.start">Iniciar</span></button>
                         <button id="traffic-pause" onclick="toggleTrafficPause()"
                             class="px-3 py-2 rounded-md bg-slate-700 hover:bg-slate-600 text-white text-xs"
-                            title="Pausar / continuar"><i class="fa-solid fa-pause"></i></button>
+                            title="Pausar / continuar" data-i18n-title="sim.pause"><i class="fa-solid fa-pause"></i></button>
                         <button onclick="stopTrafficSimulation()"
                             class="px-3 py-2 rounded-md bg-slate-700 hover:bg-slate-600 text-white text-xs"
-                            title="Detener simulación"><i class="fa-solid fa-stop"></i></button>
+                            title="Detener simulación" data-i18n-title="sim.stop"><i class="fa-solid fa-stop"></i></button>
                     </div>
                     <button id="traffic-all-btn" onclick="toggleLiveTraffic()"
                         class="mt-2 w-full px-3 py-2 rounded-md bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-bold"
-                        title="Todos los equipos se comunican a la vez, hasta que decidas detenerlo"><i
-                            class="fa-solid fa-globe mr-1"></i><span>Todos navegando a la vez</span></button>
+                        title="Todos los equipos se comunican a la vez, hasta que decidas detenerlo" data-i18n-title="sim.allTitle"><i
+                            class="fa-solid fa-globe mr-1"></i><span data-i18n="sim.all">Todos navegando a la vez</span></button>
                 </div>
                 <!-- Parte desplazable: opciones -->
                 <div class="p-3 pt-2" style="overflow-y:auto;min-height:0;flex:1 1 auto">
                     <div class="mb-2">
                         <select id="traffic-mode" onchange="applySimMode(true)"
                             class="w-full rounded-md border border-cyan-700 bg-slate-950 text-slate-100 text-xs p-1.5 font-semibold"
-                            aria-label="Modo de simulación">
-                            <option value="simple" selected>🟢 Modo simple: solo el recorrido</option>
-                            <option value="advanced">🔬 Modo avanzado: capas, ARP, MAC, DNS y rutas</option>
+                            aria-label="Modo de simulación" data-i18n-aria-label="sim.modeLabel">
+                            <option value="simple" selected data-i18n="sim.modeSimple">🟢 Modo simple: solo el recorrido</option>
+                            <option value="advanced" data-i18n="sim.modeAdvanced">🔬 Modo avanzado: capas, ARP, MAC, DNS y rutas</option>
                         </select>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
-                        <label class="text-[10px] traffic-muted text-slate-400">Origen
+                        <label class="text-[10px] traffic-muted text-slate-400"><span data-i18n="sim.source">Origen</span>
                             <select id="traffic-source"
                                 class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-2"></select>
                         </label>
-                        <label class="text-[10px] traffic-muted text-slate-400">Destino
+                        <label class="text-[10px] traffic-muted text-slate-400"><span data-i18n="sim.destination">Destino</span>
                             <select id="traffic-destination"
                                 class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-2"></select>
                         </label>
                     </div>
                     <div class="mt-2"><select id="traffic-protocol"
                             class="w-full rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-2"
-                            aria-label="Tipo de comunicación">
-                            <option value="ICMP">ICMP / Ping</option>
-                            <option value="ARP">ARP / Buscar MAC</option>
-                            <option value="DNS">DNS / Resolver nombre</option>
-                            <option value="HTTP">HTTP / Solicitud web</option>
-                            <option value="DHCP">DHCP / Pedir IP</option>
+                            aria-label="Tipo de comunicación" data-i18n-aria-label="sim.protocolLabel">
+                            <option value="ICMP" data-i18n="sim.protocol.icmp">ICMP / Ping</option>
+                            <option value="ARP" data-i18n="sim.protocol.arp">ARP / Buscar MAC</option>
+                            <option value="DNS" data-i18n="sim.protocol.dns">DNS / Resolver nombre</option>
+                            <option value="HTTP" data-i18n="sim.protocol.http">HTTP / Solicitud web</option>
+                            <option value="DHCP" data-i18n="sim.protocol.dhcp">DHCP / Pedir IP</option>
                         </select></div>
                     <div class="adv-only mt-2 grid grid-cols-2 gap-2" style="display:none">
-                        <label class="text-[10px] traffic-muted text-slate-400">Nombre del sitio (HTTP/DNS)
+                        <label class="text-[10px] traffic-muted text-slate-400"><span data-i18n="sim.site">Nombre del sitio (HTTP/DNS)</span>
                             <input id="traffic-site" type="text" value="www.ejemplo.com" maxlength="40"
                                 class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-1.5 select-text">
                         </label>
-                        <label class="text-[10px] traffic-muted text-slate-400">Servidor DNS
+                        <label class="text-[10px] traffic-muted text-slate-400"><span data-i18n="sim.dnsServer">Servidor DNS</span>
                             <select id="traffic-dns"
                                 class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-1.5"></select>
                         </label>
                         <label
                             class="col-span-2 flex items-center gap-1.5 text-[10px] traffic-muted text-slate-400 cursor-pointer"><input
-                                id="traffic-tcp" type="checkbox" checked> Mostrar el saludo TCP (SYN, SYN-ACK, ACK)
-                            antes de HTTP</label>
+                                id="traffic-tcp" type="checkbox" checked> <span data-i18n="sim.tcpHandshake">Mostrar el saludo TCP (SYN, SYN-ACK, ACK)
+                            antes de HTTP</span></label>
                     </div>
                     <div class="flex items-center gap-2 mt-2">
-                        <span class="text-[10px] traffic-muted text-slate-400">Velocidad</span>
-                        <span class="text-[10px]" title="Más lenta">🐢</span>
+                        <span class="text-[10px] traffic-muted text-slate-400" data-i18n="sim.speed">Velocidad</span>
+                        <span class="text-[10px]" title="Más lenta" data-i18n-title="sim.speedSlow">🐢</span>
                         <input id="traffic-speed" type="range" min="0.2" max="3" step="0.1" value="1"
-                            oninput="onSpeedChange()" class="flex-1" aria-label="Velocidad de la simulación">
-                        <span class="text-[10px]" title="Más rápida">🐇</span>
+                            oninput="onSpeedChange()" class="flex-1" aria-label="Velocidad de la simulación" data-i18n-aria-label="sim.speedLabel">
+                        <span class="text-[10px]" title="Más rápida" data-i18n-title="sim.speedFast">🐇</span>
                         <span id="traffic-speed-label"
                             class="text-[10px] font-bold w-8 text-right traffic-muted text-slate-400">1x</span>
                         <label
                             class="adv-only flex items-center gap-1 text-[10px] traffic-muted text-slate-400 whitespace-nowrap cursor-pointer"><input
-                                id="traffic-layers" type="checkbox" checked> Ver capas</label>
+                                id="traffic-layers" type="checkbox" checked> <span data-i18n="sim.layers">Ver capas</span></label>
                     </div>
                     <label
                         class="mt-2 flex items-center gap-1.5 text-[10px] traffic-muted text-slate-400 cursor-pointer"
-                        title="Si origen y destino están en la misma VPN, el paquete viaja dentro del túnel cifrado"><input
-                            id="traffic-vpn" type="checkbox"> Enviar por la VPN (túnel con IP VPN)</label>
+                        title="Si origen y destino están en la misma VPN, el paquete viaja dentro del túnel cifrado" data-i18n-title="sim.vpnTitle"><input
+                            id="traffic-vpn" type="checkbox"> <span data-i18n="sim.vpn">Enviar por la VPN (túnel con IP VPN)</span></label>
                     <label
                         class="mt-2 flex items-center gap-1.5 text-[10px] traffic-muted text-slate-400 cursor-pointer"
-                        title="La simulación se detiene en cada paso hasta que presiones ▶ (o la barra espaciadora)"><input
-                            id="traffic-step" type="checkbox"> Paso a paso (espera mi OK en cada cartel)</label>
+                        title="La simulación se detiene en cada paso hasta que presiones ▶ (o la barra espaciadora)" data-i18n-title="sim.stepTitle"><input
+                            id="traffic-step" type="checkbox"> <span data-i18n="sim.step">Paso a paso (espera mi OK en cada cartel)</span></label>
                     <button onclick="clearNetworkTables(true)" style="display:none"
                         class="adv-only mt-2 w-full px-2 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[10px] text-slate-200"
-                        title="Vacía las tablas ARP de los equipos y las tablas MAC de los switches"><i
-                            class="fa-solid fa-eraser mr-1"></i>Borrar tablas (ARP, MAC, DNS)</button>
-                    <p id="traffic-status" class="text-[10px] traffic-muted text-slate-400 mt-2">Selecciona origen,
+                        title="Vacía las tablas ARP de los equipos y las tablas MAC de los switches" data-i18n-title="sim.clearTablesTitle"><i
+                            class="fa-solid fa-eraser mr-1"></i><span data-i18n="sim.clearTables">Borrar tablas (ARP, MAC, DNS)</span></button>
+                    <p id="traffic-status" class="text-[10px] traffic-muted text-slate-400 mt-2" data-i18n="sim.statusIdle">Selecciona origen,
                         destino y protocolo para visualizar el recorrido.</p>
                     <ol id="traffic-log"
                         class="traffic-log mt-2 space-y-1 text-[10px] font-mono border-t border-slate-700 pt-2"></ol>
@@ -837,7 +837,7 @@
 
     <button id="proj-exit" onclick="toggleProjection()" style="display:none"
         class="fixed top-3 right-3 z-50 px-3 py-1.5 rounded-md bg-slate-900/80 hover:bg-slate-800 border border-slate-600 text-[11px] text-slate-200 opacity-60 hover:opacity-100 transition"><i
-            class="fa-solid fa-compress mr-1"></i>Salir de proyección</button>
+            class="fa-solid fa-compress mr-1"></i><span data-i18n="canvas.projectExit">Salir de proyección</span></button>
 
     <!-- MODAL: ENTREGAR -->
     <div id="deliver-modal"
@@ -1154,7 +1154,7 @@
                     cableIndicator.classList.remove('hidden');
                     cableIndicator.className = "absolute top-4 left-1/2 -translate-x-1/2 bg-blue-600/90 text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-xl border border-blue-400 backdrop-blur-md z-30 flex items-center space-x-2";
                 }
-                if (textEl) textEl.textContent = "Modo Cable: Haz clic en dos dispositivos para conectarlos";
+                if (textEl) textEl.textContent = I18N.t('canvas.cableMode');
             } else if (mode === 'delete-cable') {
                 const btn = document.getElementById('tool-delete-cable');
                 if (btn) btn.classList.add('active', 'border-rose-500', 'bg-rose-600/20', 'text-rose-300');
@@ -1162,7 +1162,7 @@
                     cableIndicator.classList.remove('hidden');
                     cableIndicator.className = "absolute top-4 left-1/2 -translate-x-1/2 bg-rose-600/90 text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-xl border border-rose-400 backdrop-blur-md z-30 flex items-center space-x-2";
                 }
-                if (textEl) textEl.textContent = "Modo Eliminar Cable: Haz clic sobre cualquier cable en la pantalla para cortarlo";
+                if (textEl) textEl.textContent = I18N.t('canvas.deleteCableMode');
             }
         }
 
@@ -1225,7 +1225,7 @@
             } else if (type === 'cloud') {
                 device.ip = '8.8.8.8';
                 device.mask = '255.0.0.0';
-                device.name = 'Internet (ISP)';
+                device.name = I18N.t('device.defaultName.cloud');
             } else if (type === 'pc') {
                 device.ip = '192.168.1.10';
             } else if (type === 'phone' || type === 'laptop' || type === 'tv') {
@@ -1240,19 +1240,15 @@
         }
 
         function getDeviceDefaultName(type, id, model) {
-            switch (type) {
-                case 'laptop': return model === 'netbook' ? `Netbook_${id}` : `Notebook_${id}`;
-                case 'tv': return `SmartTV_${id}`;
-                case 'router': return `Router_WiFi_${id}`;
-                case 'lrouter': return `Router_${id}`;
-                case 'dns': return `DNS_${id}`;
-                case 'vpn': return model === 'cloud' ? `VPN_Nube_${id}` : `VPN_Local_${id}`;
-                case 'switch': return `Switch_LAN_${id}`;
-                case 'pc': return `PC_Alumno_${id}`;
-                case 'phone': return `Smartphone_${id}`;
-                case 'cloud': return `Internet_ISP`;
-                default: return `Dispositivo_${id}`;
-            }
+            // Nombres por defecto traducibles (device.defaultName.*); {id} = número de equipo.
+            const keyMap = {
+                laptop: model === 'netbook' ? 'netbook' : 'notebook',
+                tv: 'tv', router: 'router', lrouter: 'lrouter', dns: 'dns',
+                vpn: model === 'cloud' ? 'vpnCloud' : 'vpnLocal',
+                switch: 'switch', pc: 'pc', phone: 'phone', cloud: 'cloud'
+            };
+            const key = keyMap[type] || 'other';
+            return I18N.t('device.defaultName.' + key, { id: id });
         }
 
         // RENDER DEVICES AND CANVAS
@@ -2814,7 +2810,7 @@
             source.innerHTML = options;
             destination.innerHTML = options;
             const dns = document.getElementById('traffic-dns');
-            if (dns) { const od = dns.value; dns.innerHTML = '<option value="">Automático</option>' + options; if (od) dns.value = od; }
+            if (dns) { const od = dns.value; dns.innerHTML = '<option value="">' + escapeHtml(I18N.t('sim.auto')) + '</option>' + options; if (od) dns.value = od; }
             if (state.devices.some(d => String(d.id) === oldSource)) source.value = oldSource;
             if (state.devices.some(d => String(d.id) === oldDestination)) destination.value = oldDestination;
             if (state.devices.length > 1 && source.value === destination.value) {
@@ -2822,7 +2818,7 @@
                 if (other) destination.value = String(other.id);
             }
             if (!state.devices.length) {
-                const empty = '<option value="">Sin dispositivos</option>';
+                const empty = '<option value="">' + escapeHtml(I18N.t('sim.noDevices')) + '</option>';
                 source.innerHTML = empty; destination.innerHTML = empty;
             }
         }

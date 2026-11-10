@@ -73,7 +73,13 @@ if (checkAll) {
     }
 } else {
     const keys = new Set(Object.keys(dicts[lang] || {}));
-    const missing = [...used.keys()].filter(k => !keys.has(k));
+    // Clave que termina en '.' = prefijo dinámico (I18N.t('prefijo.' + var)):
+    // vale si existe al menos una clave con ese prefijo en el diccionario.
+    const missing = [...used.keys()].filter(k => {
+        if (keys.has(k)) return false;
+        if (k.endsWith('.')) return ![...keys].some(x => x.startsWith(k));
+        return true;
+    });
     if (missing.length) { errors++; console.log(`FALTAN en lang/${lang}.js (usadas en index.html):`); for (const k of missing) console.log('  -', k, '(línea ~' + used.get(k).line + ')'); }
     else console.log(`OK: las ${used.size} claves usadas en index.html existen en lang/${lang}.js`);
 
