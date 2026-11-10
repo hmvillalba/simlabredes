@@ -1235,7 +1235,7 @@
             state.devices.push(device);
             renderDevices();
             reevaluateNetworkState();
-            showToast(`Dispositivo agregado: ${device.name}`, 'success');
+            showToast(I18N.t('toast.deviceAdded', { name: device.name }), 'success');
             return device;
         }
 
@@ -1290,7 +1290,7 @@
                     </div>
                     <div class="mt-2 text-center pointer-events-none">
                         <span class="text-xs font-semibold text-slate-200 bg-slate-900/80 px-2 py-0.5 rounded border border-slate-800 shadow block truncate max-w-[120px]">${dev.name}</span>
-                        <span class="text-[10px] font-mono ${dev.ip.startsWith('169.254') ? 'text-amber-400' : 'text-slate-400'} block">${dev.type === 'switch' && dev.switchLayer === 'L2' ? 'Modo Capa 2' : dev.ip}</span>${vpnLabelHtml(dev)}
+                        <span class="text-[10px] font-mono ${dev.ip.startsWith('169.254') ? 'text-amber-400' : 'text-slate-400'} block">${dev.type === 'switch' && dev.switchLayer === 'L2' ? I18N.t('device.layer2') : dev.ip}</span>${vpnLabelHtml(dev)}
                     </div>
                 `;
 
@@ -1302,7 +1302,7 @@
                         return;
                     }
                     if (state.activeTool === 'delete-cable') {
-                        showToast("Haz clic directamente en la línea del cable para eliminarlo", "info");
+                        showToast(I18N.t('toast.clickCableToDelete'), "info");
                         return;
                     }
 
@@ -1383,10 +1383,10 @@
         function handleCableClick(deviceId) {
             if (!state.cableSourceId) {
                 state.cableSourceId = deviceId;
-                showToast("Dispositivo origen seleccionado. Elige el destino.", "info");
+                showToast(I18N.t('toast.cableSourceSelected'), "info");
             } else {
                 if (state.cableSourceId === deviceId) {
-                    showToast("No puedes conectar un dispositivo a sí mismo", "warning");
+                    showToast(I18N.t('toast.selfConnection'), "warning");
                     state.cableSourceId = null;
                     return;
                 }
@@ -1398,14 +1398,14 @@
                 );
 
                 if (exists) {
-                    showToast("Ya existe un enlace entre estos equipos", "warning");
+                    showToast(I18N.t('toast.linkExists'), "warning");
                 } else {
                     state.connections.push({
                         from: state.cableSourceId,
                         to: deviceId,
                         type: 'ethernet'
                     });
-                    showToast("Conexión física realizada con éxito", "success");
+                    showToast(I18N.t('toast.connectionOk'), "success");
                     reevaluateNetworkState();
                 }
 
@@ -1430,7 +1430,7 @@
                     }
                 });
 
-                showToast("Cable/Conexión eliminada correctamente", "info");
+                showToast(I18N.t('toast.cableDeleted'), "info");
                 reevaluateNetworkState();
             }
         }
@@ -1634,14 +1634,14 @@
             const ip = document.getElementById('dev-ip-input')?.value.trim();
             const mask = document.getElementById('dev-mask-input')?.value.trim();
             const gateway = document.getElementById('dev-gateway-input')?.value.trim();
-            if (!isUsableHost(ip, mask)) { showToast('IP o máscara inválida. Usa una dirección de host y una máscara contigua.', 'warning'); return false; }
+            if (!isUsableHost(ip, mask)) { showToast(I18N.t('toast.invalidIp'), 'warning'); return false; }
             const duplicate = state.devices.some(other => other.id !== dev.id && other.ip === ip);
-            if (duplicate) { showToast('Esa dirección IP ya está asignada a otro dispositivo.', 'warning'); return false; }
-            if (gateway && gateway !== '0.0.0.0' && ipv4ToInt(gateway) === null) { showToast('La puerta de enlace no es una IPv4 válida.', 'warning'); return false; }
-            if (gateway && gateway !== '0.0.0.0' && !sameSubnet(ip, gateway, mask)) { showToast('La puerta de enlace debe estar en la misma subred que el dispositivo.', 'warning'); return false; }
+            if (duplicate) { showToast(I18N.t('toast.ipAlreadyAssigned'), 'warning'); return false; }
+            if (gateway && gateway !== '0.0.0.0' && ipv4ToInt(gateway) === null) { showToast(I18N.t('toast.invalidGateway'), 'warning'); return false; }
+            if (gateway && gateway !== '0.0.0.0' && !sameSubnet(ip, gateway, mask)) { showToast(I18N.t('toast.gatewayWrongSubnet'), 'warning'); return false; }
             dev.ip = ip; dev.mask = mask; dev.gateway = gateway || '0.0.0.0';
             reevaluateNetworkState();
-            showToast('Configuración IP aplicada correctamente.', 'success');
+            showToast(I18N.t('toast.ipConfigApplied'), 'success');
             openDeviceModal(dev.id);
             return true;
         }
@@ -1656,45 +1656,45 @@
                 const dnsDev = state.devices.find(d => d.type === 'dns' && d.id !== src.id);
                 if (dnsDev) {
                     const m = diagnose(src, dnsDev);
-                    if (m) return `${src.name} no llega al servidor DNS (${dnsDev.name}): ${m}`;
-                    if (dnsDev.dnsOnline === false) return `El servidor DNS ${dnsDev.name} está apagado.`;
+                    if (m) return I18N.t('diag.dnsUnreachable', { src: src.name, dns: dnsDev.name, reason: m });
+                    if (dnsDev.dnsOnline === false) return I18N.t('diag.dnsOffline', { dns: dnsDev.name });
                     const ip = (dnsDev.records || []).find(r => r.name === site)?.ip;
-                    if (!ip) return `El servidor DNS ${dnsDev.name} no conoce el nombre ${site}.`;
+                    if (!ip) return I18N.t('diag.dnsUnknownName', { dns: dnsDev.name, site: site });
                     const owner = state.devices.find(d => ownsIp(d, ip));
-                    if (!owner) return `El nombre ${site} apunta a ${ip}, que no pertenece a ningún equipo.`;
-                    if (owner.id !== dst.id) return `El nombre ${site} apunta a ${owner.name} (${ip}), pero la página está en ${dst.name}.`;
+                    if (!owner) return I18N.t('diag.nameNoOwner', { site: site, ip: ip });
+                    if (owner.id !== dst.id) return I18N.t('diag.nameWrongHost', { site: site, owner: owner.name, ip: ip, dst: dst.name });
                 }
             }
             for (const d of [src, dst]) {
-                if (d.ipMode === 'dhcp' && d.ip && d.ip.startsWith('169.254')) return `${d.name} no obtuvo IP: ningún servidor DHCP le respondió (quedó con una dirección automática 169.254.x.x).`;
+                if (d.ipMode === 'dhcp' && d.ip && d.ip.startsWith('169.254')) return I18N.t('diag.noDhcp', { name: d.name });
             }
             const path = findConnectionPath(src.id, dst.id);
-            if (!path) return `No hay camino físico entre ${src.name} y ${dst.name}: falta un cable.`;
+            if (!path) return I18N.t('diag.noPhysicalPath', { src: src.name, dst: dst.name });
             for (const d of [src, dst]) {
                 const o = state.devices.find(x => x.id !== d.id && x.type !== 'switch' && x.ip === d.ip && x.ip !== '0.0.0.0');
-                if (o) return `${d.name} y ${o.name} tienen la misma IP (${d.ip}).`;
+                if (o) return I18N.t('diag.duplicateIp', { a: d.name, b: o.name, ip: d.ip });
             }
             // Internet no enruta direcciones privadas: dos redes distintas no se ven por su IP local (hace falta VPN).
             const isPrivateIp = ip => /^10\./.test(ip) || /^192\.168\./.test(ip) || /^172\.(1[6-9]|2\d|3[01])\./.test(ip);
-            if (path.slice(1, -1).some(id => (state.devices.find(d => d.id === id) || {}).type === 'cloud') && isPrivateIp(dst.ip)) return `La dirección ${dst.ip} es privada: desde otra red, Internet no sabe llegar a ella. Para comunicar redes distintas hace falta una VPN (o una IP pública).`;
+            if (path.slice(1, -1).some(id => (state.devices.find(d => d.id === id) || {}).type === 'cloud') && isPrivateIp(dst.ip)) return I18N.t('diag.privateIp', { ip: dst.ip });
             const s1 = sameSubnet(src.ip, dst.ip, src.mask), s2 = sameSubnet(dst.ip, src.ip, dst.mask);
-            if (s1 !== s2) return `${src.name} y ${dst.name} no coinciden en si están en la misma red: las máscaras de subred son distintas.`;
+            if (s1 !== s2) return I18N.t('diag.subnetMismatch', { src: src.name, dst: dst.name });
             if (s1) return null;
             const seq = path.map(id => state.devices.find(d => d.id === id));
             const leg = (a, b, sq) => {
-                if (a.type === 'lrouter') { return routeLookup(a, b.ip) ? null : `${a.name} no tiene ninguna ruta hacia ${b.ip}.`; }
+                if (a.type === 'lrouter') { return routeLookup(a, b.ip) ? null : I18N.t('diag.noRoute', { name: a.name, ip: b.ip }); }
                 if (a.type === 'router' || a.type === 'switch' || a.type === 'cloud' || (a.type === 'vpn' && a.model === 'cloud')) return null;
-                if (!a.gateway || a.gateway === '0.0.0.0') return `${a.name} no tiene puerta de enlace: no sabe salir de su red.`;
+                if (!a.gateway || a.gateway === '0.0.0.0') return I18N.t('diag.noGateway', { name: a.name });
                 const gw = state.devices.find(d => d.id !== a.id && ownsIp(d, a.gateway));
-                if (!gw) return `La puerta de enlace de ${a.name} (${a.gateway}) no existe en la red.`;
-                if (!sameSubnet(a.ip, a.gateway, a.mask)) return `La puerta de enlace ${a.gateway} no está en la misma red que ${a.name} (${a.ip}): revisá su IP y su máscara.`;
-                if (!sq.includes(gw)) return `El camino de ${a.name} no pasa por su puerta de enlace ${gw.name}.`;
+                if (!gw) return I18N.t('diag.gatewayMissing', { name: a.name, gateway: a.gateway });
+                if (!sameSubnet(a.ip, a.gateway, a.mask)) return I18N.t('diag.gatewayWrongNetwork', { gateway: a.gateway, name: a.name, ip: a.ip });
+                if (!sq.includes(gw)) return I18N.t('diag.pathNotViaGateway', { name: a.name, gateway: gw.name });
                 for (let j = 1; j < sq.length - 1; j++) {
                     const n = sq[j];
                     if (n.type !== 'lrouter') continue;
                     const hit = routeLookup(n, b.ip);
-                    if (!hit) return `${n.name} no tiene ninguna ruta hacia ${b.ip}.`;
-                    if (hit.kind === 'static' && !ownsIp(macPair(sq, j).to, hit.ref.via)) return `La ruta de ${n.name} apunta a ${hit.ref.via}, que no es el siguiente equipo.`;
+                    if (!hit) return I18N.t('diag.noRoute', { name: n.name, ip: b.ip });
+                    if (hit.kind === 'static' && !ownsIp(macPair(sq, j).to, hit.ref.via)) return I18N.t('diag.routeWrongNextHop', { name: n.name, via: hit.ref.via });
                 }
                 return null;
             };
@@ -1711,27 +1711,27 @@
         }
         const ACTIVITIES = [
             {
-                lvl: 'Fácil', title: 'La PC que no sale', story: 'PC_A1 puede hablar con PC_A2, pero no logra comunicarse con PC_B1, que está en otra red.', hint: 'Para salir de su red, una PC necesita saber a quién entregarle los paquetes. Revisá su configuración IP.',
+                lvl: 'Fácil', title: 'act.builtin.1.title', story: 'act.builtin.1.story', hint: 'act.builtin.1.hint',
                 build() { const n = loadDemoTwoNetworks(); n.a1.gateway = '0.0.0.0'; return [[n.a1, n.b1]]; }
             },
             {
-                lvl: 'Fácil', title: 'El cable suelto', story: 'PC_B1 dejó de responder. Todo parece estar bien configurado.', hint: 'Mirá los cables con atención: ¿está cada equipo conectado a su switch? Usá «Conectar Cable» para arreglarlo.',
+                lvl: 'Fácil', title: 'act.builtin.2.title', story: 'act.builtin.2.story', hint: 'act.builtin.2.hint',
                 build() { const n = loadDemoTwoNetworks(); state.connections = state.connections.filter(c => !(c.from === n.swB.id && c.to === n.b1.id) && !(c.to === n.swB.id && c.from === n.b1.id)); renderDevices(); return [[n.a1, n.b1]]; }
             },
             {
-                lvl: 'Fácil', title: 'Dos con la misma IP', story: 'PC_A1 y PC_A2 están en la misma red pero la comunicación es un desastre.', hint: 'Cada equipo necesita una dirección IP única. Compará las IP de los dos.',
+                lvl: 'Fácil', title: 'act.builtin.3.title', story: 'act.builtin.3.story', hint: 'act.builtin.3.hint',
                 build() { const n = loadDemoTwoNetworks(); n.a2.ip = '192.168.1.10'; return [[n.a1, n.a2]]; }
             },
             {
-                lvl: 'Medio', title: 'La máscara que no coincide', story: 'PC_A1 cree que PC_A2 está en su misma red, pero PC_A2 opina otra cosa.', hint: 'Mirá la máscara de subred de PC_A2 y compará a qué red pertenece cada IP.',
+                lvl: 'Medio', title: 'act.builtin.4.title', story: 'act.builtin.4.story', hint: 'act.builtin.4.hint',
                 build() { const n = loadDemoTwoNetworks(); n.a2.ip = '192.168.1.200'; n.a2.mask = '255.255.255.128'; return [[n.a1, n.a2]]; }
             },
             {
-                lvl: 'Medio', title: 'Llega pero no vuelve', story: 'Los paquetes de PC_A1 llegan a PC_B1, pero la respuesta nunca regresa.', hint: 'Una respuesta también tiene que salir de la red de PC_B1. Revisá su puerta de enlace.',
+                lvl: 'Medio', title: 'act.builtin.5.title', story: 'act.builtin.5.story', hint: 'act.builtin.5.hint',
                 build() { const n = loadDemoTwoNetworks(); n.b1.gateway = '192.168.2.254'; return [[n.a1, n.b1]]; }
             },
             {
-                lvl: 'Difícil', title: 'Falta una ruta', story: 'Dos routers unen las redes 192.168.1.0/24 y 192.168.2.0/24. La ida funciona, pero PC_A1 no recibe respuesta de PC_B1.', hint: 'Mirá la tabla de rutas de los dos routers: ¿el segundo sabe cómo volver a la red 192.168.1.0/24? Las rutas se agregan en la pestaña «Interfaces y rutas».',
+                lvl: 'Difícil', title: 'act.builtin.6.title', story: 'act.builtin.6.story', hint: 'act.builtin.6.hint',
                 build() {
                     if (typeof clearNetworkTables === 'function') clearNetworkTables(false);
                     state.devices = []; state.connections = []; state.nextDeviceId = 1;
@@ -1750,23 +1750,23 @@
                 }
             },
             {
-                lvl: 'Medio', title: 'El nombre no existe', story: 'PC_A1 puede hacer ping a Servidor_Web por su IP, pero al escribir www.ejemplo.com la página no abre.', hint: 'El ping por IP funciona, así que la red está bien. Mirá qué sabe el servidor DNS: ¿tiene un registro para ese nombre?',
+                lvl: 'Medio', title: 'act.builtin.7.title', story: 'act.builtin.7.story', hint: 'act.builtin.7.hint',
                 build() { const { n, dns } = buildDnsLab(); dns.records = []; return [[n.a1, n.b1, 'www.ejemplo.com']]; }
             },
             {
-                lvl: 'Fácil', title: 'El DNS que no contesta', story: 'Ayer la página abría perfecto. Hoy nadie puede entrar a www.ejemplo.com.', hint: 'Revisá el estado del servidor DNS: ¿está encendido?',
+                lvl: 'Fácil', title: 'act.builtin.8.title', story: 'act.builtin.8.story', hint: 'act.builtin.8.hint',
                 build() { const { n, dns } = buildDnsLab(); dns.dnsOnline = false; return [[n.a1, n.b1, 'www.ejemplo.com']]; }
             },
             {
-                lvl: 'Medio', title: 'La página equivocada', story: 'Al escribir www.ejemplo.com se abre una página, pero no es la del Servidor_Web. Alguien tocó el DNS.', hint: 'Compará la IP del registro DNS con la IP real de Servidor_Web.',
+                lvl: 'Medio', title: 'act.builtin.9.title', story: 'act.builtin.9.story', hint: 'act.builtin.9.hint',
                 build() { const { n, dns } = buildDnsLab(); dns.records = [{ name: 'www.ejemplo.com', ip: '192.168.1.11' }]; return [[n.a1, n.b1, 'www.ejemplo.com']]; }
             },
             {
-                lvl: 'Fácil', title: 'La PC sin IP', story: 'Dos PC de la red del aula no logran comunicarse. Sus IP empiezan con 169.254.', hint: 'Esas direcciones aparecen cuando nadie les da una IP. Revisá el servidor DHCP del router.',
+                lvl: 'Fácil', title: 'act.builtin.10.title', story: 'act.builtin.10.story', hint: 'act.builtin.10.hint',
                 build() { const n = loadDemoTopology(); const r = state.devices.find(d => d.type === 'router'); r.dhcpEnabled = false; reevaluateNetworkState(); const pcs = state.devices.filter(d => d.type === 'pc'); return [[pcs[0], pcs[1]]]; }
             },
             {
-                lvl: 'Difícil', title: 'La salida a Internet', story: 'Router_Central une la red 192.168.1.0/24 con el proveedor de Internet (203.0.113.1). PC_A1 no llega a Internet (8.8.8.8).', hint: 'El router no sabe dónde queda Internet. Falta una ruta predeterminada (0.0.0.0/0) que apunte al proveedor: 203.0.113.1.',
+                lvl: 'Difícil', title: 'act.builtin.11.title', story: 'act.builtin.11.story', hint: 'act.builtin.11.hint',
                 build() {
                     if (typeof clearNetworkTables === 'function') clearNetworkTables(false);
                     state.devices = []; state.connections = []; state.nextDeviceId = 1;
@@ -1781,40 +1781,50 @@
                 }
             },
             {
-                lvl: 'Difícil', title: 'Dos fallas juntas', story: 'La red de dos routers sigue sin comunicar PC_A1 con PC_B1. Esta vez hay más de un problema.', hint: 'Arreglá un problema y verificá de nuevo: puede quedar otro. Revisá la puerta de enlace de PC_B1 y las rutas de los dos routers.',
+                lvl: 'Difícil', title: 'act.builtin.12.title', story: 'act.builtin.12.story', hint: 'act.builtin.12.hint',
                 build() { const g = ACTIVITIES[5].build(); g[0][1].gateway = '192.168.2.254'; return g; }
             },
             {
-                lvl: 'Medio', title: 'La VPN de la oficina no conecta', story: 'La oficina tiene un servidor VPN (WireGuard) adentro de su red. Desde la casa quieren entrar a la VPN, pero PC_Casa1 no logra conectarse.', hint: 'El servidor está dentro de la red privada de la oficina: desde Internet no se llega a él. Mirá el panel del servidor VPN y el Port Forwarding del router de la oficina.',
+                lvl: 'Medio', title: 'act.builtin.13.title', story: 'act.builtin.13.story', hint: 'act.builtin.13.hint',
                 build() { loadDemoVpn('local'); const L = window.__vpnLab; return [[L.a1, L.b1, '@vpn']]; }
             },
             {
-                lvl: 'Difícil', title: 'El puerto está mal abierto', story: 'Alguien abrió un puerto en el router de la oficina para la VPN, pero PC_Casa1 sigue sin poder conectarse.', hint: 'La regla existe, pero tiene un error. Revisá el protocolo (¿UDP o TCP?), los dos puertos y a qué equipo redirige.',
+                lvl: 'Difícil', title: 'act.builtin.14.title', story: 'act.builtin.14.story', hint: 'act.builtin.14.hint',
                 build() { loadDemoVpn('local'); const L = window.__vpnLab; L.rB.portForwarding = [{ name: 'VPN', proto: 'TCP', extPort: 51820, intIp: L.v.ip, intPort: 51820 }]; renderDevices(); return [[L.a1, L.b1, '@vpn']]; }
             },
             {
-                lvl: 'Fácil', title: 'El servidor VPN está apagado', story: 'Ayer la casa y la oficina se veían por la VPN. Hoy ninguna PC logra comunicarse con la otra.', hint: 'Abrí las propiedades del servidor VPN en la nube y revisá su estado.',
+                lvl: 'Fácil', title: 'act.builtin.15.title', story: 'act.builtin.15.story', hint: 'act.builtin.15.hint',
                 build() { loadDemoVpn(); const L = window.__vpnLab; L.v.vpnOnline = false; renderDevices(); return [[L.a1, L.b1, '@vpn']]; }
             },
             {
-                lvl: 'Fácil', title: 'Falta unir un equipo a la VPN', story: 'PC_Casa1 ya está en la VPN, pero no logra comunicarse con PC_Oficina1.', hint: 'Mirá las dos PC: una de ellas no tiene la segunda IP (la de la VPN). Abrí sus propiedades y buscá la pestaña VPN.',
+                lvl: 'Fácil', title: 'act.builtin.16.title', story: 'act.builtin.16.story', hint: 'act.builtin.16.hint',
                 build() { loadDemoVpn(); const L = window.__vpnLab; delete L.b1.vpn; renderDevices(); return [[L.a1, L.b1, '@vpn']]; }
             },
             {
-                lvl: 'Medio', title: 'Unir dos redes con una VPN', story: 'La casa y la oficina tienen cada una su router y su Internet, pero sus PC no se ven entre sí. Armá una VPN para que PC_Casa1 y PC_Oficina1 se comuniquen como si estuvieran en la misma red.', hint: 'Dos redes privadas no se ven por Internet. Agregá un «VPN en la nube», conectalo con un cable a Internet y unile las dos PC desde la pestaña VPN de cada una.',
+                lvl: 'Medio', title: 'act.builtin.17.title', story: 'act.builtin.17.story', hint: 'act.builtin.17.hint',
                 build() { loadDemoVpn(); const L = window.__vpnLab; state.connections = state.connections.filter(c => c.from !== L.v.id && c.to !== L.v.id); state.devices = state.devices.filter(d => d.id !== L.v.id); delete L.a1.vpn; delete L.b1.vpn; renderDevices(); renderCables(); return [[L.a1, L.b1, '@vpn']]; }
             },
             {
-                lvl: 'Difícil', title: 'La VPN con dos problemas', story: 'La oficina tiene un servidor VPN local. PC_Casa1 y PC_Oficina1 deberían comunicarse por la VPN, pero no lo logran. Esta vez hay más de un problema.', hint: 'Arreglá un problema y verificá otra vez: puede quedar otro. Pensá en cómo se llega desde afuera al servidor y en si las dos PC están en la VPN.',
+                lvl: 'Difícil', title: 'act.builtin.18.title', story: 'act.builtin.18.story', hint: 'act.builtin.18.hint',
                 build() { loadDemoVpn('local'); const L = window.__vpnLab; delete L.b1.vpn; renderDevices(); return [[L.a1, L.b1, '@vpn']]; }
             }
         ];
         let currentActivity = null;
+        // Nivel de dificultad: se guarda como 'Fácil'|'Medio'|'Difícil' y se muestra traducido.
+        function lvlKey(lvl) { return ({ 'Fácil': 'easy', 'Medio': 'medium', 'Difícil': 'hard' })[lvl] || 'medium'; }
+        function lvlLabel(lvl) { return I18N.t('act.level.' + lvlKey(lvl)); }
+        // Las actividades integradas guardan la clave del texto; las creadas por el
+        // profesor guardan texto plano (así el archivo es portable entre idiomas).
+        function actKeyOf(v) { return (typeof v === 'string' && /^act\.builtin\.\d+\.(title|story|hint)$/.test(v)) ? v : null; }
+        function actTitle(c) { const k = c && c.titleKey; return k ? I18N.t(k) : ((c && c.title) || ''); }
+        function actStory(c) { const k = c && c.storyKey; return k ? I18N.t(k) : ((c && c.story) || ''); }
+        function actHint(c) { const k = c && c.hintKey; return k ? I18N.t(k) : ((c && c.hintText) || ''); }
+        function localeTag() { return ({ es: 'es-AR', en: 'en-US', pt: 'pt-BR', fr: 'fr-FR' })[I18N.lang] || 'es-AR'; }
         function openActivities() {
             const order = { 'Fácil': 0, 'Medio': 1, 'Difícil': 2 };
             document.getElementById('act-list').innerHTML = ACTIVITIES.map((a, i) => ({ a, i })).sort((x, y) => order[x.a.lvl] - order[y.a.lvl] || x.i - y.i).map(({ a, i }) => {
                 const col = a.lvl === 'Fácil' ? '#10b981' : a.lvl === 'Medio' ? '#f59e0b' : '#f43f5e';
-                return `<button onclick="startActivity(${i})" class="w-full text-left p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/60 transition"><span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="background:${col}33;color:${col}">${a.lvl}</span><span class="text-xs font-semibold text-slate-200 ml-2">${a.title}</span><span class="block text-[11px] text-slate-400 mt-1">${a.story}</span></button>`;
+                return `<button onclick="startActivity(${i})" class="w-full text-left p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-amber-500/60 transition"><span class="text-[10px] font-bold px-1.5 py-0.5 rounded" style="background:${col}33;color:${col}">${lvlLabel(a.lvl)}</span><span class="text-xs font-semibold text-slate-200 ml-2">${I18N.t(a.title)}</span><span class="block text-[11px] text-slate-400 mt-1">${I18N.t(a.story)}</span></button>`;
             }).join('');
             document.getElementById('act-modal').classList.remove('hidden');
         }
@@ -1822,12 +1832,26 @@
         function renderActivityPanel(msg) {
             const c = currentActivity; if (!c) return;
             const dv = id => state.devices.find(d => d.id === id);
-            document.getElementById('act-title').textContent = `${c.lvl} · ${c.title}`;
-            document.getElementById('act-story').textContent = c.story || '';
-            document.getElementById('act-goal').textContent = `🎯 Objetivo: ${c.goals.map(([x, y, site]) => { const A = dv(x), B = dv(y); return site === '@vpn' ? `que ${A ? A.name : '?'} y ${B ? B.name : '?'} se comuniquen por la VPN` : site ? `que ${A ? A.name : '?'} pueda abrir ${site}` : `que ${A ? A.name : '?'} y ${B ? B.name : '?'} se comuniquen`; }).join(' y ')}.`;
-            document.getElementById('act-student').textContent = currentStudent ? `👤 Alumno: ${currentStudent}` : '👤 Escribí tu nombre con el botón de arriba para que quede en tu entrega.';
+            document.getElementById('act-title').textContent = `${lvlLabel(c.lvl)} · ${actTitle(c)}`;
+            document.getElementById('act-story').textContent = actStory(c);
+            const goalsText = c.goals.map(([x, y, site]) => {
+                const A = dv(x), B = dv(y);
+                const an = A ? A.name : '?', bn = B ? B.name : '?';
+                return site === '@vpn' ? I18N.t('act.goal.vpn', { a: an, b: bn })
+                    : site ? I18N.t('act.goal.site', { a: an, site })
+                        : I18N.t('act.goal.comm', { a: an, b: bn });
+            }).join(I18N.t('act.goal.and'));
+            document.getElementById('act-goal').textContent = I18N.t('act.goal.prefix', { goals: goalsText });
+            document.getElementById('act-student').textContent = currentStudent ? I18N.t('act.student.label', { name: currentStudent }) : I18N.t('act.student.prompt');
             const sub = document.getElementById('act-sub');
-            if (c.submission) { sub.textContent = `📥 Entrega de ${c.submission.student} · guardada ${c.submission.savedAt ? new Date(c.submission.savedAt).toLocaleString('es-AR') : ''} · el alumno la marcó como ${c.submission.solved ? 'resuelta ✅' : 'sin resolver ❌'}. Usá «Verificar» para comprobarlo ahora.`; sub.classList.remove('hidden'); }
+            if (c.submission) {
+                sub.textContent = I18N.t('act.submission.label', {
+                    student: c.submission.student,
+                    date: c.submission.savedAt ? new Date(c.submission.savedAt).toLocaleString(localeTag()) : '',
+                    state: c.submission.solved ? I18N.t('act.submission.solved') : I18N.t('act.submission.unsolved')
+                });
+                sub.classList.remove('hidden');
+            }
             else sub.classList.add('hidden');
             if (msg !== undefined) document.getElementById('act-msg').textContent = msg;
             document.getElementById('act-panel').classList.remove('hidden');
@@ -1838,25 +1862,33 @@
             const realToast = showToast; showToast = () => { };
             let goals;
             try { goals = a.build(); } finally { showToast = realToast; }
-            currentActivity = { idx: i, goals: goals.map(([x, y, site]) => [x.id, y.id, site]), hint: 0, title: a.title, lvl: a.lvl, story: a.story, hintText: a.hint, custom: false, tries: 0, solved: false, solvedAt: null };
+            currentActivity = { idx: i, goals: goals.map(([x, y, site]) => [x.id, y.id, site]), hint: 0, titleKey: a.title, storyKey: a.story, hintKey: a.hint, title: I18N.t(a.title), story: I18N.t(a.story), hintText: I18N.t(a.hint), lvl: a.lvl, custom: false, tries: 0, solved: false, solvedAt: null };
             const sel = document.getElementById('traffic-mode'); if (sel) { sel.value = 'advanced'; applySimMode(false); }
             closeActivitiesModal();
-            renderActivityPanel('Tip: usá la simulación en modo avanzado para ver dónde se corta.');
-            showToast(`Actividad cargada: ${a.title}`, 'info');
+            renderActivityPanel(I18N.t('act.tip'));
+            showToast(I18N.t('toast.activityLoaded', { title: I18N.t(a.title) }), 'info');
             if (!currentStudent) openStudentDialog();
         }
         // Reanuda una actividad guardada en un archivo (del profesor o la entrega de un alumno).
         function resumeActivity(def, data) {
             const sub = (data.student && data.student !== currentStudent) ? { student: data.student, savedAt: data.savedAt, solved: !!def.solved } : null;
-            currentActivity = { idx: -1, goals: def.goals, hint: 0, title: def.title || 'Actividad', lvl: def.lvl || 'Medio', story: def.story || '', hintText: def.hint || 'Probá la simulación en modo avanzado para ver dónde se corta.', custom: !!def.custom, tries: def.tries || 0, solved: false, solvedAt: null, submission: sub };
+            const tKey = actKeyOf(def.title), sKey = actKeyOf(def.story), hKey = actKeyOf(def.hint);
+            currentActivity = {
+                idx: -1, goals: def.goals, hint: 0,
+                titleKey: tKey, storyKey: sKey, hintKey: hKey,
+                title: tKey ? I18N.t(tKey) : (def.title || I18N.t('act.defaultTitle')),
+                story: sKey ? I18N.t(sKey) : (def.story || ''),
+                hintText: hKey ? I18N.t(hKey) : (def.hint || I18N.t('act.defaultHint')),
+                lvl: def.lvl || 'Medio', custom: !!def.custom, tries: def.tries || 0, solved: false, solvedAt: null, submission: sub
+            };
             const sel = document.getElementById('traffic-mode'); if (sel) { sel.value = 'advanced'; applySimMode(false); }
-            renderActivityPanel(sub ? '' : 'Tip: usá la simulación en modo avanzado para ver dónde se corta.');
+            renderActivityPanel(sub ? '' : I18N.t('act.tip'));
             if (!sub && !currentStudent) openStudentDialog();
         }
         function failureFor(goals) {
             for (const [x, y, site] of goals) {
                 const A = state.devices.find(d => d.id === x), B = state.devices.find(d => d.id === y);
-                if (!A || !B) return { A: { name: '?' }, B: { name: '?' }, m: 'Alguno de los equipos de la actividad fue eliminado.' };
+                if (!A || !B) return { A: { name: '?' }, B: { name: '?' }, m: I18N.t('act.msg.deviceRemoved') };
                 if (site === '@vpn') { const pl = vpnPlan(A, B); if (!pl.ok) return { A, B, m: pl.msg }; continue; }
                 const m = diagnose(A, B, site); if (m) return { A, B, m };
             }
@@ -1865,7 +1897,7 @@
         function activityFailure() { return failureFor(currentActivity.goals); }
         function activityForSave() {
             const c = currentActivity; if (!c) return null;
-            return { title: c.title, lvl: c.lvl, story: c.story, hint: c.hintText, goals: c.goals, custom: c.custom, builtinIdx: c.idx, solved: !activityFailure(), tries: c.tries, solvedAt: c.solvedAt };
+            return { title: c.titleKey || c.title, lvl: c.lvl, story: c.storyKey || c.story, hint: c.hintKey || c.hintText, goals: c.goals, custom: c.custom, builtinIdx: c.idx, solved: !activityFailure(), tries: c.tries, solvedAt: c.solvedAt };
         }
         function verifyActivity() {
             if (!currentActivity) return;
@@ -1874,15 +1906,15 @@
             if (!fail) {
                 if (!currentActivity.solved) currentActivity.solvedAt = new Date().toISOString();
                 currentActivity.solved = true;
-                box.innerHTML = `<span style="color:#10b981;font-weight:700">✅ ¡Resuelto${currentStudent ? ', ' + escapeHtml(currentStudent) : ''}! La red funciona. Guardá la red para entregarla.</span>`; showToast('¡Actividad resuelta!', 'success');
-            } else box.innerHTML = `<span style="color:#f43f5e;font-weight:700">❌ Todavía no:</span> ${escapeHtml(fail.A.name)} y ${escapeHtml(fail.B.name)} no logran comunicarse. Usá «Pista» si te trabás.`;
+                box.innerHTML = `<span style="color:#10b981;font-weight:700">${escapeHtml(I18N.t('act.msg.solved', { student: currentStudent ? ', ' + currentStudent : '' }))}</span>`; showToast(I18N.t('toast.activitySolved'), 'success');
+            } else box.innerHTML = `<span style="color:#f43f5e;font-weight:700">❌ ${escapeHtml(I18N.t('act.msg.notYetLabel'))}</span> ${escapeHtml(I18N.t('act.msg.notYet', { a: fail.A.name, b: fail.B.name }))}`;
         }
         function nextHint() {
             if (!currentActivity) return;
             const box = document.getElementById('act-msg');
-            if (currentActivity.hint === 0) { box.innerHTML = `💡 ${escapeHtml(currentActivity.hintText)}`; currentActivity.hint = 1; return; }
+            if (currentActivity.hint === 0) { box.innerHTML = `💡 ${escapeHtml(actHint(currentActivity))}`; currentActivity.hint = 1; return; }
             const fail = activityFailure();
-            box.innerHTML = fail ? `🔎 <b>Diagnóstico:</b> ${escapeHtml(fail.m)}` : '✅ No queda ningún problema: ¡ya está resuelta!';
+            box.innerHTML = fail ? `🔎 <b>${escapeHtml(I18N.t('act.msg.diagnosticLabel'))}</b> ${escapeHtml(fail.m)}` : I18N.t('act.msg.noProblems');
         }
         function closeActivity() { currentActivity = null; document.getElementById('act-panel')?.classList.add('hidden'); }
 
@@ -1891,10 +1923,10 @@
         function renderDnsTab(c, dev) {
             const recs = (dev.records || []).map(r => `${r.name} ${r.ip}`).join('\n');
             c.innerHTML = `<div class="space-y-3">
-                <label class="flex items-center gap-2 text-xs text-slate-200 cursor-pointer"><input id="dns-online" type="checkbox" ${dev.dnsOnline !== false ? 'checked' : ''}> Servidor encendido (si lo apagás, nadie recibe respuesta)</label>
-                <div><h4 class="text-xs font-bold text-teal-400 mb-1">Registros (nombre → IP)</h4><p class="text-[11px] text-slate-400 mb-2">Una línea por registro: <span class="font-mono">nombre IP</span>. Ejemplo: <span class="font-mono">www.ejemplo.com 192.168.2.10</span>. Si un nombre no está acá, el servidor responde «no existe».</p>
+                <label class="flex items-center gap-2 text-xs text-slate-200 cursor-pointer"><input id="dns-online" type="checkbox" ${dev.dnsOnline !== false ? 'checked' : ''}> ${I18N.t('dev.dnsTab.online')}</label>
+                <div><h4 class="text-xs font-bold text-teal-400 mb-1">${I18N.t('dev.dnsTab.records')}</h4><p class="text-[11px] text-slate-400 mb-2">${I18N.t('dev.dnsTab.recordsHint', { format: '<span class="font-mono">nombre IP</span>', example: '<span class="font-mono">www.ejemplo.com 192.168.2.10</span>' })}</p>
                 <textarea id="dns-records" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-200 text-xs font-mono select-text" placeholder="www.ejemplo.com 192.168.2.10">${escapeHtml(recs)}</textarea></div>
-                <button onclick="saveDnsTab(${dev.id})" class="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold"><i class="fa-solid fa-floppy-disk mr-1"></i>Aplicar</button></div>`;
+                <button onclick="saveDnsTab(${dev.id})" class="px-4 py-2 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold"><i class="fa-solid fa-floppy-disk mr-1"></i>${I18N.t('dev.dnsTab.apply')}</button></div>`;
         }
         function saveDnsTab(devId) {
             const dev = state.devices.find(d => d.id === devId); if (!dev) return;
@@ -1902,12 +1934,12 @@
             for (const line of (document.getElementById('dns-records')?.value || '').split('\n')) {
                 const t = line.trim(); if (!t || t.startsWith('#')) continue;
                 const m = t.match(/^([a-z0-9._-]+)\s+(\d+\.\d+\.\d+\.\d+)$/i);
-                if (!m || ipv4ToInt(m[2]) === null) { showToast(`Registro inválido: «${t}». Usá: www.ejemplo.com 192.168.2.10`, 'warning'); return; }
+                if (!m || ipv4ToInt(m[2]) === null) { showToast(I18N.t('dev.dnsTab.invalidRecord', { line: t }), 'warning'); return; }
                 records.push({ name: m[1].toLowerCase(), ip: m[2] });
             }
             dev.records = records; dev.dnsOnline = !!document.getElementById('dns-online')?.checked;
             netTables.dns = {};
-            showToast(`${dev.name}: registros aplicados (${records.length}).`, 'success');
+            showToast(I18N.t('dev.dnsTab.recordsApplied', { name: dev.name, count: records.length }), 'success');
         }
 
         // ===== ROUTER CON VARIAS INTERFACES =====
@@ -1919,14 +1951,14 @@
             const ns = getConnectedNeighbors(dev.id);
             const rows = ns.map(id => {
                 const f = (dev.ifaces || {})[id] || { ip: '', mask: '255.255.255.0' };
-                return `<div class="grid grid-cols-6 gap-2 items-center text-xs"><span class="col-span-2 text-slate-300">Hacia <b>${escapeHtml(devName(id))}</b></span><input id="if-ip-${id}" value="${escapeHtml(f.ip)}" placeholder="IP (ej: 192.168.1.1)" class="col-span-2 INP"><input id="if-mask-${id}" value="${escapeHtml(f.mask)}" class="col-span-2 INP"></div>`;
-            }).join('') || '<p class="text-xs text-amber-400">Conectá este router con cables a otros equipos (por ejemplo a un switch): cada cable crea una interfaz.</p>';
+                return `<div class="grid grid-cols-6 gap-2 items-center text-xs"><span class="col-span-2 text-slate-300">${I18N.t('dev.routesTab.toward', { name: `<b>${escapeHtml(devName(id))}</b>` })}</span><input id="if-ip-${id}" value="${escapeHtml(f.ip)}" placeholder="IP (ej: 192.168.1.1)" class="col-span-2 INP"><input id="if-mask-${id}" value="${escapeHtml(f.mask)}" class="col-span-2 INP"></div>`;
+            }).join('') || `<p class="text-xs text-amber-400">${I18N.t('dev.routesTab.noNeighbors')}</p>`;
             const routes = (dev.routes || []).map(r => `${r.net}/${r.prefix} via ${r.via}`).join('\n');
             c.innerHTML = `<div class="space-y-4">
-                <div><h4 class="text-xs font-bold text-orange-400 mb-1">Interfaces (una por cable)</h4><p class="text-[11px] text-slate-400 mb-2">Cada interfaz tiene su propia IP y pertenece a una red distinta.</p><div class="space-y-2">${rows}</div></div>
-                <div><h4 class="text-xs font-bold text-orange-400 mb-1">Rutas estáticas</h4><p class="text-[11px] text-slate-400 mb-2">Una por línea: <span class="font-mono">red/prefijo via IP-del-siguiente-router</span>. Ruta predeterminada: <span class="font-mono">0.0.0.0/0 via 10.0.0.2</span>. Las redes de sus interfaces ya son conocidas.</p>
+                <div><h4 class="text-xs font-bold text-orange-400 mb-1">${I18N.t('dev.routesTab.interfaces')}</h4><p class="text-[11px] text-slate-400 mb-2">${I18N.t('dev.routesTab.interfacesHint')}</p><div class="space-y-2">${rows}</div></div>
+                <div><h4 class="text-xs font-bold text-orange-400 mb-1">${I18N.t('dev.routesTab.staticRoutes')}</h4><p class="text-[11px] text-slate-400 mb-2">${I18N.t('dev.routesTab.staticRoutesHint', { format: '<span class="font-mono">red/prefijo via IP-del-siguiente-router</span>', default: '<span class="font-mono">0.0.0.0/0 via 10.0.0.2</span>' })}</p>
                 <textarea id="route-text" rows="4" class="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-slate-200 text-xs font-mono select-text" placeholder="10.0.0.0/24 via 192.168.2.2">${escapeHtml(routes)}</textarea></div>
-                <button onclick="saveRoutesTab(${dev.id})" class="px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold"><i class="fa-solid fa-floppy-disk mr-1"></i>Aplicar</button></div>`.replace(/INP/g, '__INP__').replace(/__INP__/g, 'w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-slate-200 text-xs select-text');
+                <button onclick="saveRoutesTab(${dev.id})" class="px-4 py-2 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-xs font-bold"><i class="fa-solid fa-floppy-disk mr-1"></i>${I18N.t('dev.routesTab.apply')}</button></div>`.replace(/INP/g, '__INP__').replace(/__INP__/g, 'w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-slate-200 text-xs select-text');
             c.innerHTML = c.innerHTML;
         }
         function saveRoutesTab(devId) {
@@ -1935,19 +1967,19 @@
             for (const id of getConnectedNeighbors(dev.id)) {
                 const ip = document.getElementById(`if-ip-${id}`)?.value.trim(), mask = document.getElementById(`if-mask-${id}`)?.value.trim();
                 if (!ip) continue;
-                if (!isUsableHost(ip, mask)) { showToast(`IP o máscara inválida en la interfaz hacia ${devName(id)}.`, 'warning'); return; }
+                if (!isUsableHost(ip, mask)) { showToast(I18N.t('dev.routesTab.invalidIface', { name: devName(id) }), 'warning'); return; }
                 ifaces[id] = { ip, mask };
             }
             const routes = [];
             for (const line of (document.getElementById('route-text')?.value || '').split('\n')) {
                 const t = line.trim(); if (!t || t.startsWith('#')) continue;
                 const m = t.match(/^(\d+\.\d+\.\d+\.\d+)\/(\d{1,2})\s+(?:via\s+)?(\d+\.\d+\.\d+\.\d+)$/i);
-                if (!m || ipv4ToInt(m[1]) === null || ipv4ToInt(m[3]) === null || Number(m[2]) > 32) { showToast(`Ruta inválida: «${t}». Usá: 10.0.0.0/24 via 192.168.2.2`, 'warning'); return; }
+                if (!m || ipv4ToInt(m[1]) === null || ipv4ToInt(m[3]) === null || Number(m[2]) > 32) { showToast(I18N.t('dev.routesTab.invalidRoute', { line: t }), 'warning'); return; }
                 routes.push({ net: m[1], prefix: Number(m[2]), via: m[3] });
             }
             dev.ifaces = ifaces; dev.routes = routes;
             const first = Object.values(ifaces)[0]; dev.ip = first ? first.ip : '0.0.0.0'; dev.mask = first ? first.mask : '255.255.255.0';
-            renderDevices(); showToast(`${dev.name}: interfaces y rutas aplicadas.`, 'success');
+            renderDevices(); showToast(I18N.t('dev.routesTab.applied', { name: dev.name }), 'success');
         }
         // Busca la ruta para una IP: primero redes conectadas, luego la ruta estática más específica.
         function routeLookup(router, dstIp) {
@@ -1992,7 +2024,11 @@
 
             // UI Elements
             document.getElementById('modal-title').textContent = dev.name;
-            document.getElementById('modal-subtitle').textContent = `Tipo: ${dev.type.toUpperCase()} ${dev.type === 'switch' ? `(${dev.switchLayer})` : ''} | MAC: 00:1A:2B:3C:4D:${dev.id}0`;
+            document.getElementById('modal-subtitle').textContent = I18N.t('dev.subtitle', {
+                type: dev.type.toUpperCase(),
+                layer: dev.type === 'switch' ? ` (${dev.switchLayer})` : '',
+                mac: `00:1A:2B:3C:4D:${dev.id}0`
+            });
 
             const iconContainer = document.getElementById('modal-icon');
             iconContainer.className = `w-9 h-9 rounded-lg border flex items-center justify-center text-lg ${getDeviceIconColor(dev)} bg-slate-900 border-slate-700`;
@@ -2002,26 +2038,28 @@
             const tabsContainer = document.getElementById('modal-tabs');
             tabsContainer.innerHTML = '';
 
+            // Las pestañas se identifican con una clave interna (para no depender del
+            // idioma) y se muestran traducidas con dev.tab.*
             let tabs = [];
             if (dev.type === 'switch') {
-                tabs = ['Modo de Capa (L2/L3)', 'Configuración IP / SVI', 'Conexiones / Puertos'];
-                if (dev.switchLayer === 'L3') tabs.splice(2, 0, 'Servidor DHCP');
+                tabs = ['layer', 'ipSvi', 'connections'];
+                if (dev.switchLayer === 'L3') tabs.splice(2, 0, 'dhcp');
             } else {
-                tabs = ['Configuración IP', 'Conexiones / Puertos'];
-                if (dev.type === 'router') tabs.splice(1, 0, 'DHCP / WiFi', 'Port Forwarding');
-                if (isWifiClient(dev)) tabs = ['WiFi Redes', 'Configuración IP', 'Conexiones / Puertos'];
-                if (dev.type === 'pc' || isWifiClient(dev)) { if (dev.type !== 'tv') tabs.push('Terminal Ping'); tabs.push('Navegador Web'); }
+                tabs = ['ip', 'connections'];
+                if (dev.type === 'router') tabs.splice(1, 0, 'dhcpWifi', 'portForwarding');
+                if (isWifiClient(dev)) tabs = ['wifiNetworks', 'ip', 'connections'];
+                if (dev.type === 'pc' || isWifiClient(dev)) { if (dev.type !== 'tv') tabs.push('pingTerminal'); tabs.push('webBrowser'); }
             }
 
-            if (dev.type === 'lrouter') tabs = ['Interfaces y rutas', 'Conexiones / Puertos'];
-            if (dev.type === 'dns') tabs = ['Configuración IP', 'Registros DNS', 'Conexiones / Puertos'];
-            if (dev.type === 'vpn') tabs = ['Configuración IP', 'VPN', 'Conexiones / Puertos'];
-            else if (['pc', 'laptop', 'phone', 'tv', 'dns', 'lrouter'].includes(dev.type) && tabs.indexOf('Conexiones / Puertos') >= 0) tabs.splice(tabs.indexOf('Conexiones / Puertos'), 0, 'VPN');
-            tabs.forEach((tabName, index) => {
+            if (dev.type === 'lrouter') tabs = ['routes', 'connections'];
+            if (dev.type === 'dns') tabs = ['ip', 'dnsRecords', 'connections'];
+            if (dev.type === 'vpn') tabs = ['ip', 'vpn', 'connections'];
+            else if (['pc', 'laptop', 'phone', 'tv', 'dns', 'lrouter'].includes(dev.type) && tabs.indexOf('connections') >= 0) tabs.splice(tabs.indexOf('connections'), 0, 'vpn');
+            tabs.forEach((tabId, index) => {
                 const tabBtn = document.createElement('button');
                 tabBtn.className = `px-4 py-3 text-xs font-semibold border-b-2 transition ${index === 0 ? 'border-blue-500 text-blue-400' : 'border-transparent text-slate-400 hover:text-slate-200'}`;
-                tabBtn.textContent = tabName;
-                tabBtn.onclick = () => switchModalTab(index, tabName, dev);
+                tabBtn.textContent = I18N.t('dev.tab.' + tabId);
+                tabBtn.onclick = () => switchModalTab(index, tabId, dev);
                 tabsContainer.appendChild(tabBtn);
             });
 
@@ -2050,27 +2088,27 @@
             const body = document.getElementById('modal-body');
             body.innerHTML = '';
 
-            if (tabName === 'Modo de Capa (L2/L3)') {
+            if (tabName === 'layer') {
                 renderSwitchLayerTab(body, dev);
-            } else if (tabName === 'Configuración IP' || tabName === 'Configuración IP / SVI') {
+            } else if (tabName === 'ip' || tabName === 'ipSvi') {
                 renderIpConfigTab(body, dev);
-            } else if (tabName === 'VPN') {
+            } else if (tabName === 'vpn') {
                 renderVpnTab(body, dev);
-            } else if (tabName === 'Registros DNS') {
+            } else if (tabName === 'dnsRecords') {
                 renderDnsTab(body, dev);
-            } else if (tabName === 'Interfaces y rutas') {
+            } else if (tabName === 'routes') {
                 renderRoutesTab(body, dev);
-            } else if (tabName === 'Servidor DHCP' || tabName === 'DHCP / WiFi') {
+            } else if (tabName === 'dhcp' || tabName === 'dhcpWifi') {
                 renderDhcpWifiTab(body, dev);
-            } else if (tabName === 'Port Forwarding') {
+            } else if (tabName === 'portForwarding') {
                 renderPortForwardingTab(body, dev);
-            } else if (tabName === 'Conexiones / Puertos') {
+            } else if (tabName === 'connections') {
                 renderConnectionsTab(body, dev);
-            } else if (tabName === 'WiFi Redes') {
+            } else if (tabName === 'wifiNetworks') {
                 renderWifiScanTab(body, dev);
-            } else if (tabName === 'Terminal Ping') {
+            } else if (tabName === 'pingTerminal') {
                 renderTerminalTab(body, dev);
-            } else if (tabName === 'Navegador Web') {
+            } else if (tabName === 'webBrowser') {
                 renderBrowserTab(body, dev);
             }
         }
@@ -2079,15 +2117,15 @@
         function renderSwitchLayerTab(container, dev) {
             container.innerHTML = `
                 <div class="space-y-4">
-                    <p class="text-xs text-slate-400">Selecciona el modo de operación del Switch:</p>
+                    <p class="text-xs text-slate-400">${I18N.t('dev.layerTab.intro')}</p>
                     <div class="grid grid-cols-2 gap-4">
                         <div onclick="setSwitchLayer('${dev.id}', 'L2')" class="p-4 rounded-xl border cursor-pointer transition ${dev.switchLayer === 'L2' ? 'bg-blue-950/40 border-blue-500' : 'bg-slate-950 border-slate-800 hover:border-slate-700'}">
-                            <span class="text-xs font-bold text-slate-200 block mb-1">Capa 2 (L2 Switch)</span>
-                            <span class="text-[11px] text-slate-400">Conmutación de tramas mediante MAC. No realiza enrutamiento.</span>
+                            <span class="text-xs font-bold text-slate-200 block mb-1">${I18N.t('dev.layerTab.l2')}</span>
+                            <span class="text-[11px] text-slate-400">${I18N.t('dev.layerTab.l2Desc')}</span>
                         </div>
                         <div onclick="setSwitchLayer('${dev.id}', 'L3')" class="p-4 rounded-xl border cursor-pointer transition ${dev.switchLayer === 'L3' ? 'bg-purple-950/40 border-purple-500' : 'bg-slate-950 border-slate-800 hover:border-slate-700'}">
-                            <span class="text-xs font-bold text-slate-200 block mb-1">Capa 3 (L3 Multicapa)</span>
-                            <span class="text-[11px] text-slate-400">Soporta enrutamiento IP inter-VLAN y servicio Servidor DHCP.</span>
+                            <span class="text-xs font-bold text-slate-200 block mb-1">${I18N.t('dev.layerTab.l3')}</span>
+                            <span class="text-[11px] text-slate-400">${I18N.t('dev.layerTab.l3Desc')}</span>
                         </div>
                     </div>
                 </div>
@@ -2101,7 +2139,7 @@
                 if (layer === 'L3' && dev.ip === '0.0.0.0') {
                     dev.ip = '192.168.1.254';
                 }
-                showToast(`Switch configurado en Capa ${layer}`, 'info');
+                showToast(I18N.t('dev.msg.switchLayer', { layer: layer }), 'info');
                 reevaluateNetworkState();
                 openDeviceModal(dev.id);
             }
@@ -2111,17 +2149,17 @@
             container.innerHTML = `
                 <div class="space-y-4 text-xs">
                     <div class="flex items-center space-x-4 bg-slate-950 p-3 rounded-xl border border-slate-800">
-                        <span class="text-slate-300 font-semibold">Obtención de IP:</span>
+                        <span class="text-slate-300 font-semibold">${I18N.t('dev.ipTab.obtain')}</span>
                         <label class="flex items-center space-x-1.5 cursor-pointer"><input type="radio" name="ipMode" value="dhcp" ${dev.ipMode === 'dhcp' ? 'checked' : ''} onchange="updateDeviceIpMode('${dev.id}', 'dhcp')" class="accent-blue-500"><span class="text-slate-300">DHCP</span></label>
-                        <label class="flex items-center space-x-1.5 cursor-pointer"><input type="radio" name="ipMode" value="static" ${dev.ipMode === 'static' ? 'checked' : ''} onchange="updateDeviceIpMode('${dev.id}', 'static')" class="accent-blue-500"><span class="text-slate-300">Estática</span></label>
+                        <label class="flex items-center space-x-1.5 cursor-pointer"><input type="radio" name="ipMode" value="static" ${dev.ipMode === 'static' ? 'checked' : ''} onchange="updateDeviceIpMode('${dev.id}', 'static')" class="accent-blue-500"><span class="text-slate-300">${I18N.t('dev.ipTab.static')}</span></label>
                     </div>
                     <div class="space-y-3">
-                        <div><label class="block text-slate-400 mb-1 font-medium">Nombre del dispositivo</label><input type="text" id="dev-name-input" value="${dev.name}" onchange="renameDevice('${dev.id}', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200"></div>
-                        <div><label class="block text-slate-400 mb-1 font-medium">Dirección IP</label><input type="text" id="dev-ip-input" value="${dev.ip}" ${dev.ipMode === 'dhcp' ? 'disabled' : ''} class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 disabled:opacity-50"></div>
-                        <div><label class="block text-slate-400 mb-1 font-medium">Máscara de subred</label><input type="text" id="dev-mask-input" value="${dev.mask}" ${dev.ipMode === 'dhcp' ? 'disabled' : ''} class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 disabled:opacity-50"></div>
-                        <div><label class="block text-slate-400 mb-1 font-medium">Puerta de enlace</label><input type="text" id="dev-gateway-input" value="${dev.gateway}" ${dev.ipMode === 'dhcp' ? 'disabled' : ''} class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 disabled:opacity-50"></div>
-                        <button onclick="validateStaticIp('${dev.id}')" ${dev.ipMode === 'dhcp' ? 'disabled' : ''} class="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white rounded-lg py-2 font-semibold">Aplicar configuración IP</button>
-                        <p class="text-[10px] text-slate-500">Se validan IPv4, máscara, puerta de enlace y direcciones duplicadas.</p>
+                        <div><label class="block text-slate-400 mb-1 font-medium">${I18N.t('dev.ipTab.name')}</label><input type="text" id="dev-name-input" value="${dev.name}" onchange="renameDevice('${dev.id}', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200"></div>
+                        <div><label class="block text-slate-400 mb-1 font-medium">${I18N.t('dev.ipTab.ip')}</label><input type="text" id="dev-ip-input" value="${dev.ip}" ${dev.ipMode === 'dhcp' ? 'disabled' : ''} class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 disabled:opacity-50"></div>
+                        <div><label class="block text-slate-400 mb-1 font-medium">${I18N.t('dev.ipTab.mask')}</label><input type="text" id="dev-mask-input" value="${dev.mask}" ${dev.ipMode === 'dhcp' ? 'disabled' : ''} class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 disabled:opacity-50"></div>
+                        <div><label class="block text-slate-400 mb-1 font-medium">${I18N.t('dev.ipTab.gateway')}</label><input type="text" id="dev-gateway-input" value="${dev.gateway}" ${dev.ipMode === 'dhcp' ? 'disabled' : ''} class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 disabled:opacity-50"></div>
+                        <button onclick="validateStaticIp('${dev.id}')" ${dev.ipMode === 'dhcp' ? 'disabled' : ''} class="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white rounded-lg py-2 font-semibold">${I18N.t('dev.ipTab.apply')}</button>
+                        <p class="text-[10px] text-slate-500">${I18N.t('dev.ipTab.validationHint')}</p>
                     </div>
                 </div>`;
         }
@@ -2130,7 +2168,7 @@
             const dev = state.devices.find(d => d.id == devId);
             if (!dev) return;
             const clean = value.trim();
-            if (!clean) { showToast('El nombre no puede quedar vacío.', 'warning'); openDeviceModal(dev.id); return; }
+            if (!clean) { showToast(I18N.t('dev.msg.nameEmpty'), 'warning'); openDeviceModal(dev.id); return; }
             dev.name = clean; renderDevices();
             document.getElementById('modal-title').textContent = clean;
         }
@@ -2148,32 +2186,32 @@
             container.innerHTML = `
                 <div class="space-y-4 text-xs">
                     <div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800">
-                        <span class="text-slate-200 font-semibold">Servidor DHCP</span>
+                        <span class="text-slate-200 font-semibold">${I18N.t('dev.dhcpTab.title')}</span>
                         <input type="checkbox" ${dev.dhcpEnabled ? 'checked' : ''} onchange="dev.dhcpEnabled = this.checked; reevaluateNetworkState();" class="w-4 h-4 accent-blue-500 cursor-pointer">
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-slate-400 mb-1">IP Inicial DHCP</label>
+                            <label class="block text-slate-400 mb-1">${I18N.t('dev.dhcpTab.start')}</label>
                             <input type="text" id="dhcp-start-${dev.id}" value="${dev.dhcpStart}" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
                         </div>
                         <div>
-                            <label class="block text-slate-400 mb-1">IP Final DHCP</label>
+                            <label class="block text-slate-400 mb-1">${I18N.t('dev.dhcpTab.end')}</label>
                             <input type="text" id="dhcp-end-${dev.id}" value="${dev.dhcpEnd}" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
                         </div>
                     </div>
-                    <button onclick="applyDhcpSettings('${dev.id}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white rounded-lg py-2 font-semibold">Aplicar configuración DHCP</button>
+                    <button onclick="applyDhcpSettings('${dev.id}')" class="w-full bg-blue-600 hover:bg-blue-500 text-white rounded-lg py-2 font-semibold">${I18N.t('dev.dhcpTab.apply')}</button>
                     ${dev.type === 'router' ? `
                     <div class="border-t border-slate-800 pt-3 space-y-3">
-                        <span class="text-slate-300 font-semibold block">Configuración Punto de Acceso WiFi</span>
+                        <span class="text-slate-300 font-semibold block">${I18N.t('dev.dhcpTab.wifiTitle')}</span>
                         <div>
-                            <label class="block text-slate-400 mb-1">Nombre SSID</label>
+                            <label class="block text-slate-400 mb-1">${I18N.t('dev.dhcpTab.ssid')}</label>
                             <input type="text" value="${escapeHtml(dev.wifiSsid)}" maxlength="32" onchange="setWifiField(${dev.id}, 'wifiSsid', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200">
                         </div>
                         <div>
-                            <label class="block text-slate-400 mb-1">Contraseña WPA2</label>
+                            <label class="block text-slate-400 mb-1">${I18N.t('dev.dhcpTab.password')}</label>
                             <input id="wifi-pass-input" type="password" value="${escapeHtml(dev.wifiPass)}" maxlength="63" onchange="setWifiField(${dev.id}, 'wifiPass', this.value)" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200 select-text">
-                            <label class="mt-1.5 flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer"><input type="checkbox" onchange="document.getElementById('wifi-pass-input').type = this.checked ? 'text' : 'password'"> Mostrar contraseña</label>
-                            <p class="mt-1 text-[10px] text-slate-500">Al cambiar el nombre o la contraseña, los equipos conectados se desconectan y tienen que volver a conectarse.</p>
+                            <label class="mt-1.5 flex items-center gap-1.5 text-[11px] text-slate-400 cursor-pointer"><input type="checkbox" onchange="document.getElementById('wifi-pass-input').type = this.checked ? 'text' : 'password'"> ${I18N.t('dev.dhcpTab.showPassword')}</label>
+                            <p class="mt-1 text-[10px] text-slate-500">${I18N.t('dev.dhcpTab.changeHint')}</p>
                         </div>
                     </div>
                     ` : ''}
@@ -2190,12 +2228,12 @@
             dev.dhcpStart = start; dev.dhcpEnd = end;
             if (!getDhcpPool(dev)) {
                 dev.dhcpStart = oldStart; dev.dhcpEnd = oldEnd;
-                showToast('Rango DHCP inválido: debe estar dentro de la subred y no incluir la IP del gateway.', 'warning');
+                showToast(I18N.t('dev.msg.dhcpRangeInvalid'), 'warning');
                 openDeviceModal(dev.id);
                 return;
             }
             reevaluateNetworkState();
-            showToast('Rango DHCP aplicado.', 'success');
+            showToast(I18N.t('dev.msg.dhcpRangeApplied'), 'success');
             openDeviceModal(dev.id);
         }
 
@@ -2208,21 +2246,21 @@
             const inp = 'w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-slate-200 text-xs select-text';
             container.innerHTML = `
                 <div class="space-y-3 text-xs">
-                    <div class="rounded-lg bg-slate-950 border border-slate-800 p-3"><span class="text-slate-500">IP pública (lado Internet) de este router:</span> <span class="font-mono text-sky-300 font-bold">${routerPublicIp(dev)}</span>
-                        <p class="text-[11px] text-slate-500 mt-1">Los equipos de la red salen a Internet con esta IP (NAT). Desde afuera solo se puede llegar a un equipo de adentro si hay una regla de reenvío de puertos.</p></div>
-                    <p class="text-slate-400 font-semibold">Reglas de reenvío de puertos (Port Forwarding):</p>
-                    ${rules.length ? rules.map((r, i) => `<div class="flex items-center justify-between gap-2 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2"><span class="text-slate-200"><b>${escapeHtml(r.name || 'Regla')}</b> · <span class="font-mono">${r.proto} ${r.extPort}</span> → <span class="font-mono text-emerald-300">${escapeHtml(r.intIp)}:${r.intPort}</span></span><button onclick="delPortForward(${dev.id}, ${i})" class="px-2 py-1 rounded bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-[11px]"><i class="fa-solid fa-trash-can"></i></button></div>`).join('') : '<div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-slate-500 text-center">No hay reglas: desde Internet no se puede entrar a ningún equipo de esta red.</div>'}
+                    <div class="rounded-lg bg-slate-950 border border-slate-800 p-3"><span class="text-slate-500">${I18N.t('dev.pf.publicIp')}</span> <span class="font-mono text-sky-300 font-bold">${routerPublicIp(dev)}</span>
+                        <p class="text-[11px] text-slate-500 mt-1">${I18N.t('dev.pf.publicIpHint')}</p></div>
+                    <p class="text-slate-400 font-semibold">${I18N.t('dev.pf.rules')}</p>
+                    ${rules.length ? rules.map((r, i) => `<div class="flex items-center justify-between gap-2 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2"><span class="text-slate-200"><b>${escapeHtml(r.name || I18N.t('dev.pf.defaultRuleName'))}</b> · <span class="font-mono">${r.proto} ${r.extPort}</span> → <span class="font-mono text-emerald-300">${escapeHtml(r.intIp)}:${r.intPort}</span></span><button onclick="delPortForward(${dev.id}, ${i})" class="px-2 py-1 rounded bg-rose-950/60 hover:bg-rose-900 text-rose-300 text-[11px]"><i class="fa-solid fa-trash-can"></i></button></div>`).join('') : `<div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-slate-500 text-center">${I18N.t('dev.pf.noRules')}</div>`}
                     <div class="rounded-lg border border-slate-800 p-3 space-y-2">
-                        <h4 class="font-bold text-slate-200">Agregar regla</h4>
+                        <h4 class="font-bold text-slate-200">${I18N.t('dev.pf.addTitle')}</h4>
                         <div class="grid grid-cols-2 gap-2">
-                            <label class="text-slate-400">Nombre<input id="pf-name" type="text" maxlength="30" placeholder="Ej: VPN" class="mt-1 ${inp}"></label>
-                            <label class="text-slate-400">Protocolo<select id="pf-proto" class="mt-1 ${inp}"><option>UDP</option><option>TCP</option></select></label>
-                            <label class="text-slate-400">Puerto externo<input id="pf-ext" type="number" min="1" max="65535" placeholder="51820" class="mt-1 ${inp}"></label>
-                            <label class="text-slate-400">Puerto interno<input id="pf-int" type="number" min="1" max="65535" placeholder="51820" class="mt-1 ${inp}"></label>
+                            <label class="text-slate-400">${I18N.t('dev.pf.name')}<input id="pf-name" type="text" maxlength="30" placeholder="Ej: VPN" class="mt-1 ${inp}"></label>
+                            <label class="text-slate-400">${I18N.t('dev.pf.proto')}<select id="pf-proto" class="mt-1 ${inp}"><option>UDP</option><option>TCP</option></select></label>
+                            <label class="text-slate-400">${I18N.t('dev.pf.extPort')}<input id="pf-ext" type="number" min="1" max="65535" placeholder="51820" class="mt-1 ${inp}"></label>
+                            <label class="text-slate-400">${I18N.t('dev.pf.intPort')}<input id="pf-int" type="number" min="1" max="65535" placeholder="51820" class="mt-1 ${inp}"></label>
                         </div>
-                        <label class="block text-slate-400">Redirigir al equipo<select id="pf-ip" class="mt-1 ${inp}">${opts || '<option value="">(no hay equipos en esta red)</option>'}</select></label>
-                        <button onclick="addPortForward(${dev.id})" class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-bold"><i class="fa-solid fa-plus mr-1"></i>Agregar regla</button>
-                        <p class="text-[11px] text-slate-500">Para llegar a un servidor VPN local desde Internet: UDP, mismo puerto afuera y adentro (WireGuard 51820 · OpenVPN 1194 · ZeroTier 9993), hacia la IP del servidor VPN.</p>
+                        <label class="block text-slate-400">${I18N.t('dev.pf.redirectTo')}<select id="pf-ip" class="mt-1 ${inp}">${opts || `<option value="">${I18N.t('dev.pf.noDevices')}</option>`}</select></label>
+                        <button onclick="addPortForward(${dev.id})" class="px-3 py-1.5 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-white font-bold"><i class="fa-solid fa-plus mr-1"></i>${I18N.t('dev.pf.add')}</button>
+                        <p class="text-[11px] text-slate-500">${I18N.t('dev.pf.vpnHint')}</p>
                     </div>
                 </div>`;
         }
@@ -2230,13 +2268,13 @@
             const r = state.devices.find(d => d.id === devId); if (!r) return;
             const ext = parseInt(document.getElementById('pf-ext').value, 10), int = parseInt(document.getElementById('pf-int').value, 10);
             const proto = document.getElementById('pf-proto').value, ip = document.getElementById('pf-ip').value, name = document.getElementById('pf-name').value.trim();
-            if (!(ext >= 1 && ext <= 65535 && int >= 1 && int <= 65535)) { showToast('Los puertos tienen que ser números entre 1 y 65535.', 'warning'); return; }
-            if (!ip) { showToast('Elegí a qué equipo de la red querés redirigir el puerto.', 'warning'); return; }
+            if (!(ext >= 1 && ext <= 65535 && int >= 1 && int <= 65535)) { showToast(I18N.t('dev.msg.portsInvalid'), 'warning'); return; }
+            if (!ip) { showToast(I18N.t('dev.msg.portTargetMissing'), 'warning'); return; }
             r.portForwarding = r.portForwarding || [];
-            if (r.portForwarding.some(x => x.proto === proto && Number(x.extPort) === ext)) { showToast(`Ya hay una regla para ${proto} ${ext}.`, 'warning'); return; }
+            if (r.portForwarding.some(x => x.proto === proto && Number(x.extPort) === ext)) { showToast(I18N.t('dev.msg.portRuleExists', { proto: proto, port: ext }), 'warning'); return; }
             r.portForwarding.push({ name, proto, extPort: ext, intIp: ip, intPort: int });
             stopTrafficSimulation(false); renderDevices();
-            showToast(`Regla agregada: ${proto} ${ext} → ${ip}:${int}.`, 'success');
+            showToast(I18N.t('dev.msg.portRuleAdded', { proto: proto, ext: ext, ip: ip, port: int }), 'success');
             renderPortForwardingTab(document.getElementById('modal-body'), r);
         }
         function delPortForward(devId, i) {
@@ -2249,12 +2287,12 @@
             const routers = state.devices.filter(d => d.type === 'router');
             let html = `
                 <div class="space-y-3 text-xs">
-                    <p class="text-slate-400">Redes WiFi al alcance:</p>
+                    <p class="text-slate-400">${I18N.t('dev.wifi.networks')}</p>
                     <div class="space-y-2">
             `;
 
             if (routers.length === 0) {
-                html += `<div class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-center text-slate-500">No se encontraron redes WiFi disponibles.</div>`;
+                html += `<div class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-center text-slate-500">${I18N.t('dev.wifi.none')}</div>`;
             } else {
                 routers.forEach(r => {
                     const isConnected = dev.connectedWifiSsid === r.wifiSsid;
@@ -2264,12 +2302,12 @@
                                 <i class="fa-solid fa-wifi text-emerald-400 text-base"></i>
                                 <div>
                                     <span class="font-bold text-slate-200 block">${r.wifiSsid}</span>
-                                    <span class="text-[10px] text-slate-400">Señal: Excelente | Canal 6</span>
+                                    <span class="text-[10px] text-slate-400">${I18N.t('dev.wifi.signal')}</span>
                                 </div>
                             </div>
                             ${isConnected ?
-                            `<span class="px-2.5 py-1 bg-emerald-950 border border-emerald-800 text-emerald-300 text-[10px] rounded-md font-semibold">Conectado</span>` :
-                            `<button onclick="connectWifi('${dev.id}', '${r.wifiSsid}')" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold">Conectar</button>`
+                            `<span class="px-2.5 py-1 bg-emerald-950 border border-emerald-800 text-emerald-300 text-[10px] rounded-md font-semibold">${I18N.t('dev.wifi.connected')}</span>` :
+                            `<button onclick="connectWifi('${dev.id}', '${r.wifiSsid}')" class="px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded text-xs font-semibold">${I18N.t('dev.wifi.connect')}</button>`
                         }
                         </div>
                     `;
@@ -2285,12 +2323,12 @@
 
             let html = `
                 <div class="space-y-4">
-                    <p class="text-xs text-slate-400">Lista de conexiones activas conectadas a los puertos de <b>${dev.name}</b>:</p>
+                    <p class="text-xs text-slate-400">${I18N.t('dev.conn.list', { name: dev.name })}</p>
                     <div class="space-y-2">
             `;
 
             if (devConns.length === 0) {
-                html += `<div class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-center text-xs text-slate-500">No hay cables o redes inalámbricas conectadas a este dispositivo.</div>`;
+                html += `<div class="p-4 bg-slate-950 rounded-xl border border-slate-800 text-center text-xs text-slate-500">${I18N.t('dev.conn.none')}</div>`;
             } else {
                 devConns.forEach(conn => {
                     const targetId = conn.from === dev.id ? conn.to : conn.from;
@@ -2305,12 +2343,12 @@
                                     </div>
                                     <div>
                                         <span class="text-xs font-bold text-slate-200 block">${targetDev.name}</span>
-                                        <span class="text-[10px] text-slate-400">Tipo enlace: ${conn.type === 'wifi' ? 'WiFi Inalámbrico' : 'Cable Ethernet'} | IP: ${targetDev.ip}</span>
+                                        <span class="text-[10px] text-slate-400">${I18N.t('dev.conn.linkType', { type: conn.type === 'wifi' ? I18N.t('dev.conn.typeWifi') : I18N.t('dev.conn.typeEthernet'), ip: targetDev.ip })}</span>
                                     </div>
                                 </div>
                                 <button onclick="deleteCable(${conn.from}, ${conn.to}); openDeviceModal(${dev.id});" class="px-3 py-1 bg-rose-950/60 hover:bg-rose-900 border border-rose-800 text-rose-300 rounded text-xs transition flex items-center space-x-1">
                                     <i class="fa-solid fa-scissors text-[10px]"></i>
-                                    <span>Desconectar</span>
+                                    <span>${I18N.t('dev.conn.disconnect')}</span>
                                 </button>
                             </div>
                         `;
@@ -2323,7 +2361,7 @@
                     <div class="pt-2">
                         <button onclick="closeModal(); setToolMode('cable');" class="w-full bg-slate-800 hover:bg-slate-700 text-blue-300 font-semibold py-2 rounded-lg text-xs transition border border-slate-700 flex items-center justify-center space-x-2">
                             <i class="fa-solid fa-plug"></i>
-                            <span>Conectar Nuevo Cable</span>
+                            <span>${I18N.t('dev.conn.connectNew')}</span>
                         </button>
                     </div>
                 </div>
@@ -2339,9 +2377,9 @@
             const refresh = () => { if (body) renderDhcpWifiTab(body, router); };
             value = String(value).trim();
             if (field === 'wifiSsid') {
-                if (!value) { showToast('El nombre de la red no puede quedar vacío.', 'warning'); refresh(); return; }
-                if (state.devices.some(d => d.id !== devId && d.type === 'router' && d.wifiSsid === value)) { showToast('Ya existe otra red WiFi con ese nombre.', 'warning'); refresh(); return; }
-            } else if (value.length < 8) { showToast('La contraseña WPA2 debe tener al menos 8 caracteres.', 'warning'); refresh(); return; }
+                if (!value) { showToast(I18N.t('dev.msg.wifiNameEmpty'), 'warning'); refresh(); return; }
+                if (state.devices.some(d => d.id !== devId && d.type === 'router' && d.wifiSsid === value)) { showToast(I18N.t('dev.msg.wifiNameTaken'), 'warning'); refresh(); return; }
+            } else if (value.length < 8) { showToast(I18N.t('dev.msg.wifiPassShort'), 'warning'); refresh(); return; }
             const oldSsid = router.wifiSsid;
             router[field] = value;
             // Los equipos conectados a esta red pierden la conexión y deben volver a ingresar.
@@ -2349,7 +2387,7 @@
             state.connections = state.connections.filter(c => !(c.type === 'wifi' && (c.from === devId || c.to === devId)));
             stopTrafficSimulation(false);
             reevaluateNetworkState(); renderDevices();
-            showToast(field === 'wifiSsid' ? `Red WiFi renombrada a «${value}». Los equipos deben reconectarse.` : 'Contraseña WiFi actualizada. Los equipos deben reconectarse.', 'success');
+            showToast(field === 'wifiSsid' ? I18N.t('dev.msg.wifiRenamed', { ssid: value }) : I18N.t('dev.msg.wifiPassUpdated'), 'success');
             refresh();
         }
 
@@ -2357,14 +2395,14 @@
             const dev = state.devices.find(d => d.id == devId);
             const router = state.devices.find(d => d.wifiSsid === ssid);
             if (!dev || !router) return;
-            const password = prompt(`Contraseña de la red WiFi "${ssid}":`);
+            const password = prompt(I18N.t('dev.wifi.prompt', { ssid: ssid }));
             if (password === null) return;
             if (password !== router.wifiPass) {
                 dev.wifiAuthenticated = false;
                 dev.connectedWifiSsid = null;
                 state.connections = state.connections.filter(c => !((c.from === dev.id && c.to === router.id) || (c.from === router.id && c.to === dev.id)) || c.type !== 'wifi');
                 reevaluateNetworkState();
-                showToast('Contraseña incorrecta. No se estableció la conexión WiFi.', 'warning');
+                showToast(I18N.t('dev.msg.wifiWrongPass'), 'warning');
                 openDeviceModal(dev.id);
                 return;
             }
@@ -2373,7 +2411,7 @@
             const exists = state.connections.some(c => ((c.from === dev.id && c.to === router.id) || (c.from === router.id && c.to === dev.id)) && c.type === 'wifi');
             if (!exists) state.connections.push({ from: dev.id, to: router.id, type: 'wifi' });
             reevaluateNetworkState();
-            showToast(`Conectado a la red WiFi ${ssid}`, 'success');
+            showToast(I18N.t('dev.msg.wifiConnected', { ssid: ssid }), 'success');
             openDeviceModal(dev.id);
         }
 
@@ -2579,14 +2617,14 @@
                         </div>
                         <input type="text" id="browser-url" value="http://google.com" class="flex-1 bg-slate-950 border border-slate-800 rounded px-3 py-1 text-xs text-slate-200 focus:outline-none">
                         <button onclick="navigateBrowser('${dev.id}')" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded text-xs font-semibold">
-                            Ir
+                            ${I18N.t('dev.browser.go')}
                         </button>
                     </div>
 
                     <!-- Browser Display Viewport -->
                     <div id="browser-viewport" class="flex-1 p-6 flex flex-col items-center justify-center text-center bg-slate-900">
                         <i class="fa-solid fa-globe text-4xl text-slate-700 mb-2"></i>
-                        <p class="text-xs text-slate-500">Introduce una URL como <b>google.com</b> o la IP del Router para navegar.</p>
+                        <p class="text-xs text-slate-500">${I18N.t('dev.browser.hint', { example: '<b>google.com</b>' })}</p>
                     </div>
                 </div>
             `;
@@ -2605,7 +2643,7 @@
                     <div class="text-rose-400 space-y-2">
                         <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
                         <h4 class="text-sm font-bold">ERR_INTERNET_DISCONNECTED</h4>
-                        <p class="text-xs text-slate-400 max-w-xs">El equipo no posee una IP válida asignada (Dirección APIPA o sin red).</p>
+                        <p class="text-xs text-slate-400 max-w-xs">${I18N.t('dev.browser.noIp')}</p>
                     </div>
                 `;
                 return;
@@ -2613,7 +2651,7 @@
 
             const err = (icon, code, msg, color = 'text-amber-400') => { viewport.innerHTML = `<div class="${color} space-y-2"><i class="fa-solid ${icon} text-3xl"></i><h4 class="text-sm font-bold">${code}</h4><p class="text-xs text-slate-400 max-w-xs">${msg}</p></div>`; };
             const host = urlInput.replace(/^[a-z]+:\/\//i, '').split(/[\/?#:]/)[0].toLowerCase();
-            if (!host) { err('fa-circle-question', 'URL vacía', 'Escribí una dirección, por ejemplo www.ejemplo.com o una IP.'); return; }
+            if (!host) { err('fa-circle-question', I18N.t('dev.browser.emptyUrl'), I18N.t('dev.browser.emptyUrlMsg')); return; }
 
             // 1) ¿A qué IP apunta? (IP directa o nombre resuelto por el servidor DNS)
             let ip = host, dnsDev = null;
@@ -3635,28 +3673,28 @@
             const body = document.getElementById('modal-body'); if (body) renderVpnTab(body, sv);
         }
         function renderVpnTab(c, dev) {
-            const stBadge = st => st.state === 'ok' ? '<span class="text-emerald-400 font-bold">● Conectado</span>' : st.state === 'off' ? '<span class="text-slate-400">○ Sin VPN</span>' : `<span class="text-rose-400 font-bold">✖ Sin conexión</span> <span class="text-[11px] text-slate-400">${escapeHtml(st.msg)}</span>`;
+            const stBadge = st => st.state === 'ok' ? `<span class="text-emerald-400 font-bold">${I18N.t('dev.vpn.statusOk')}</span>` : st.state === 'off' ? `<span class="text-slate-400">${I18N.t('dev.vpn.statusOff')}</span>` : `<span class="text-rose-400 font-bold">${I18N.t('dev.vpn.statusError')}</span> <span class="text-[11px] text-slate-400">${escapeHtml(st.msg)}</span>`;
             if (dev.type === 'vpn') {
                 const members = state.devices.filter(d => d.vpn && d.vpn.server === dev.id);
                 const presets = Object.keys(VPN_PRESETS).map(n => `<option ${dev.vpnNet.name === n ? 'selected' : ''}>${n}</option>`).join('');
                 c.innerHTML = `<div class="space-y-3 text-xs">
-                    <p class="text-slate-400">${dev.model === 'cloud' ? 'Servidor VPN <b>en la nube</b> (como el coordinador de Tailscale o ZeroTier): conectalo al acceso a Internet. Los equipos se encuentran a través de él; si pueden verse entre sí hablan directo, y si no, el tráfico pasa por este servidor.' : 'Servidor VPN <b>local</b> (como WireGuard u OpenVPN): conectalo a la red de la escuela o la oficina. Todos los equipos se conectan a él y el tráfico de la VPN pasa por él.'}</p>
-                    <div class="grid grid-cols-2 gap-3"><label class="block text-slate-300">Servicio<select onchange="setVpnPreset(${dev.id}, this.value)" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-2 text-slate-200">${presets}</select></label>
-                    <div class="text-slate-300">Red VPN<div class="mt-1 px-2 py-2 rounded-lg bg-slate-950 border border-slate-800 font-mono text-violet-400">${dev.vpnNet.base}.0/24 · UDP ${dev.vpnNet.port}</div></div></div>
-                    <label class="flex items-center gap-2 text-slate-200 cursor-pointer"><input type="checkbox" ${dev.vpnOnline !== false ? 'checked' : ''} onchange="setVpnOnline(${dev.id}, this.checked)"> Servidor encendido</label>
+                    <p class="text-slate-400">${dev.model === 'cloud' ? I18N.t('dev.vpn.serverCloud', { cloud: `<b>${I18N.t('dev.vpn.inCloud')}</b>` }) : I18N.t('dev.vpn.serverLocal', { local: `<b>${I18N.t('dev.vpn.local')}</b>` })}</p>
+                    <div class="grid grid-cols-2 gap-3"><label class="block text-slate-300">${I18N.t('dev.vpn.service')}<select onchange="setVpnPreset(${dev.id}, this.value)" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-2 text-slate-200">${presets}</select></label>
+                    <div class="text-slate-300">${I18N.t('dev.vpn.network')}<div class="mt-1 px-2 py-2 rounded-lg bg-slate-950 border border-slate-800 font-mono text-violet-400">${dev.vpnNet.base}.0/24 · UDP ${dev.vpnNet.port}</div></div></div>
+                    <label class="flex items-center gap-2 text-slate-200 cursor-pointer"><input type="checkbox" ${dev.vpnOnline !== false ? 'checked' : ''} onchange="setVpnOnline(${dev.id}, this.checked)"> ${I18N.t('dev.vpn.serverOn')}</label>
                     ${dev.model === 'local' ? vpnReachHtml(dev) : ''}
-                    <div><h4 class="font-bold text-violet-400 mb-1">Equipos en esta VPN (${members.length})</h4>
-                    ${members.length ? members.map(m => `<div class="flex items-center justify-between gap-2 py-1 border-t border-slate-800"><span class="text-slate-200">${escapeHtml(m.name)} <span class="font-mono text-violet-400">${m.vpn.ip}</span></span><span>${stBadge(vpnStatus(m))}</span></div>`).join('') : '<p class="text-slate-500">Todavía no hay equipos. Abrí las propiedades de una PC, notebook o celular y elegí esta VPN en su pestaña «VPN».</p>'}</div></div>`;
+                    <div><h4 class="font-bold text-violet-400 mb-1">${I18N.t('dev.vpn.members', { count: members.length })}</h4>
+                    ${members.length ? members.map(m => `<div class="flex items-center justify-between gap-2 py-1 border-t border-slate-800"><span class="text-slate-200">${escapeHtml(m.name)} <span class="font-mono text-violet-400">${m.vpn.ip}</span></span><span>${stBadge(vpnStatus(m))}</span></div>`).join('') : `<p class="text-slate-500">${I18N.t('dev.vpn.noMembers')}</p>`}</div></div>`;
                 return;
             }
             const servers = state.devices.filter(d => d.type === 'vpn'), cur = dev.vpn && dev.vpn.server, st = vpnStatus(dev);
             c.innerHTML = `<div class="space-y-3 text-xs">
-                <p class="text-slate-400">Una VPN le da a este equipo una <b>segunda IP</b>, la de la VPN, además de la de su red local. Con ella puede comunicarse con otros equipos de la VPN como si estuvieran en su misma red, estén donde estén.</p>
-                ${servers.length ? `<label class="block text-slate-300">Conectarse a la VPN<select onchange="setVpnServer(${dev.id}, this.value)" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200"><option value="">Sin VPN</option>${servers.map(v => `<option value="${v.id}" ${cur === v.id ? 'selected' : ''}>${escapeHtml(v.name)} · ${v.vpnNet.name} (${v.model === 'cloud' ? 'en la nube' : 'local'})</option>`).join('')}</select></label>` : '<p class="px-3 py-2 rounded-lg bg-amber-900/30 border border-amber-700 text-amber-200">No hay servidores VPN en la red. Agregá uno desde la barra lateral («VPN en la nube» o «Servidor VPN local») y conectalo con un cable.</p>'}
+                <p class="text-slate-400">${I18N.t('dev.vpn.clientIntro')}</p>
+                ${servers.length ? `<label class="block text-slate-300">${I18N.t('dev.vpn.connectTo')}<select onchange="setVpnServer(${dev.id}, this.value)" class="mt-1 w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-200"><option value="">${I18N.t('dev.vpn.noVpn')}</option>${servers.map(v => `<option value="${v.id}" ${cur === v.id ? 'selected' : ''}>${escapeHtml(v.name)} · ${v.vpnNet.name} (${v.model === 'cloud' ? I18N.t('dev.vpn.inCloud') : I18N.t('dev.vpn.local')})</option>`).join('')}</select></label>` : `<p class="px-3 py-2 rounded-lg bg-amber-900/30 border border-amber-700 text-amber-200">${I18N.t('dev.vpn.noServers')}</p>`}
                 <div class="rounded-lg bg-slate-950 border border-slate-800 p-3 space-y-1.5">
-                    <div><span class="text-slate-500">IP de la red local:</span> <span class="font-mono text-slate-200">${escapeHtml(dev.ip)}</span></div>
-                    <div><span class="text-slate-500">IP de la VPN:</span> <span class="font-mono text-violet-400">${dev.vpn && dev.vpn.ip ? dev.vpn.ip : '—'}</span></div>
-                    <div><span class="text-slate-500">Estado:</span> ${stBadge(st)}</div>
+                    <div><span class="text-slate-500">${I18N.t('dev.vpn.localIp')}</span> <span class="font-mono text-slate-200">${escapeHtml(dev.ip)}</span></div>
+                    <div><span class="text-slate-500">${I18N.t('dev.vpn.vpnIp')}</span> <span class="font-mono text-violet-400">${dev.vpn && dev.vpn.ip ? dev.vpn.ip : '—'}</span></div>
+                    <div><span class="text-slate-500">${I18N.t('dev.vpn.status')}</span> ${stBadge(st)}</div>
                 </div></div>`;
         }
 

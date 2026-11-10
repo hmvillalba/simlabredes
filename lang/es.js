@@ -115,7 +115,190 @@ window.I18N_DICTS.es = {
             phone: 'Smartphone_{id}',
             cloud: 'Internet_ISP',
             other: 'Dispositivo_{id}'
+        },
+        layer2: 'Modo Capa 2'
+    },
+
+    // Fase 3 · zona 4 — modal de dispositivo (pestañas y campos):
+    dev: {
+        subtitle: 'Tipo: {type}{layer} | MAC: {mac}',
+        tab: {
+            layer: 'Modo de Capa (L2/L3)',
+            ip: 'Configuración IP',
+            ipSvi: 'Configuración IP / SVI',
+            connections: 'Conexiones / Puertos',
+            dhcp: 'Servidor DHCP',
+            dhcpWifi: 'DHCP / WiFi',
+            portForwarding: 'Port Forwarding',
+            wifiNetworks: 'WiFi Redes',
+            routes: 'Interfaces y rutas',
+            dnsRecords: 'Registros DNS',
+            vpn: 'VPN',
+            pingTerminal: 'Terminal Ping',
+            webBrowser: 'Navegador Web'
+        },
+        layerTab: {
+            intro: 'Selecciona el modo de operación del Switch:',
+            l2: 'Capa 2 (L2 Switch)',
+            l2Desc: 'Conmutación de tramas mediante MAC. No realiza enrutamiento.',
+            l3: 'Capa 3 (L3 Multicapa)',
+            l3Desc: 'Soporta enrutamiento IP inter-VLAN y servicio Servidor DHCP.'
+        },
+        ipTab: {
+            obtain: 'Obtención de IP:',
+            static: 'Estática',
+            name: 'Nombre del dispositivo',
+            ip: 'Dirección IP',
+            mask: 'Máscara de subred',
+            gateway: 'Puerta de enlace',
+            apply: 'Aplicar configuración IP',
+            validationHint: 'Se validan IPv4, máscara, puerta de enlace y direcciones duplicadas.'
+        },
+        dhcpTab: {
+            title: 'Servidor DHCP',
+            start: 'IP Inicial DHCP',
+            end: 'IP Final DHCP',
+            apply: 'Aplicar configuración DHCP',
+            wifiTitle: 'Configuración Punto de Acceso WiFi',
+            ssid: 'Nombre SSID',
+            password: 'Contraseña WPA2',
+            showPassword: 'Mostrar contraseña',
+            changeHint: 'Al cambiar el nombre o la contraseña, los equipos conectados se desconectan y tienen que volver a conectarse.'
+        },
+        pf: {
+            publicIp: 'IP pública (lado Internet) de este router:',
+            publicIpHint: 'Los equipos de la red salen a Internet con esta IP (NAT). Desde afuera solo se puede llegar a un equipo de adentro si hay una regla de reenvío de puertos.',
+            rules: 'Reglas de reenvío de puertos (Port Forwarding):',
+            defaultRuleName: 'Regla',
+            noRules: 'No hay reglas: desde Internet no se puede entrar a ningún equipo de esta red.',
+            addTitle: 'Agregar regla',
+            name: 'Nombre',
+            proto: 'Protocolo',
+            extPort: 'Puerto externo',
+            intPort: 'Puerto interno',
+            redirectTo: 'Redirigir al equipo',
+            noDevices: '(no hay equipos en esta red)',
+            add: 'Agregar regla',
+            vpnHint: 'Para llegar a un servidor VPN local desde Internet: UDP, mismo puerto afuera y adentro (WireGuard 51820 · OpenVPN 1194 · ZeroTier 9993), hacia la IP del servidor VPN.'
+        },
+        wifi: {
+            networks: 'Redes WiFi al alcance:',
+            none: 'No se encontraron redes WiFi disponibles.',
+            signal: 'Señal: Excelente | Canal 6',
+            connected: 'Conectado',
+            connect: 'Conectar',
+            prompt: 'Contraseña de la red WiFi "{ssid}":'
+        },
+        conn: {
+            list: 'Lista de conexiones activas conectadas a los puertos de {name}:',
+            none: 'No hay cables o redes inalámbricas conectadas a este dispositivo.',
+            linkType: 'Tipo enlace: {type} | IP: {ip}',
+            typeWifi: 'WiFi Inalámbrico',
+            typeEthernet: 'Cable Ethernet',
+            disconnect: 'Desconectar',
+            connectNew: 'Conectar Nuevo Cable'
+        },
+        dnsTab: {
+            online: 'Servidor encendido (si lo apagás, nadie recibe respuesta)',
+            records: 'Registros (nombre → IP)',
+            recordsHint: 'Una línea por registro: {format}. Ejemplo: {example}. Si un nombre no está acá, el servidor responde «no existe».',
+            apply: 'Aplicar',
+            invalidRecord: 'Registro inválido: «{line}». Usá: www.ejemplo.com 192.168.2.10',
+            recordsApplied: '{name}: registros aplicados ({count}).'
+        },
+        routesTab: {
+            toward: 'Hacia {name}',
+            noNeighbors: 'Conectá este router con cables a otros equipos (por ejemplo a un switch): cada cable crea una interfaz.',
+            interfaces: 'Interfaces (una por cable)',
+            interfacesHint: 'Cada interfaz tiene su propia IP y pertenece a una red distinta.',
+            staticRoutes: 'Rutas estáticas',
+            staticRoutesHint: 'Una por línea: {format}. Ruta predeterminada: {default}. Las redes de sus interfaces ya son conocidas.',
+            apply: 'Aplicar',
+            invalidIface: 'IP o máscara inválida en la interfaz hacia {name}.',
+            invalidRoute: 'Ruta inválida: «{line}». Usá: 10.0.0.0/24 via 192.168.2.2',
+            applied: '{name}: interfaces y rutas aplicadas.'
+        },
+        browser: {
+            go: 'Ir',
+            hint: 'Introduce una URL como {example} o la IP del Router para navegar.',
+            noIp: 'El equipo no posee una IP válida asignada (Dirección APIPA o sin red).',
+            emptyUrl: 'URL vacía',
+            emptyUrlMsg: 'Escribí una dirección, por ejemplo www.ejemplo.com o una IP.'
+        },
+        vpn: {
+            statusOk: '● Conectado',
+            statusOff: '○ Sin VPN',
+            statusError: '✖ Sin conexión',
+            serverCloud: 'Servidor VPN {cloud} (como el coordinador de Tailscale o ZeroTier): conectalo al acceso a Internet. Los equipos se encuentran a través de él; si pueden verse entre sí hablan directo, y si no, el tráfico pasa por este servidor.',
+            serverLocal: 'Servidor VPN {local} (como WireGuard u OpenVPN): conectalo a la red de la escuela o la oficina. Todos los equipos se conectan a él y el tráfico de la VPN pasa por él.',
+            inCloud: 'en la nube',
+            local: 'local',
+            service: 'Servicio',
+            network: 'Red VPN',
+            serverOn: 'Servidor encendido',
+            members: 'Equipos en esta VPN ({count})',
+            noMembers: 'Todavía no hay equipos. Abrí las propiedades de una PC, notebook o celular y elegí esta VPN en su pestaña «VPN».',
+            clientIntro: 'Una VPN le da a este equipo una segunda IP, la de la VPN, además de la de su red local. Con ella puede comunicarse con otros equipos de la VPN como si estuvieran en su misma red, estén donde estén.',
+            connectTo: 'Conectarse a la VPN',
+            noVpn: 'Sin VPN',
+            noServers: 'No hay servidores VPN en la red. Agregá uno desde la barra lateral («VPN en la nube» o «Servidor VPN local») y conectalo con un cable.',
+            localIp: 'IP de la red local:',
+            vpnIp: 'IP de la VPN:',
+            status: 'Estado:'
+        },
+        msg: {
+            switchLayer: 'Switch configurado en Capa {layer}',
+            nameEmpty: 'El nombre no puede quedar vacío.',
+            dhcpRangeInvalid: 'Rango DHCP inválido: debe estar dentro de la subred y no incluir la IP del gateway.',
+            dhcpRangeApplied: 'Rango DHCP aplicado.',
+            portsInvalid: 'Los puertos tienen que ser números entre 1 y 65535.',
+            portTargetMissing: 'Elegí a qué equipo de la red querés redirigir el puerto.',
+            portRuleExists: 'Ya hay una regla para {proto} {port}.',
+            portRuleAdded: 'Regla agregada: {proto} {ext} → {ip}:{port}.',
+            wifiNameEmpty: 'El nombre de la red no puede quedar vacío.',
+            wifiNameTaken: 'Ya existe otra red WiFi con ese nombre.',
+            wifiPassShort: 'La contraseña WPA2 debe tener al menos 8 caracteres.',
+            wifiRenamed: 'Red WiFi renombrada a «{ssid}». Los equipos deben reconectarse.',
+            wifiPassUpdated: 'Contraseña WiFi actualizada. Los equipos deben reconectarse.',
+            wifiWrongPass: 'Contraseña incorrecta. No se estableció la conexión WiFi.',
+            wifiConnected: 'Conectado a la red WiFi {ssid}'
         }
+    },
+
+    // Fase 3 · zona 4 — mensajes dinámicos (toasts y diagnósticos):
+    toast: {
+        deviceAdded: 'Dispositivo agregado: {name}',
+        clickCableToDelete: 'Haz clic directamente en la línea del cable para eliminarlo',
+        cableSourceSelected: 'Dispositivo origen seleccionado. Elige el destino.',
+        selfConnection: 'No puedes conectar un dispositivo a sí mismo',
+        linkExists: 'Ya existe un enlace entre estos equipos',
+        connectionOk: 'Conexión física realizada con éxito',
+        cableDeleted: 'Cable/Conexión eliminada correctamente',
+        invalidIp: 'IP o máscara inválida. Usa una dirección de host y una máscara contigua.',
+        ipAlreadyAssigned: 'Esa dirección IP ya está asignada a otro dispositivo.',
+        invalidGateway: 'La puerta de enlace no es una IPv4 válida.',
+        gatewayWrongSubnet: 'La puerta de enlace debe estar en la misma subred que el dispositivo.',
+        ipConfigApplied: 'Configuración IP aplicada correctamente.',
+        activityLoaded: 'Actividad cargada: {title}',
+        activitySolved: '¡Actividad resuelta!'
+    },
+    diag: {
+        dnsUnreachable: '{src} no llega al servidor DNS ({dns}): {reason}',
+        dnsOffline: 'El servidor DNS {dns} está apagado.',
+        dnsUnknownName: 'El servidor DNS {dns} no conoce el nombre {site}.',
+        nameNoOwner: 'El nombre {site} apunta a {ip}, que no pertenece a ningún equipo.',
+        nameWrongHost: 'El nombre {site} apunta a {owner} ({ip}), pero la página está en {dst}.',
+        noDhcp: '{name} no obtuvo IP: ningún servidor DHCP le respondió (quedó con una dirección automática 169.254.x.x).',
+        noPhysicalPath: 'No hay camino físico entre {src} y {dst}: falta un cable.',
+        duplicateIp: '{a} y {b} tienen la misma IP ({ip}).',
+        privateIp: 'La dirección {ip} es privada: desde otra red, Internet no sabe llegar a ella. Para comunicar redes distintas hace falta una VPN (o una IP pública).',
+        subnetMismatch: '{src} y {dst} no coinciden en si están en la misma red: las máscaras de subred son distintas.',
+        noRoute: '{name} no tiene ninguna ruta hacia {ip}.',
+        noGateway: '{name} no tiene puerta de enlace: no sabe salir de su red.',
+        gatewayMissing: 'La puerta de enlace de {name} ({gateway}) no existe en la red.',
+        gatewayWrongNetwork: 'La puerta de enlace {gateway} no está en la misma red que {name} ({ip}): revisá su IP y su máscara.',
+        pathNotViaGateway: 'El camino de {name} no pasa por su puerta de enlace {gateway}.',
+        routeWrongNextHop: 'La ruta de {name} apunta a {via}, que no es el siguiente equipo.'
     },
     canvas: {
         cableMode: 'Modo Cable: Haz clic en dos dispositivos para conectarlos',
@@ -171,7 +354,131 @@ window.I18N_DICTS.es = {
         close: 'Cerrar actividad',
         verify: 'Verificar',
         hint: 'Pista',
-        deliverTitle: 'Guardar y entregar'
+        deliverTitle: 'Guardar y entregar',
+        defaultTitle: 'Actividad',
+        defaultHint: 'Probá la simulación en modo avanzado para ver dónde se corta.',
+        tip: 'Tip: usá la simulación en modo avanzado para ver dónde se corta.',
+        level: {
+            easy: 'Fácil',
+            medium: 'Medio',
+            hard: 'Difícil'
+        },
+        goal: {
+            prefix: '🎯 Objetivo: {goals}.',
+            comm: 'que {a} y {b} se comuniquen',
+            vpn: 'que {a} y {b} se comuniquen por la VPN',
+            site: 'que {a} pueda abrir {site}',
+            and: ' y '
+        },
+        student: {
+            label: '👤 Alumno: {name}',
+            prompt: '👤 Escribí tu nombre con el botón de arriba para que quede en tu entrega.'
+        },
+        submission: {
+            label: '📥 Entrega de {student} · guardada {date} · el alumno la marcó como {state}. Usá «Verificar» para comprobarlo ahora.',
+            solved: 'resuelta ✅',
+            unsolved: 'sin resolver ❌'
+        },
+        msg: {
+            solved: '✅ ¡Resuelto{student}! La red funciona. Guardá la red para entregarla.',
+            notYetLabel: 'Todavía no:',
+            notYet: '{a} y {b} no logran comunicarse. Usá «Pista» si te trabás.',
+            diagnosticLabel: 'Diagnóstico:',
+            noProblems: '✅ No queda ningún problema: ¡ya está resuelta!',
+            deviceRemoved: 'Alguno de los equipos de la actividad fue eliminado.'
+        },
+        builtin: {
+            1: {
+                title: 'La PC que no sale',
+                story: 'PC_A1 puede hablar con PC_A2, pero no logra comunicarse con PC_B1, que está en otra red.',
+                hint: 'Para salir de su red, una PC necesita saber a quién entregarle los paquetes. Revisá su configuración IP.'
+            },
+            2: {
+                title: 'El cable suelto',
+                story: 'PC_B1 dejó de responder. Todo parece estar bien configurado.',
+                hint: 'Mirá los cables con atención: ¿está cada equipo conectado a su switch? Usá «Conectar Cable» para arreglarlo.'
+            },
+            3: {
+                title: 'Dos con la misma IP',
+                story: 'PC_A1 y PC_A2 están en la misma red pero la comunicación es un desastre.',
+                hint: 'Cada equipo necesita una dirección IP única. Compará las IP de los dos.'
+            },
+            4: {
+                title: 'La máscara que no coincide',
+                story: 'PC_A1 cree que PC_A2 está en su misma red, pero PC_A2 opina otra cosa.',
+                hint: 'Mirá la máscara de subred de PC_A2 y compará a qué red pertenece cada IP.'
+            },
+            5: {
+                title: 'Llega pero no vuelve',
+                story: 'Los paquetes de PC_A1 llegan a PC_B1, pero la respuesta nunca regresa.',
+                hint: 'Una respuesta también tiene que salir de la red de PC_B1. Revisá su puerta de enlace.'
+            },
+            6: {
+                title: 'Falta una ruta',
+                story: 'Dos routers unen las redes 192.168.1.0/24 y 192.168.2.0/24. La ida funciona, pero PC_A1 no recibe respuesta de PC_B1.',
+                hint: 'Mirá la tabla de rutas de los dos routers: ¿el segundo sabe cómo volver a la red 192.168.1.0/24? Las rutas se agregan en la pestaña «Interfaces y rutas».'
+            },
+            7: {
+                title: 'El nombre no existe',
+                story: 'PC_A1 puede hacer ping a Servidor_Web por su IP, pero al escribir www.ejemplo.com la página no abre.',
+                hint: 'El ping por IP funciona, así que la red está bien. Mirá qué sabe el servidor DNS: ¿tiene un registro para ese nombre?'
+            },
+            8: {
+                title: 'El DNS que no contesta',
+                story: 'Ayer la página abría perfecto. Hoy nadie puede entrar a www.ejemplo.com.',
+                hint: 'Revisá el estado del servidor DNS: ¿está encendido?'
+            },
+            9: {
+                title: 'La página equivocada',
+                story: 'Al escribir www.ejemplo.com se abre una página, pero no es la del Servidor_Web. Alguien tocó el DNS.',
+                hint: 'Compará la IP del registro DNS con la IP real de Servidor_Web.'
+            },
+            10: {
+                title: 'La PC sin IP',
+                story: 'Dos PC de la red del aula no logran comunicarse. Sus IP empiezan con 169.254.',
+                hint: 'Esas direcciones aparecen cuando nadie les da una IP. Revisá el servidor DHCP del router.'
+            },
+            11: {
+                title: 'La salida a Internet',
+                story: 'Router_Central une la red 192.168.1.0/24 con el proveedor de Internet (203.0.113.1). PC_A1 no llega a Internet (8.8.8.8).',
+                hint: 'El router no sabe dónde queda Internet. Falta una ruta predeterminada (0.0.0.0/0) que apunte al proveedor: 203.0.113.1.'
+            },
+            12: {
+                title: 'Dos fallas juntas',
+                story: 'La red de dos routers sigue sin comunicar PC_A1 con PC_B1. Esta vez hay más de un problema.',
+                hint: 'Arreglá un problema y verificá de nuevo: puede quedar otro. Revisá la puerta de enlace de PC_B1 y las rutas de los dos routers.'
+            },
+            13: {
+                title: 'La VPN de la oficina no conecta',
+                story: 'La oficina tiene un servidor VPN (WireGuard) adentro de su red. Desde la casa quieren entrar a la VPN, pero PC_Casa1 no logra conectarse.',
+                hint: 'El servidor está dentro de la red privada de la oficina: desde Internet no se llega a él. Mirá el panel del servidor VPN y el Port Forwarding del router de la oficina.'
+            },
+            14: {
+                title: 'El puerto está mal abierto',
+                story: 'Alguien abrió un puerto en el router de la oficina para la VPN, pero PC_Casa1 sigue sin poder conectarse.',
+                hint: 'La regla existe, pero tiene un error. Revisá el protocolo (¿UDP o TCP?), los dos puertos y a qué equipo redirige.'
+            },
+            15: {
+                title: 'El servidor VPN está apagado',
+                story: 'Ayer la casa y la oficina se veían por la VPN. Hoy ninguna PC logra comunicarse con la otra.',
+                hint: 'Abrí las propiedades del servidor VPN en la nube y revisá su estado.'
+            },
+            16: {
+                title: 'Falta unir un equipo a la VPN',
+                story: 'PC_Casa1 ya está en la VPN, pero no logra comunicarse con PC_Oficina1.',
+                hint: 'Mirá las dos PC: una de ellas no tiene la segunda IP (la de la VPN). Abrí sus propiedades y buscá la pestaña VPN.'
+            },
+            17: {
+                title: 'Unir dos redes con una VPN',
+                story: 'La casa y la oficina tienen cada una su router y su Internet, pero sus PC no se ven entre sí. Armá una VPN para que PC_Casa1 y PC_Oficina1 se comuniquen como si estuvieran en la misma red.',
+                hint: 'Dos redes privadas no se ven por Internet. Agregá un «VPN en la nube», conectalo con un cable a Internet y unile las dos PC desde la pestaña VPN de cada una.'
+            },
+            18: {
+                title: 'La VPN con dos problemas',
+                story: 'La oficina tiene un servidor VPN local. PC_Casa1 y PC_Oficina1 deberían comunicarse por la VPN, pero no lo logran. Esta vez hay más de un problema.',
+                hint: 'Arreglá un problema y verificá otra vez: puede quedar otro. Pensá en cómo se llega desde afuera al servidor y en si las dos PC están en la VPN.'
+            }
+        }
     },
     log: {},     // log de tráfico (claves + variables)
     error: {},   // validaciones y alertas
