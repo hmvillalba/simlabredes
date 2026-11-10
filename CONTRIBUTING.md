@@ -84,6 +84,15 @@ test:  scripts de control de calidad
 └── LICENSE
 ```
 
+### Qué se traduce y qué no
+
+- **Se traduce**: toda la interfaz del simulador (menús, paneles, modales, mensajes, avisos,
+  textos de la simulación, actividades, entregas, calificador, exportación y recorrido guiado).
+- **No se traduce**: la salida de la consola/CLI de los dispositivos (`ping`, `tracert`,
+  `ipconfig`, `nslookup`, `arp`, `help`): va en inglés, como en un equipo real.
+- **No se traducen** los términos técnicos (DHCP, ARP, MAC, VLAN, gateway…) ni los nombres
+  propios de los equipos.
+
 ---
 
 ## Fases del plan de internacionalización
@@ -95,9 +104,9 @@ Ver el documento completo del plan. Resumen de fases:
 | 0 | Preparación del repositorio | ✅ Completa |
 | 1 | Auditoría de textos | ✅ Completa (inventario en `docs/auditoria-textos.csv` + resumen en `docs/auditoria-resumen.md`) |
 | 2 | Sistema i18n (`t()` + `data-i18n`) | ✅ Completa (motor en `js/i18n.js`, solo `es` por ahora; en/pt/fr en Fases 4 y 8) |
-| 3 | Extracción del español a `lang/es.js` | 🔄 En curso (zonas 1-3: cabecera/menús, paneles, modales) |
+| 3 | Extracción del español a `lang/es.js` | ✅ Completa (cabecera/menús, paneles, modales y textos dinámicos del JS) |
 | 4 | Traducción al inglés (`lang/en.js`) | ⏳ Pendiente |
-| 5 | Script de control de calidad de claves | 🔄 En curso (`tools/check_keys.mjs` ya valida claves y texto fallback) |
+| 5 | Script de control de calidad de claves | ✅ Completa (`tools/check_keys.mjs` valida claves y texto fallback) |
 | 6 | Producción: Tailwind compilado, assets locales | ⏳ Pendiente |
 | 7 | Landing page web propia | ⏳ Pendiente |
 | 8 | Portugués y francés | ⏳ Pendiente |

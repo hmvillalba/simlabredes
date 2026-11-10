@@ -2012,7 +2012,7 @@
             r.ifaces = { [swA.id]: { ip: '192.168.1.1', mask: '255.255.255.0' }, [swB.id]: { ip: '192.168.2.1', mask: '255.255.255.0' } };
             r.ip = '192.168.1.1';
             reevaluateNetworkState();
-            showToast('Ejemplo cargado: dos redes (192.168.1.0/24 y 192.168.2.0/24) unidas por un router. Probá un ping de PC_A1 a PC_B1 en modo avanzado.', 'info');
+            showToast(I18N.t('demo.twoNetworks'), 'info');
             return { r, swA, swB, a1, a2, b1 };
         }
 
@@ -2990,7 +2990,7 @@
             state.pickedId = null;
             clearNetworkTables(false);
             reevaluateNetworkState();
-            showToast(`«${dev.name}» eliminado. Podés deshacerlo con Ctrl+Z.`, 'info');
+            showToast(I18N.t('dev.msg.deviceDeleted', { name: dev.name }), 'info');
         }
         document.addEventListener('mousedown', e => { if (e.target.closest('#canvas-container') && !e.target.closest('[data-dev-id]')) selectDevice(null); });
         document.addEventListener('keydown', e => {
@@ -3039,8 +3039,8 @@
         window.addEventListener('load', () => setTimeout(commitHistory, 600));
 
         // ===== EXPORTAR LA RED: PNG, JPG o PDF (fondo blanco, ideal para pruebas e impresión) =====
-        const exportLabel = d => d.type === 'vpn' ? (d.model === 'cloud' ? 'VPN nube' : 'VPN local') : d.model === 'netbook' ? 'Netbook' : (EXPORT_LABELS[d.type] || d.type);
-        const EXPORT_LABELS = { vpn: 'VPN', laptop: 'Notebook', tv: 'Smart TV', dns: 'DNS', router: 'Router WiFi', lrouter: 'Router', switch: 'Switch', pc: 'PC', phone: 'Móvil', cloud: 'Internet' };
+        const exportLabel = d => d.type === 'vpn' ? (d.model === 'cloud' ? I18N.t('export.type.vpnCloud') : I18N.t('export.type.vpnLocal')) : d.model === 'netbook' ? I18N.t('export.type.netbook') : (EXPORT_LABELS[d.type] ? I18N.t(EXPORT_LABELS[d.type]) : d.type);
+        const EXPORT_LABELS = { vpn: 'export.type.vpn', laptop: 'export.type.laptop', tv: 'export.type.tv', dns: 'export.type.dns', router: 'export.type.router', lrouter: 'export.type.lrouter', switch: 'export.type.switch', pc: 'export.type.pc', phone: 'export.type.phone', cloud: 'export.type.cloud' };
         function buildNetworkCanvas(withTitle = true) {
             const colors = { vpn: '#8b5cf6', laptop: '#d946ef', tv: '#f43f5e', dns: '#14b8a6', router: '#10b981', lrouter: '#f97316', switch: '#3b82f6', pc: '#8b5cf6', phone: '#ec4899', cloud: '#0ea5e9' };
             const pad = 50, xs = state.devices.map(d => d.x), ys = state.devices.map(d => d.y);
@@ -3089,7 +3089,7 @@
                 const ipsV = d.vpn && d.vpn.ip ? `${ips} | VPN ${d.vpn.ip}` : ips;
                 return [d.name, exportLabel(d), ipsV, d.type === 'lrouter' ? '-' : (d.mask || '-'), (d.gateway && d.gateway !== '0.0.0.0' && d.type !== 'lrouter') ? d.gateway : '-'];
             });
-            const cols = [0, 140, 210, 370, 470].map(v => m + v * f), heads = ['Equipo', 'Tipo', 'IP', 'Máscara', 'Puerta de enlace'];
+            const cols = [0, 140, 210, 370, 470].map(v => m + v * f), heads = [I18N.t('export.heads.device'), I18N.t('export.heads.type'), I18N.t('export.heads.ip'), I18N.t('export.heads.mask'), I18N.t('export.heads.gateway')];
             const txt = (font, size, x, y, t) => `BT /${font} ${size.toFixed(1)} Tf ${x.toFixed(1)} ${y.toFixed(1)} Td (${lat1(t)}) Tj ET\n`;
             const header = y => heads.map((t, i) => txt('F2', fs, cols[i], y, t)).join('');
             const pages = []; let c = '';
@@ -3097,11 +3097,11 @@
             const topY = ph - 74 * f, maxW = pw - 2 * m, maxH = (topY - m) * (rows.length ? 0.6 : 1);
             const k = Math.min(maxW / iw, maxH / ih), dw = iw * k, dh = ih * k, ix = m + (maxW - dw) / 2, iy = topY - dh;
             c += txt('F2', 16 * f, m, ph - 48 * f, 'NetSim Lab' + (currentTopologyName ? ' - ' + currentTopologyName : ''));
-            c += txt('F1', 9 * f, m, ph - 62 * f, 'Exportado el ' + new Date().toLocaleString('es-AR') + ' · ' + n + ' equipos');
+            c += txt('F1', 9 * f, m, ph - 62 * f, I18N.t('export.exportedAt', { date: new Date().toLocaleString(localeTag()), count: n }));
             c += `q ${dw.toFixed(2)} 0 0 ${dh.toFixed(2)} ${ix.toFixed(2)} ${iy.toFixed(2)} cm /Im1 Do Q\n`;
             let y = iy - 22 * f; c += header(y); y -= 13 * f;
             for (const r of rows) {
-                if (y < m + 16 * f) { pages.push(c); c = txt('F2', 12 * f, m, ph - m - 6 * f, 'Equipos (continuación)'); y = ph - m - 28 * f; c += header(y); y -= 13 * f; }
+                if (y < m + 16 * f) { pages.push(c); c = txt('F2', 12 * f, m, ph - m - 6 * f, I18N.t('export.continuation')); y = ph - m - 28 * f; c += header(y); y -= 13 * f; }
                 r.forEach((t, i) => { const tt = String(t).length > 34 ? String(t).slice(0, 31) + '...' : t; c += txt('F1', fs, cols[i], y, tt); });
                 y -= lh;
             }
@@ -3118,7 +3118,7 @@
             obj(4, '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>');
             obj(5, `<< /Type /XObject /Subtype /Image /Width ${iw} /Height ${ih} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpgBytes.length} >>`, jpgBytes);
             pages.forEach((pc, i) => {
-                const body = pc + txt('F1', 8 * f, m, 20 * f, copyrightText()) + txt('F1', 8 * f, pw - m - 60 * f, 20 * f, `Página ${i + 1} de ${total}`);
+                const body = pc + txt('F1', 8 * f, m, 20 * f, copyrightText()) + txt('F1', 8 * f, pw - m - 60 * f, 20 * f, I18N.t('export.page', { page: i + 1, total: total }));
                 const cb = enc(body);
                 obj(6 + 2 * i, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pw} ${ph}] /Resources << /XObject << /Im1 5 0 R >> /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${7 + 2 * i} 0 R >>`);
                 obj(7 + 2 * i, `<< /Length ${cb.length} >>`, cb);
@@ -3129,12 +3129,12 @@
             return new Blob(parts, { type: 'application/pdf' });
         }
         function exportNetwork(format) {
-            if (!state.devices.length) { showToast('No hay nada para exportar: agregá dispositivos primero.', 'warning'); return; }
+            if (!state.devices.length) { showToast(I18N.t('export.empty'), 'warning'); return; }
             const base = (currentTopologyName || 'red').replace(/[\\/:*?"<>|]/g, '');
             const canvas = buildNetworkCanvas(format !== 'pdf');
-            if (format === 'pdf') { downloadBlob(buildPdf(canvas), `${base}.pdf`); showToast('Documento PDF generado.', 'success'); return; }
+            if (format === 'pdf') { downloadBlob(buildPdf(canvas), `${base}.pdf`); showToast(I18N.t('export.pdfDone'), 'success'); return; }
             const mime = format === 'jpg' ? 'image/jpeg' : 'image/png';
-            canvas.toBlob(blob => { downloadBlob(blob, `${base}.${format}`); showToast(`Imagen ${format.toUpperCase()} exportada.`, 'success'); }, mime, 0.92);
+            canvas.toBlob(blob => { downloadBlob(blob, `${base}.${format}`); showToast(I18N.t('export.imageDone', { format: format.toUpperCase() }), 'success'); }, mime, 0.92);
         }
         function exportImage() { exportNetwork('png'); }
 
@@ -3145,11 +3145,11 @@
         function updateLiveUI() {
             const btn = document.getElementById('traffic-all-btn'), box = document.getElementById('live-stats');
             if (btn) {
-                btn.innerHTML = liveRunning ? '<i class="fa-solid fa-stop mr-1"></i><span>Detener el tráfico general</span>' : '<i class="fa-solid fa-globe mr-1"></i><span>Todos navegando a la vez</span>';
+                btn.innerHTML = liveRunning ? `<i class="fa-solid fa-stop mr-1"></i><span>${I18N.t('live.stop')}</span>` : `<i class="fa-solid fa-globe mr-1"></i><span>${I18N.t('live.start')}</span>`;
                 btn.style.background = liveRunning ? '#be123c' : '';
             }
             if (box) {
-                if (liveRunning) { box.textContent = `🌐 Tráfico en vivo · ✔ ${liveStats.ok} correctos · ✖ ${liveStats.fail} fallidos`; box.classList.remove('hidden'); }
+                if (liveRunning) { box.textContent = I18N.t('live.stats', { ok: liveStats.ok, fail: liveStats.fail }); box.classList.remove('hidden'); }
                 else box.classList.add('hidden');
             }
         }
@@ -3157,12 +3157,12 @@
         function startLiveTraffic() {
             stopTrafficSimulation(false);
             const clients = state.devices.filter(d => ['pc', 'laptop', 'phone', 'tv'].includes(d.type));
-            if (!clients.length || state.devices.length < 2) { showToast('Agregá PC, notebooks, celulares o Smart TV (y algo con quien comunicarse) para generar tráfico.', 'warning'); return; }
+            if (!clients.length || state.devices.length < 2) { showToast(I18N.t('live.needClients'), 'warning'); return; }
             liveStats.ok = 0; liveStats.fail = 0; liveRunning = true; trafficPaused = false;
             const pb = document.getElementById('traffic-pause'); if (pb) pb.innerHTML = '<i class="fa-solid fa-pause"></i>';
             updateLiveUI();
             const st = document.getElementById('traffic-status');
-            if (st) st.textContent = 'Tráfico general: cada equipo navega por su cuenta. ✔ llega y responde, ✖ no logra comunicarse. Presioná ■ cuando quieras detenerlo.';
+            if (st) st.textContent = I18N.t('live.hint');
             const token = trafficRunToken;
             clients.forEach(c => liveClientLoop(c.id, token));
         }
@@ -3237,10 +3237,10 @@
         // ===== ALUMNO: nombre guardado en el navegador y dentro de cada entrega =====
         let currentStudent = '', studentCb = null;
         function updateStudentUI() {
-            const l = document.getElementById('student-label'); if (l) l.textContent = currentStudent || 'Alumno';
-            const b = document.getElementById('student-btn'); if (b) b.title = currentStudent ? `Alumno: ${currentStudent} (clic para cambiar)` : 'Escribí tu nombre: queda guardado en lo que entregues';
+            const l = document.getElementById('student-label'); if (l) l.textContent = currentStudent || I18N.t('studentUi.default');
+            const b = document.getElementById('student-btn'); if (b) b.title = currentStudent ? I18N.t('studentUi.title', { name: currentStudent }) : I18N.t('studentUi.titleEmpty');
             const st = document.getElementById('act-student');
-            if (st && currentActivity) st.textContent = currentStudent ? `👤 Alumno: ${currentStudent}` : '👤 Escribí tu nombre con el botón de arriba para que quede en tu entrega.';
+            if (st && currentActivity) st.textContent = currentStudent ? I18N.t('act.student.label', { name: currentStudent }) : I18N.t('act.student.prompt');
         }
         function initStudent() { try { currentStudent = localStorage.getItem('netsim-student') || ''; } catch (_) { } updateStudentUI(); }
         function openStudentDialog(cb) {
@@ -3252,22 +3252,22 @@
         function closeStudentDialog() { document.getElementById('student-modal').classList.add('hidden'); studentCb = null; }
         function confirmStudent() {
             const typed = document.getElementById('student-name').value.trim().slice(0, 60);
-            if (!typed && studentCb) { showToast('Escribí tu nombre para poder entregar.', 'warning'); return; }
+            if (!typed && studentCb) { showToast(I18N.t('studentUi.needName'), 'warning'); return; }
             currentStudent = typed;
             try { localStorage.setItem('netsim-student', currentStudent); } catch (_) { }
             updateStudentUI();
             const cb = studentCb; document.getElementById('student-modal').classList.add('hidden'); studentCb = null;
-            if (currentStudent) showToast(`Hola, ${currentStudent}. Tu nombre quedará en lo que guardes.`, 'success');
+            if (currentStudent) showToast(I18N.t('studentUi.hello', { name: currentStudent }), 'success');
             if (cb) cb();
         }
 
         // ===== PROFESOR: crear una actividad con la red actual =====
         function goalRowHtml(i) {
             const opts = '<option value="">—</option>' + state.devices.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
-            return `<div class="grid grid-cols-7 gap-1.5 items-center"><select id="mk-a${i}" class="col-span-2 rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-1.5">${opts}</select><span class="text-center text-slate-500">→</span><select id="mk-b${i}" class="col-span-2 rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-1.5">${opts}</select><input id="mk-s${i}" type="text" placeholder="sitio web, o escribí VPN" class="col-span-2 rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-1.5 select-text"></div>`;
+            return `<div class="grid grid-cols-7 gap-1.5 items-center"><select id="mk-a${i}" class="col-span-2 rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-1.5">${opts}</select><span class="text-center text-slate-500">→</span><select id="mk-b${i}" class="col-span-2 rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-1.5">${opts}</select><input id="mk-s${i}" type="text" placeholder="sitio web, o escribí VPN" data-i18n-placeholder="teacher.goalPlaceholder" class="col-span-2 rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-1.5 select-text"></div>`;
         }
         function openMakeActivity() {
-            if (state.devices.length < 2) { showToast('Armá primero una red con al menos dos equipos.', 'warning'); return; }
+            if (state.devices.length < 2) { showToast(I18N.t('teacher.needNetwork'), 'warning'); return; }
             document.getElementById('mk-goals').innerHTML = goalRowHtml(1) + goalRowHtml(2);
             document.getElementById('mk-modal-hint')?.remove();
             document.getElementById('mkact-modal').classList.remove('hidden');
@@ -3275,25 +3275,25 @@
         function closeMakeActivity() { document.getElementById('mkact-modal').classList.add('hidden'); }
         function saveCustomActivity() {
             const title = document.getElementById('mk-title').value.trim();
-            if (!title) { showToast('Poné un título a la actividad.', 'warning'); return; }
+            if (!title) { showToast(I18N.t('teacher.needTitle'), 'warning'); return; }
             const goals = [];
             for (const i of [1, 2]) {
                 const a = Number(document.getElementById(`mk-a${i}`).value), b = Number(document.getElementById(`mk-b${i}`).value), site = document.getElementById(`mk-s${i}`).value.trim().toLowerCase();
                 if (a && b && a !== b) goals.push((site === 'vpn' || site === '@vpn') ? [a, b, '@vpn'] : (site ? [a, b, site] : [a, b]));
             }
-            if (!goals.length) { showToast('Elegí al menos un objetivo: dos equipos distintos que deban comunicarse.', 'warning'); return; }
-            if (!failureFor(goals) && !confirm('Con la red tal como está, los objetivos YA se cumplen: el alumno no tendría nada para arreglar. ¿Guardar igual?')) return;
-            const activity = { title, lvl: document.getElementById('mk-lvl').value, story: document.getElementById('mk-story').value.trim(), hint: document.getElementById('mk-hint').value.trim() || 'Probá la simulación en modo avanzado para ver dónde se corta.', goals, custom: true, solved: false };
-            const name = `Actividad - ${title}`.replace(/[\\/:*?"<>|]/g, '');
+            if (!goals.length) { showToast(I18N.t('teacher.needGoals'), 'warning'); return; }
+            if (!failureFor(goals) && !confirm(I18N.t('teacher.alreadySolved'))) return;
+            const activity = { title, lvl: document.getElementById('mk-lvl').value, story: document.getElementById('mk-story').value.trim(), hint: document.getElementById('mk-hint').value.trim() || I18N.t('act.defaultHint'), goals, custom: true, solved: false };
+            const name = I18N.t('teacher.activityName', { title: title }).replace(/[\\/:*?"<>|]/g, '');
             const payload = { format: 'NetSimLabTopology', version: 2, name, devices: state.devices, connections: state.connections, nextDeviceId: state.nextDeviceId, student: null, savedAt: new Date().toISOString(), activity };
             downloadBlob(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }), `${name}.json`);
             closeMakeActivity();
-            showToast(`Actividad «${title}» guardada. Pasale el archivo a tus alumnos: la abren con Archivo → Abrir red.`, 'success');
+            showToast(I18N.t('teacher.saved', { title: title }), 'success');
         }
 
         // ===== PROFESOR: corregir entregas =====
         let gradeRows = [];
-        function openGrader() { gradeRows = []; document.getElementById('grade-table').innerHTML = '<p class="text-slate-500 text-center py-6">Todavía no elegiste archivos.</p>'; document.getElementById('grade-modal').classList.remove('hidden'); }
+        function openGrader() { gradeRows = []; document.getElementById('grade-table').innerHTML = `<p class="text-slate-500 text-center py-6">${I18N.t('grade.noFiles')}</p>`; document.getElementById('grade-modal').classList.remove('hidden'); }
         function closeGrader() { document.getElementById('grade-modal').classList.add('hidden'); }
         // Verifica una entrega sin tocar lo que el profesor tiene en pantalla.
         function gradeData(data) {
@@ -3313,30 +3313,31 @@
                 gradeRows = list.map(({ f, text }) => {
                     try {
                         const data = JSON.parse(text), g = gradeData(data), a = data.activity && Array.isArray(data.activity.goals) ? data.activity : null;
-                        return { file: f.name, student: data.student || (a && a.custom ? '(archivo del profesor)' : '(sin nombre)'), title: a ? a.title : (data.name || 'Red libre'), savedAt: data.savedAt || '', tries: a ? (a.tries || 0) : '', claimed: a ? !!a.solved : null, ...g, data };
-                    } catch (e) { return { file: f.name, student: '—', title: 'Archivo no válido', error: e.message }; }
+                        return { file: f.name, student: data.student || (a && a.custom ? I18N.t('grade.teacherFile') : I18N.t('grade.noName')), title: a ? a.title : (data.name || I18N.t('grade.freeNetwork')), savedAt: data.savedAt || '', tries: a ? (a.tries || 0) : '', claimed: a ? !!a.solved : null, ...g, data };
+                    } catch (e) { return { file: f.name, student: '—', title: I18N.t('grade.invalidFile'), error: e.message }; }
                 }).sort((x, y) => String(x.student).localeCompare(String(y.student)) || String(x.title).localeCompare(String(y.title)));
                 event.target.value = ''; renderGradeTable();
             });
         }
         function renderGradeTable() {
             const rows = gradeRows.map((r, i) => {
-                const res = r.error ? `<span class="text-rose-400">⚠ ${escapeHtml(r.error)}</span>` : r.ok === null ? '<span class="text-slate-400">Red libre (sin actividad)</span>' : r.ok ? '<span class="text-emerald-400 font-bold">✅ Resuelta</span>' : `<span class="text-rose-400 font-bold">❌ No resuelta</span><span class="block text-[10px] text-slate-400">${escapeHtml(r.why)}</span>`;
-                const when = r.savedAt ? new Date(r.savedAt).toLocaleString('es-AR') : '';
-                return `<tr class="border-t border-slate-800"><td class="py-2 pr-2 font-semibold text-slate-100">${escapeHtml(r.student)}</td><td class="py-2 pr-2">${escapeHtml(r.title)}</td><td class="py-2 pr-2">${res}</td><td class="py-2 pr-2 text-slate-400">${when}</td><td class="py-2 text-right">${r.error ? '' : `<button onclick="viewSubmission(${i})" class="px-2 py-1 rounded bg-sky-700 hover:bg-sky-600 text-white text-[11px] font-semibold">Ver red</button>`}</td></tr>`;
+                const res = r.error ? `<span class="text-rose-400">⚠ ${escapeHtml(r.error)}</span>` : r.ok === null ? `<span class="text-slate-400">${I18N.t('grade.freeNetworkResult')}</span>` : r.ok ? `<span class="text-emerald-400 font-bold">${I18N.t('grade.solved')}</span>` : `<span class="text-rose-400 font-bold">${I18N.t('grade.notSolved')}</span><span class="block text-[10px] text-slate-400">${escapeHtml(r.why)}</span>`;
+                const when = r.savedAt ? new Date(r.savedAt).toLocaleString(localeTag()) : '';
+                return `<tr class="border-t border-slate-800"><td class="py-2 pr-2 font-semibold text-slate-100">${escapeHtml(r.student)}</td><td class="py-2 pr-2">${escapeHtml(r.title)}</td><td class="py-2 pr-2">${res}</td><td class="py-2 pr-2 text-slate-400">${when}</td><td class="py-2 text-right">${r.error ? '' : `<button onclick="viewSubmission(${i})" class="px-2 py-1 rounded bg-sky-700 hover:bg-sky-600 text-white text-[11px] font-semibold">${I18N.t('grade.viewNetwork')}</button>`}</td></tr>`;
             }).join('');
             const done = gradeRows.filter(r => r.ok === true).length, graded = gradeRows.filter(r => r.ok !== null && !r.error).length;
-            document.getElementById('grade-table').innerHTML = gradeRows.length ? `<p class="mb-2 text-slate-300">${gradeRows.length} archivo(s) · ${done} de ${graded} actividades resueltas</p><table class="w-full text-left"><thead><tr class="text-[10px] uppercase tracking-wider text-slate-500"><th class="pb-1">Alumno</th><th class="pb-1">Actividad / Red</th><th class="pb-1">Resultado (verificado ahora)</th><th class="pb-1">Guardado</th><th></th></tr></thead><tbody>${rows}</tbody></table>` : '<p class="text-slate-500 text-center py-6">Todavía no elegiste archivos.</p>';
+            document.getElementById('grade-table').innerHTML = gradeRows.length ? `<p class="mb-2 text-slate-300">${I18N.t('grade.summary', { count: gradeRows.length, done: done, graded: graded })}</p><table class="w-full text-left"><thead><tr class="text-[10px] uppercase tracking-wider text-slate-500"><th class="pb-1">${I18N.t('grade.headStudent')}</th><th class="pb-1">${I18N.t('grade.headActivity')}</th><th class="pb-1">${I18N.t('grade.headResult')}</th><th class="pb-1">${I18N.t('grade.headSaved')}</th><th></th></tr></thead><tbody>${rows}</tbody></table>` : `<p class="text-slate-500 text-center py-6">${I18N.t('grade.noFiles')}</p>`;
         }
         function viewSubmission(i) {
             const r = gradeRows[i]; if (!r || !r.data) return;
-            try { applyTopologyData(r.data, r.file); closeGrader(); } catch (e) { showToast(`No se pudo abrir: ${e.message}`, 'warning'); }
+            try { applyTopologyData(r.data, r.file); closeGrader(); } catch (e) { showToast(I18N.t('grade.cannotOpen', { error: e.message }), 'warning'); }
         }
         function downloadGradesCsv() {
-            if (!gradeRows.length) { showToast('Elegí primero los archivos de tus alumnos.', 'warning'); return; }
+            if (!gradeRows.length) { showToast(I18N.t('grade.needFiles'), 'warning'); return; }
             const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
-            const lines = [['Alumno', 'Actividad / Red', 'Resultado', 'Detalle', 'Intentos de verificación', 'Guardado', 'Archivo'].map(q).join(';')];
-            gradeRows.forEach(r => lines.push([r.student, r.title, r.error ? 'Archivo no válido' : r.ok === null ? 'Red libre' : r.ok ? 'Resuelta' : 'No resuelta', r.why || r.error || '', r.tries, r.savedAt ? new Date(r.savedAt).toLocaleString('es-AR') : '', r.file].map(q).join(';')));
+            const heads = ['student', 'activity', 'result', 'detail', 'attempts', 'saved', 'file'].map(k => I18N.t('grade.csvHead.' + k));
+            const lines = [heads.map(q).join(';')];
+            gradeRows.forEach(r => lines.push([r.student, r.title, r.error ? I18N.t('grade.csvResult.invalid') : r.ok === null ? I18N.t('grade.csvResult.free') : r.ok ? I18N.t('grade.csvResult.solved') : I18N.t('grade.csvResult.notSolved'), r.why || r.error || '', r.tries, r.savedAt ? new Date(r.savedAt).toLocaleString(localeTag()) : '', r.file].map(q).join(';')));
             downloadBlob(new Blob(['\ufeff' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' }), 'Entregas.csv');
         }
 
@@ -3344,20 +3345,20 @@
         let tourIdx = -1, tourEl = null;
         function demoPing() {
             const pcs = state.devices.filter(d => ['pc', 'laptop', 'phone'].includes(d.type));
-            if (pcs.length < 2) { showToast('Cargá primero el ejemplo para ver un ping.', 'warning'); return; }
+            if (pcs.length < 2) { showToast(I18N.t('tour.needDemo'), 'warning'); return; }
             document.getElementById('traffic-source').value = pcs[0].id; document.getElementById('traffic-destination').value = pcs[1].id;
             document.getElementById('traffic-protocol').value = 'ICMP'; startTrafficSimulation();
         }
         const TOUR = [
-            { t: '¡Bienvenido a NetSim Lab!', x: 'Acá vas a armar redes, hacer que se comuniquen y ver cómo viajan los datos. Este recorrido dura un minuto.', sel: null },
-            { t: '1 · Agregá equipos', x: 'En el panel de la izquierda hacé clic en un equipo para sumarlo: PC, notebook, celular, router, switch, servidor DNS…', sel: '#devices-panel' },
-            { t: '2 · Movelos y configuralos', x: 'Arrastrá un equipo para moverlo y el fondo para recorrer el esquema. La rueda del mouse acerca y aleja; el botón de la izquierda encuadra toda la red. Doble clic abre las propiedades; Supr elimina; Ctrl+Z deshace.', sel: '#canvas-container' },
-            { t: '3 · Conectá con cables', x: 'Elegí «Conectar Cable» y hacé clic en dos equipos. Celulares, notebooks y Smart TV también se conectan por WiFi desde sus propiedades.', sel: "button[onclick*=\"setToolMode('cable')\"]" },
-            { t: '4 · Probalo con un ejemplo', x: 'Cargamos una red de ejemplo para que veas todo funcionando. Después podés armar la tuya.', sel: null, btn: ['Cargar ejemplo', () => loadDemoTopology()] },
-            { t: '5 · Simulá una comunicación', x: 'Elegí origen, destino y tipo (ping, web, DNS…) y presioná ▶ Iniciar. Podés pausar, frenar y cambiar la velocidad.', sel: '#sim-panel', btn: ['Mostrame un ping', demoPing] },
-            { t: '6 · Modo avanzado', x: 'Con el modo avanzado ves las capas del paquete, ARP, la tabla MAC del switch, DNS, DHCP, TCP y las rutas de los routers.', sel: '#traffic-mode' },
-            { t: '7 · Todos a la vez', x: '«Todos navegando a la vez» hace que todos los equipos se comuniquen al mismo tiempo. Los fallos aparecen en rojo (✕).', sel: '#traffic-all-btn' },
-            { t: '8 · Tu nombre y las actividades', x: 'Escribí tu nombre en este botón: quedará dentro de lo que guardes. En «Actividades» hay redes con fallas para arreglar; al terminar, guardá la red y entregá el archivo a tu profe.', sel: '#student-btn' }
+            { t: 'tour.steps.1.title', x: 'tour.steps.1.text', sel: null },
+            { t: 'tour.steps.2.title', x: 'tour.steps.2.text', sel: '#devices-panel' },
+            { t: 'tour.steps.3.title', x: 'tour.steps.3.text', sel: '#canvas-container' },
+            { t: 'tour.steps.4.title', x: 'tour.steps.4.text', sel: "button[onclick*=\"setToolMode('cable')\"]" },
+            { t: 'tour.steps.5.title', x: 'tour.steps.5.text', sel: null, btn: ['tour.steps.5.action', () => loadDemoTopology()] },
+            { t: 'tour.steps.6.title', x: 'tour.steps.6.text', sel: '#sim-panel', btn: ['tour.steps.6.action', demoPing] },
+            { t: 'tour.steps.7.title', x: 'tour.steps.7.text', sel: '#traffic-mode' },
+            { t: 'tour.steps.8.title', x: 'tour.steps.8.text', sel: '#traffic-all-btn' },
+            { t: 'tour.steps.9.title', x: 'tour.steps.9.text', sel: '#student-btn' }
         ];
         function tourClearHl() { if (tourEl) { tourEl.classList.remove('tour-hl'); tourEl = null; } }
         function startTour() { setPanelVisible('devices', true, false); setPanelVisible('sim', true, false); tourIdx = -1; tourGo(1); document.getElementById('tour-card').classList.remove('hidden'); }
@@ -3367,15 +3368,15 @@
             restorePanels();
         }
         function tourGo(d) {
-            const n = tourIdx + d; if (n >= TOUR.length) { endTour(true); showToast('¡Listo! Podés volver a ver el recorrido desde el menú «Ver».', 'success'); return; }
+            const n = tourIdx + d; if (n >= TOUR.length) { endTour(true); showToast(I18N.t('tour.done'), 'success'); return; }
             if (n < 0) return;
             tourIdx = n; tourClearHl();
             const st = TOUR[n];
-            document.getElementById('tour-step').textContent = `Paso ${n + 1} de ${TOUR.length}`;
-            document.getElementById('tour-title').textContent = st.t; document.getElementById('tour-text').textContent = st.x;
+            document.getElementById('tour-step').textContent = I18N.t('tour.step', { step: n + 1, total: TOUR.length });
+            document.getElementById('tour-title').textContent = I18N.t(st.t); document.getElementById('tour-text').textContent = I18N.t(st.x);
             document.getElementById('tour-prev').style.visibility = n === 0 ? 'hidden' : 'visible';
-            document.getElementById('tour-next').textContent = n === TOUR.length - 1 ? 'Terminar' : 'Siguiente';
-            const ab = document.getElementById('tour-action'); if (st.btn) { ab.textContent = st.btn[0]; ab.classList.remove('hidden'); } else ab.classList.add('hidden');
+            document.getElementById('tour-next').textContent = n === TOUR.length - 1 ? I18N.t('tour.finish') : I18N.t('tour.next');
+            const ab = document.getElementById('tour-action'); if (st.btn) { ab.textContent = I18N.t(st.btn[0]); ab.classList.remove('hidden'); } else ab.classList.add('hidden');
             const el = st.sel ? document.querySelector(st.sel) : null;
             if (el && el.offsetParent !== null) { el.classList.add('tour-hl'); tourEl = el; }
         }
@@ -3391,31 +3392,31 @@
 
         // ===== ENTREGAR: un solo botón que verifica, guarda con el nombre correcto y explica qué enviar =====
         function deliverFileName() {
-            const base = currentActivity ? currentActivity.title : (currentTopologyName || 'Red libre');
+            const base = currentActivity ? actTitle(currentActivity) : (currentTopologyName || I18N.t('deliver.freeNetwork'));
             return `${currentStudent} - ${base}`.replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, ' ').trim().slice(0, 100);
         }
         function closeDeliver() { document.getElementById('deliver-modal').classList.add('hidden'); }
         function deliverWork() {
-            if (!state.devices.length) { showToast('No hay nada para entregar: armá primero tu red.', 'warning'); return; }
+            if (!state.devices.length) { showToast(I18N.t('deliver.empty'), 'warning'); return; }
             if (!currentStudent) { openStudentDialog(() => deliverWork()); return; }
             let estado = '';
             if (currentActivity) {
                 verifyActivity();
                 const ok = !activityFailure();
-                estado = ok ? '<span class="text-emerald-400 font-bold">✅ Resuelta: la red funciona</span>' : '<span class="text-rose-400 font-bold">❌ Todavía sin resolver</span><span class="block text-[11px] text-slate-400 mt-0.5">Podés entregarla igual, o seguir intentando y entregar después.</span>';
-            } else estado = '<span class="text-slate-400">Red libre (sin actividad)</span>';
+                estado = ok ? `<span class="text-emerald-400 font-bold">${I18N.t('deliver.solved')}</span>` : `<span class="text-rose-400 font-bold">${I18N.t('deliver.notSolved')}</span><span class="block text-[11px] text-slate-400 mt-0.5">${I18N.t('deliver.notSolvedHint')}</span>`;
+            } else estado = `<span class="text-slate-400">${I18N.t('deliver.freeNetworkState')}</span>`;
             const name = deliverFileName();
             document.getElementById('deliver-body').innerHTML = `
                 <div class="rounded-lg bg-slate-950 border border-slate-800 p-3 space-y-1.5">
-                    <div><span class="text-slate-500">Alumno:</span> <b class="text-slate-100">${escapeHtml(currentStudent)}</b></div>
-                    <div><span class="text-slate-500">${currentActivity ? 'Actividad' : 'Trabajo'}:</span> <b class="text-slate-100">${escapeHtml(currentActivity ? currentActivity.title : (currentTopologyName || 'Red libre'))}</b></div>
-                    <div><span class="text-slate-500">Estado:</span> ${estado}</div>
-                    <div><span class="text-slate-500">Equipos en la red:</span> ${state.devices.length}</div>
-                    <div><span class="text-slate-500">Archivo:</span> <span class="font-mono text-[11px] text-sky-300">${escapeHtml(name)}.json</span></div>
+                    <div><span class="text-slate-500">${I18N.t('deliver.student')}</span> <b class="text-slate-100">${escapeHtml(currentStudent)}</b></div>
+                    <div><span class="text-slate-500">${currentActivity ? I18N.t('deliver.activity') : I18N.t('deliver.work')}:</span> <b class="text-slate-100">${escapeHtml(currentActivity ? actTitle(currentActivity) : (currentTopologyName || I18N.t('deliver.freeNetwork')))}</b></div>
+                    <div><span class="text-slate-500">${I18N.t('deliver.status')}</span> ${estado}</div>
+                    <div><span class="text-slate-500">${I18N.t('deliver.devices')}</span> ${state.devices.length}</div>
+                    <div><span class="text-slate-500">${I18N.t('deliver.file')}</span> <span class="font-mono text-[11px] text-sky-300">${escapeHtml(name)}.json</span></div>
                 </div>
                 <div id="deliver-actions" class="flex justify-end gap-2 mt-4">
-                    <button onclick="closeDeliver()" class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200">Seguir trabajando</button>
-                    <button onclick="confirmDeliver()" class="px-3 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-600 text-xs font-bold text-white"><i class="fa-solid fa-download mr-1"></i>Descargar mi entrega</button>
+                    <button onclick="closeDeliver()" class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200">${I18N.t('deliver.keepWorking')}</button>
+                    <button onclick="confirmDeliver()" class="px-3 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-600 text-xs font-bold text-white"><i class="fa-solid fa-download mr-1"></i>${I18N.t('deliver.download')}</button>
                 </div>`;
             document.getElementById('deliver-modal').classList.remove('hidden');
         }
@@ -3425,11 +3426,11 @@
             document.getElementById('deliver-actions').innerHTML = '';
             document.getElementById('deliver-body').insertAdjacentHTML('beforeend', `
                 <div class="mt-3 rounded-lg border border-emerald-700 bg-emerald-900/30 p-3 text-emerald-200">
-                    <b>✔ ¡Listo! Se descargó tu entrega.</b>
-                    <p class="mt-1 text-[11px]">Buscá el archivo <span class="font-mono">${escapeHtml(name)}.json</span> en tu carpeta de Descargas y enviáselo a tu profe (por mail, WhatsApp o el aula virtual).</p>
+                    <b>${I18N.t('deliver.doneTitle')}</b>
+                    <p class="mt-1 text-[11px]">${I18N.t('deliver.doneHint', { file: `<span class="font-mono">${escapeHtml(name)}.json</span>` })}</p>
                 </div>
-                <div class="flex justify-end mt-3"><button onclick="closeDeliver()" class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200">Cerrar</button></div>`);
-            if (currentActivity) document.getElementById('act-msg').innerHTML = '<span style="color:#38bdf8;font-weight:700">📤 Entrega descargada. Enviá el archivo a tu profe.</span>';
+                <div class="flex justify-end mt-3"><button onclick="closeDeliver()" class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200">${I18N.t('deliver.close')}</button></div>`);
+            if (currentActivity) document.getElementById('act-msg').innerHTML = `<span style="color:#38bdf8;font-weight:700">${I18N.t('deliver.downloaded')}</span>`;
         }
 
         // ===== GUARDADO AUTOMÁTICO (en este navegador) =====
@@ -3448,16 +3449,19 @@
             const same = saved && JSON.stringify(saved.devices) === JSON.stringify(state.devices) && JSON.stringify(saved.connections) === JSON.stringify(state.connections);
             if (!saved || !Array.isArray(saved.devices) || !saved.devices.length || same) { autosaveHold = false; return; }
             autosaveHold = true;
-            const when = saved.savedAt ? new Date(saved.savedAt).toLocaleString('es-AR') : '';
-            document.getElementById('restore-info').textContent = `${saved.name ? '«' + saved.name + '» · ' : ''}${saved.devices.length} equipos${saved.activity ? ' · actividad: ' + saved.activity.title : ''} · guardado ${when}.`;
+            const when = saved.savedAt ? new Date(saved.savedAt).toLocaleString(localeTag()) : '';
+            document.getElementById('restore-info').textContent = (saved.name ? I18N.t('autosave.network', { name: saved.name }) : '')
+                + I18N.t('autosave.deviceCount', { count: saved.devices.length })
+                + (saved.activity ? I18N.t('autosave.activity', { title: actKeyOf(saved.activity.title) ? I18N.t(saved.activity.title) : saved.activity.title }) : '')
+                + I18N.t('autosave.savedAt', { when: when });
             document.getElementById('restore-modal').classList.remove('hidden');
         }
         function restoreAutosave() {
             try {
                 const saved = JSON.parse(localStorage.getItem(AUTOSAVE_KEY));
                 applyTopologyData(saved, '', true);
-                showToast('Listo: seguís donde habías dejado tu trabajo.', 'success');
-            } catch (e) { showToast(`No se pudo recuperar: ${e.message}`, 'warning'); }
+                showToast(I18N.t('autosave.restored'), 'success');
+            } catch (e) { showToast(I18N.t('autosave.cannotRestore', { error: e.message }), 'warning'); }
             document.getElementById('restore-modal').classList.add('hidden'); autosaveHold = false; commitHistory();
         }
         function discardAutosave() {
@@ -3475,7 +3479,7 @@
         }
         async function saveOfflineCopy() {
             const TW = 'https://cdn.tailwindcss.com', FA = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
-            showToast('Descargando las librerías… (hace falta internet esta única vez)', 'info');
+            showToast(I18N.t('offline.downloading'), 'info');
             try {
                 const get = async (u, kind) => { const r = await fetch(u); if (!r.ok) throw new Error(kind); return r; };
                 const [tw, faCss] = await Promise.all([get(TW, 'Tailwind').then(r => r.text()), get(FA, 'Font Awesome').then(r => r.text())]);
@@ -3489,9 +3493,9 @@
                 const style = PRISTINE_STYLE.replace(/@import url\([^)]*\);?/g, '');
                 const html = `<!DOCTYPE html>\n<html lang="es" class="${PRISTINE_HTML_CLASS}">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>Simulador de Redes Educativo</title>\n<meta name="author" content="Hugo Martin Villalba">\n<meta name="copyright" content="© ${new Date().getFullYear()} Hugo Martin Villalba. Licencia MIT.">\n${SC_OPEN}${tw.replace(/<\/script/gi, '<\\/script')}${SC_CLOSE}\n<style>${css}</style>\n<style id="app-style">${style}</style>\n</head>\n<body class="${PRISTINE_BODY_CLASS}">${PRISTINE_BODY}</body>\n</html>`;
                 downloadBlob(new Blob([html], { type: 'text/html' }), 'Simulador-de-Redes-sin-internet.html');
-                showToast('Copia descargada: ese archivo funciona sin conexión. Guardalo en una carpeta o pendrive.', 'success');
+                showToast(I18N.t('offline.done'), 'success');
             } catch (e) {
-                showToast(`No se pudo armar la copia (${e.message}). Probá con internet o guardá la página desde el navegador (Ctrl+S).`, 'warning');
+                showToast(I18N.t('offline.failed', { error: e.message }), 'warning');
             }
         }
 
@@ -3588,17 +3592,17 @@
         function vpnStatus(dev) {
             if (!dev.vpn || !dev.vpn.server) return { state: 'off', msg: '' };
             const sv = state.devices.find(d => d.id === dev.vpn.server && d.type === 'vpn');
-            if (!sv) return { state: 'fail', msg: 'el servidor VPN ya no existe' };
-            if (sv.vpnOnline === false) return { state: 'fail', msg: 'el servidor VPN está apagado' };
+            if (!sv) return { state: 'fail', msg: I18N.t('dev.vpn.serverGone') };
+            if (sv.vpnOnline === false) return { state: 'fail', msg: I18N.t('dev.vpn.serverOff') };
             const m = diagnose(dev, sv);
             if (!m) return { state: 'ok', msg: '' };
             // Servidor VPN local detrás de un router: desde otra red solo se llega con el puerto abierto (Port Forwarding).
             if (sv.model === 'local' && /es privada/.test(m)) {
                 const R = natRouterOf(sv);
                 if (R) {
-                    if (!forwardsVpn(R, sv)) return { state: 'fail', msg: `el servidor VPN está detrás de ${R.name} (red privada) y desde Internet no se llega a él: hay que abrir el puerto UDP ${sv.vpnNet.port} en ${R.name} y redirigirlo a ${sv.ip} (Port Forwarding)` };
+                    if (!forwardsVpn(R, sv)) return { state: 'fail', msg: I18N.t('dev.vpn.behindRouter', { router: R.name, port: sv.vpnNet.port, ip: sv.ip }) };
                     const e = diagnose(dev, { ...R, ip: routerPublicIp(R) });
-                    if (e) return { state: 'fail', msg: `no llega al router ${R.name} (${routerPublicIp(R)}) a través de Internet: ${e}` };
+                    if (e) return { state: 'fail', msg: I18N.t('dev.vpn.noRouter', { router: R.name, ip: routerPublicIp(R), error: e }) };
                     return { state: 'ok', msg: '', viaNat: true, router: R };
                 }
             }
@@ -3607,18 +3611,18 @@
         // ¿Pueden comunicarse a y b por la VPN? Devuelve el plan (camino real por donde viaja el túnel).
         function vpnPlan(a, b) {
             const fail = msg => ({ ok: false, msg });
-            if (!a.vpn || !a.vpn.server) return fail(`${a.name} no está conectado a ninguna VPN.`);
+            if (!a.vpn || !a.vpn.server) return fail(I18N.t('dev.vpn.notConnected', { name: a.name }));
             const sv = state.devices.find(d => d.id === a.vpn.server && d.type === 'vpn');
-            if (!sv) return fail(`El servidor VPN de ${a.name} ya no existe.`);
-            const sa = vpnStatus(a); if (sa.state !== 'ok') return fail(`${a.name} no logra conectarse a la VPN (${sv.name}): ${sa.msg}`);
+            if (!sv) return fail(I18N.t('dev.vpn.serverGoneFor', { name: a.name }));
+            const sa = vpnStatus(a); if (sa.state !== 'ok') return fail(I18N.t('dev.vpn.cannotConnect', { name: a.name, vpn: sv.name, reason: sa.msg }));
             const natFor = {}; if (sa.viaNat) natFor[a.id] = sa.router;
             const common = { server: sv, preset: sv.vpnNet.name, port: sv.vpnNet.port, srcIp: a.vpn.ip, natFor };
             if (b.type === 'vpn') {
-                if (b.id !== sv.id) return fail(`${b.name} es otra VPN distinta a la de ${a.name}.`);
+                if (b.id !== sv.id) return fail(I18N.t('dev.vpn.otherVpn', { name: b.name, other: a.name }));
                 return { ok: true, mode: 'directo', path: findConnectionPath(a.id, sv.id), dstIp: `${sv.vpnNet.base}.1`, ...common };
             }
-            if (!b.vpn || b.vpn.server !== sv.id) return fail(`${b.name} no está en la misma VPN que ${a.name}.`);
-            const sb = vpnStatus(b); if (sb.state !== 'ok') return fail(`${b.name} no logra conectarse a la VPN (${sv.name}): ${sb.msg}`);
+            if (!b.vpn || b.vpn.server !== sv.id) return fail(I18N.t('dev.vpn.notSameVpn', { name: b.name, other: a.name }));
+            const sb = vpnStatus(b); if (sb.state !== 'ok') return fail(I18N.t('dev.vpn.cannotConnect', { name: b.name, vpn: sv.name, reason: sb.msg }));
             if (sb.viaNat) natFor[b.id] = sb.router;
             // VPN "en la nube" (tipo Tailscale/ZeroTier): si los equipos se ven entre sí, hablan directo; si no, pasan por el servidor.
             if (sv.model === 'cloud' && !diagnose(a, b)) return { ok: true, mode: 'directo', path: findConnectionPath(a.id, b.id), dstIp: b.vpn.ip, ...common };
@@ -3640,7 +3644,7 @@
             if (!val) delete dev.vpn; else vpnAssign(dev, Number(val));
             stopTrafficSimulation(false); renderDevices();
             const body = document.getElementById('modal-body'); if (body) renderVpnTab(body, dev);
-            showToast(val ? `${dev.name} ahora tiene dos IP: ${dev.ip} (local) y ${dev.vpn.ip} (VPN).` : `${dev.name} salió de la VPN.`, 'success');
+            showToast(val ? I18N.t('dev.msg.vpnTwoIps', { name: dev.name, local: dev.ip, vpn: dev.vpn.ip }) : I18N.t('dev.msg.vpnLeft', { name: dev.name }), 'success');
         }
         function vpnReachHtml(sv) {
             const R = natRouterOf(sv);
@@ -3657,7 +3661,7 @@
             R.portForwarding = R.portForwarding || [];
             if (!forwardsVpn(R, sv)) R.portForwarding.push({ name: `VPN ${sv.vpnNet.name}`, proto: 'UDP', extPort: sv.vpnNet.port, intIp: sv.ip, intPort: sv.vpnNet.port });
             stopTrafficSimulation(false); renderDevices();
-            showToast(`Puerto UDP ${sv.vpnNet.port} abierto en ${R.name} → ${sv.ip}.`, 'success');
+            showToast(I18N.t('dev.msg.portOpened', { port: sv.vpnNet.port, router: R.name, ip: sv.ip }), 'success');
             const body = document.getElementById('modal-body'); if (body) renderVpnTab(body, sv);
         }
         function setVpnPreset(devId, name) {
@@ -3718,7 +3722,7 @@
             vpnAssign(a1, v.id); vpnAssign(b1, v.id);
             renderDevices(); renderCables();
             window.__vpnLab = { net, rA, rB, swA, swB, a1, a2, b1, b2, v };
-            showToast(local ? 'Ejemplo: la VPN está dentro de la red de la Oficina (WireGuard). PC_Oficina1 se conecta, pero PC_Casa1 no llega: falta abrir el puerto UDP 51820 en Router_Oficina. Abrí las propiedades del servidor VPN o del router.' : 'Ejemplo: Casa y Oficina tienen redes distintas, cada una con Internet. PC_Casa1 y PC_Oficina1 están unidas por la VPN (100.64.0.x). Probá un ping entre sus IP VPN.', 'info');
+            showToast(local ? I18N.t('demo.vpnLocal') : I18N.t('demo.vpnCloud'), 'info');
         }
 
         // ===== ARRANQUE VACÍO: mensaje de bienvenida cuando no hay equipos =====
@@ -3892,13 +3896,13 @@
                 repTxt: (s, d) => I18N.t('sim.text.icmp.rep', { d: d.name })
             },
             ARP: {
-                color: '#f59e0b', req: 'ARP ¿quién?', rep: 'ARP mi MAC',
+                color: '#f59e0b', req: 'packet.arpWho', rep: 'packet.arpMyMac',
                 reqTxt: (s, d) => I18N.t('sim.text.arp.req', { s: s.name, ip: arpTargetIp || d.ip }),
                 destTxt: d => I18N.t('sim.text.arp.dest', { d: d.name }),
                 repTxt: (s, d) => I18N.t('sim.text.arp.rep', { d: d.name })
             },
             DNS: {
-                color: '#8b5cf6', req: 'DNS ¿IP?', rep: 'DNS IP',
+                color: '#8b5cf6', req: 'packet.dnsIp', rep: 'packet.dnsIpOk',
                 reqTxt: (s, d) => I18N.t('sim.text.dns.req', { s: s.name, site: trafficSite.name }),
                 destTxt: d => I18N.t('sim.text.dns.dest', { d: d.name }),
                 repTxt: (s, d) => trafficSite.ip ? I18N.t('sim.text.dns.rep', { d: d.name, site: trafficSite.name, ip: trafficSite.ip }) : I18N.t('sim.text.dns.repUnknown', { d: d.name, site: trafficSite.name })
@@ -4173,7 +4177,7 @@
             const reqText = (vpnCtx && protocol !== 'ARP') ? I18N.t('sim.req.vpn', { s: source.name, d: destination.name, srcIp: vpnCtx.srcIp, dstIp: vpnCtx.dstIp, preset: vpnCtx.preset, mode: vpnCtx.mode === 'relevo' ? I18N.t('sim.req.vpnRelay') : I18N.t('sim.req.vpnDirect') }) : (protocol === 'HTTP' && tcpOpened) ? I18N.t('sim.req.ackGet', { s: source.name, d: destination.name }) : info.reqTxt(source, destination);
             const ORDER_IN = ['app', 'tr', 'inet', 'vpn', 'net', 'link'];
             // Con VPN, el IP de afuera (el tramo del túnel) depende de en qué parte del recorrido estemos.
-            const setLeg = (sq, j) => { vpnLegTxt = ''; if (!vpnCtx) return; const si = vpnCtx.mode === 'relevo' ? sq.findIndex(x => x.id === vpnCtx.serverId) : -1; let a = sq[0], b = sq[sq.length - 1]; if (si > 0 && si < sq.length - 1) { if (j < si) b = sq[si]; else a = sq[si]; } vpnLegTxt = `${a.ip} → ${b.ip}`; if (b.type === 'vpn' && vpnCtx.natFor && vpnCtx.natFor[a.id]) vpnLegTxt = `${a.ip} → ${routerPublicIp(vpnCtx.natFor[a.id])}:${vpnCtx.port} (el router lo redirige a ${b.ip})`; };
+            const setLeg = (sq, j) => { vpnLegTxt = ''; if (!vpnCtx) return; const si = vpnCtx.mode === 'relevo' ? sq.findIndex(x => x.id === vpnCtx.serverId) : -1; let a = sq[0], b = sq[sq.length - 1]; if (si > 0 && si < sq.length - 1) { if (j < si) b = sq[si]; else a = sq[si]; } vpnLegTxt = `${a.ip} → ${b.ip}`; if (b.type === 'vpn' && vpnCtx.natFor && vpnCtx.natFor[a.id]) vpnLegTxt = I18N.t('sim.legNatRedirect', { ip: a.ip, public: routerPublicIp(vpnCtx.natFor[a.id]), port: vpnCtx.port, target: b.ip }); };
             function encap(s, d, pair, isReply, ms) {
                 const data = layerData(protocol, s, d, pair.from, pair.to, isReply);
                 const order = ORDER_IN.filter(x => data[x]);
@@ -4263,7 +4267,7 @@
                 setLeg(seq, j);
                 const line = findCableLine(fromDev, toDev);
                 if (line) { line.setAttribute('stroke', color); line.setAttribute('stroke-width', '6'); line.setAttribute('stroke-dasharray', '8 6'); }
-                const packet = makePacket(color, isReply ? info.rep : reqLabel, isReply);
+                const packet = makePacket(color, isReply ? I18N.t(info.rep) : I18N.t(reqLabel), isReply);
                 const pair = macPair(seq, j);
                 renderLayerCard(I18N.t('sim.layer.travels'), layerData(protocol, isReply ? destination : source, isReply ? source : destination, pair.from, pair.to, isReply), ORDER_IN, new Set(ORDER_IN));
                 svgCanvas.appendChild(packet);
@@ -4373,7 +4377,7 @@
             if (svgCanvas) svgCanvas.querySelectorAll('.traffic-packet').forEach(el => el.remove());
             if (showMessage) {
                 const status = document.getElementById('traffic-status');
-                if (status) status.textContent = 'Simulación detenida. Puedes iniciar otra comunicación.';
+                if (status) status.textContent = I18N.t('sim.status.stopped');
             }
             if (svgCanvas) renderCables();
         }
@@ -4418,7 +4422,18 @@
             try { savedTheme = localStorage.getItem('netsim-theme') || 'dark'; } catch (_) { }
             applyTheme(savedTheme);
             // i18n (Fase 3): al cambiar de idioma se re-aplica el texto del botón de tema
-            if (window.I18N) window.I18N.onChange(() => applyTheme(document.body.classList.contains('light-mode') ? 'light' : 'dark'));
+            // y se refrescan los paneles que se generan por código (actividad, modal de
+            // dispositivo, lista de actividades, tráfico en vivo y estado de la simulación).
+            if (window.I18N) window.I18N.onChange(() => {
+                applyTheme(document.body.classList.contains('light-mode') ? 'light' : 'dark');
+                updateStudentUI();
+                if (currentActivity) renderActivityPanel();
+                const actModal = document.getElementById('act-modal');
+                if (actModal && !actModal.classList.contains('hidden')) openActivities();
+                if (state.selectedDeviceId) openDeviceModal(state.selectedDeviceId);
+                applySimMode(false);
+                updateLiveUI();
+            });
             restorePanels();
             restoreSimMode();
             initStudent();

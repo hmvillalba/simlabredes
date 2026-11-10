@@ -152,7 +152,179 @@ window.I18N_DICTS.es = {
         httpOk: 'HTTP 200 OK + página web',
         httpGet: 'HTTP GET / (pido la página)',
         tcp80: 'TCP puerto 80 → {port}',
-        tcpTo80ack: 'TCP puerto {port} → 80 · bandera ACK (confirma la conexión)'
+        tcpTo80ack: 'TCP puerto {port} → 80 · bandera ACK (confirma la conexión)',
+        arpWho: 'ARP ¿quién?',
+        arpMyMac: 'ARP mi MAC',
+        dnsIp: 'DNS ¿IP?',
+        dnsIpOk: 'DNS IP'
+    },
+    studentUi: {
+        default: 'Alumno',
+        title: 'Alumno: {name} (clic para cambiar)',
+        titleEmpty: 'Escribí tu nombre: queda guardado en lo que entregues',
+        needName: 'Escribí tu nombre para poder entregar.',
+        hello: 'Hola, {name}. Tu nombre quedará en lo que guardes.'
+    },
+    teacher: {
+        needNetwork: 'Armá primero una red con al menos dos equipos.',
+        needTitle: 'Poné un título a la actividad.',
+        needGoals: 'Elegí al menos un objetivo: dos equipos distintos que deban comunicarse.',
+        alreadySolved: 'Con la red tal como está, los objetivos YA se cumplen: el alumno no tendría nada para arreglar. ¿Guardar igual?',
+        goalPlaceholder: 'sitio web, o escribí VPN',
+        activityName: 'Actividad - {title}',
+        saved: 'Actividad «{title}» guardada. Pasale el archivo a tus alumnos: la abren con Archivo → Abrir red.'
+    },
+    grade: {
+        noFiles: 'Todavía no elegiste archivos.',
+        teacherFile: '(archivo del profesor)',
+        noName: '(sin nombre)',
+        freeNetwork: 'Red libre',
+        invalidFile: 'Archivo no válido',
+        freeNetworkResult: 'Red libre (sin actividad)',
+        solved: '✅ Resuelta',
+        notSolved: '❌ No resuelta',
+        viewNetwork: 'Ver red',
+        summary: '{count} archivo(s) · {done} de {graded} actividades resueltas',
+        headStudent: 'Alumno',
+        headActivity: 'Actividad / Red',
+        headResult: 'Resultado (verificado ahora)',
+        headSaved: 'Guardado',
+        cannotOpen: 'No se pudo abrir: {error}',
+        needFiles: 'Elegí primero los archivos de tus alumnos.',
+        csvHead: {
+            student: 'Alumno',
+            activity: 'Actividad / Red',
+            result: 'Resultado',
+            detail: 'Detalle',
+            attempts: 'Intentos de verificación',
+            saved: 'Guardado',
+            file: 'Archivo'
+        },
+        csvResult: { invalid: 'Archivo no válido', free: 'Red libre', solved: 'Resuelta', notSolved: 'No resuelta' }
+    },
+    tour: {
+        prev: 'Anterior',
+        next: 'Siguiente',
+        closeTitle: 'Cerrar recorrido',
+        needDemo: 'Cargá primero el ejemplo para ver un ping.',
+        done: '¡Listo! Podés volver a ver el recorrido desde el menú «Ver».',
+        step: 'Paso {step} de {total}',
+        finish: 'Terminar',
+        steps: {
+            1: {
+                title: '¡Bienvenido a NetSim Lab!',
+                text: 'Acá vas a armar redes, hacer que se comuniquen y ver cómo viajan los datos. Este recorrido dura un minuto.'
+            },
+            2: {
+                title: '1 · Agregá equipos',
+                text: 'En el panel de la izquierda hacé clic en un equipo para sumarlo: PC, notebook, celular, router, switch, servidor DNS…'
+            },
+            3: {
+                title: '2 · Movelos y configuralos',
+                text: 'Arrastrá un equipo para moverlo y el fondo para recorrer el esquema. La rueda del mouse acerca y aleja; el botón de la izquierda encuadra toda la red. Doble clic abre las propiedades; Supr elimina; Ctrl+Z deshace.'
+            },
+            4: {
+                title: '3 · Conectá con cables',
+                text: 'Elegí «Conectar Cable» y hacé clic en dos equipos. Celulares, notebooks y Smart TV también se conectan por WiFi desde sus propiedades.'
+            },
+            5: {
+                title: '4 · Probalo con un ejemplo',
+                text: 'Cargamos una red de ejemplo para que veas todo funcionando. Después podés armar la tuya.',
+                action: 'Cargar ejemplo'
+            },
+            6: {
+                title: '5 · Simulá una comunicación',
+                text: 'Elegí origen, destino y tipo (ping, web, DNS…) y presioná ▶ Iniciar. Podés pausar, frenar y cambiar la velocidad.',
+                action: 'Mostrame un ping'
+            },
+            7: {
+                title: '6 · Modo avanzado',
+                text: 'Con el modo avanzado ves las capas del paquete, ARP, la tabla MAC del switch, DNS, DHCP, TCP y las rutas de los routers.'
+            },
+            8: {
+                title: '7 · Todos a la vez',
+                text: '«Todos navegando a la vez» hace que todos los equipos se comuniquen al mismo tiempo. Los fallos aparecen en rojo (✕).'
+            },
+            9: {
+                title: '8 · Tu nombre y las actividades',
+                text: 'Escribí tu nombre en este botón: quedará dentro de lo que guardes. En «Actividades» hay redes con fallas para arreglar; al terminar, guardá la red y entregá el archivo a tu profe.'
+            }
+        }
+    },
+    deliver: {
+        freeNetwork: 'Red libre',
+        empty: 'No hay nada para entregar: armá primero tu red.',
+        solved: '✅ Resuelta: la red funciona',
+        notSolved: '❌ Todavía sin resolver',
+        notSolvedHint: 'Podés entregarla igual, o seguir intentando y entregar después.',
+        freeNetworkState: 'Red libre (sin actividad)',
+        student: 'Alumno:',
+        activity: 'Actividad',
+        work: 'Trabajo',
+        status: 'Estado:',
+        devices: 'Equipos en la red:',
+        file: 'Archivo:',
+        keepWorking: 'Seguir trabajando',
+        download: 'Descargar mi entrega',
+        doneTitle: '✔ ¡Listo! Se descargó tu entrega.',
+        doneHint: 'Buscá el archivo {file} en tu carpeta de Descargas y enviáselo a tu profe (por mail, WhatsApp o el aula virtual).',
+        close: 'Cerrar',
+        downloaded: '📤 Entrega descargada. Enviá el archivo a tu profe.'
+    },
+    autosave: {
+        network: '«{name}» · ',
+        deviceCount: '{count} equipos',
+        activity: ' · actividad: {title}',
+        savedAt: ' · guardado {when}.',
+        restored: 'Listo: seguís donde habías dejado tu trabajo.',
+        cannotRestore: 'No se pudo recuperar: {error}'
+    },
+    offline: {
+        downloading: 'Descargando las librerías… (hace falta internet esta única vez)',
+        done: 'Copia descargada: ese archivo funciona sin conexión. Guardalo en una carpeta o pendrive.',
+        failed: 'No se pudo armar la copia ({error}). Probá con internet o guardá la página desde el navegador (Ctrl+S).'
+    },
+    demo: {
+        twoNetworks: 'Ejemplo cargado: dos redes (192.168.1.0/24 y 192.168.2.0/24) unidas por un router. Probá un ping de PC_A1 a PC_B1 en modo avanzado.',
+        vpnLocal: 'Ejemplo: la VPN está dentro de la red de la Oficina (WireGuard). PC_Oficina1 se conecta, pero PC_Casa1 no llega: falta abrir el puerto UDP 51820 en Router_Oficina. Abrí las propiedades del servidor VPN o del router.',
+        vpnCloud: 'Ejemplo: Casa y Oficina tienen redes distintas, cada una con Internet. PC_Casa1 y PC_Oficina1 están unidas por la VPN (100.64.0.x). Probá un ping entre sus IP VPN.'
+    },
+    export: {
+        empty: 'No hay nada para exportar: agregá dispositivos primero.',
+        pdfDone: 'Documento PDF generado.',
+        imageDone: 'Imagen {format} exportada.',
+        type: {
+            vpn: 'VPN',
+            vpnCloud: 'VPN nube',
+            vpnLocal: 'VPN local',
+            laptop: 'Notebook',
+            netbook: 'Netbook',
+            tv: 'Smart TV',
+            dns: 'DNS',
+            router: 'Router WiFi',
+            lrouter: 'Router',
+            switch: 'Switch',
+            pc: 'PC',
+            phone: 'Móvil',
+            cloud: 'Internet'
+        },
+        heads: {
+            device: 'Equipo',
+            type: 'Tipo',
+            ip: 'IP',
+            mask: 'Máscara',
+            gateway: 'Puerta de enlace'
+        },
+        exportedAt: 'Exportado el {date} · {count} equipos',
+        continuation: 'Equipos (continuación)',
+        page: 'Página {page} de {total}'
+    },
+    live: {
+        stop: 'Detener el tráfico general',
+        start: 'Todos navegando a la vez',
+        stats: '🌐 Tráfico en vivo · ✔ {ok} correctos · ✖ {fail} fallidos',
+        needClients: 'Agregá PC, notebooks, celulares o Smart TV (y algo con quien comunicarse) para generar tráfico.',
+        hint: 'Tráfico general: cada equipo navega por su cuenta. ✔ llega y responde, ✖ no logra comunicarse. Presioná ■ cuando quieras detenerlo.'
     },
     // Fase 3 · zona 4 — modal de dispositivo (pestañas y campos):
     dev: {
@@ -293,7 +465,16 @@ window.I18N_DICTS.es = {
             noServers: 'No hay servidores VPN en la red. Agregá uno desde la barra lateral («VPN en la nube» o «Servidor VPN local») y conectalo con un cable.',
             localIp: 'IP de la red local:',
             vpnIp: 'IP de la VPN:',
-            status: 'Estado:'
+            status: 'Estado:',
+            serverGone: 'el servidor VPN ya no existe',
+            serverOff: 'el servidor VPN está apagado',
+            behindRouter: 'el servidor VPN está detrás de {router} (red privada) y desde Internet no se llega a él: hay que abrir el puerto UDP {port} en {router} y redirigirlo a {ip} (Port Forwarding)',
+            noRouter: 'no llega al router {router} ({ip}) a través de Internet: {error}',
+            notConnected: '{name} no está conectado a ninguna VPN.',
+            serverGoneFor: 'El servidor VPN de {name} ya no existe.',
+            cannotConnect: '{name} no logra conectarse a la VPN ({vpn}): {reason}',
+            otherVpn: '{name} es otra VPN distinta a la de {other}.',
+            notSameVpn: '{name} no está en la misma VPN que {other}.'
         },
         msg: {
             switchLayer: 'Switch configurado en Capa {layer}',
@@ -310,7 +491,11 @@ window.I18N_DICTS.es = {
             wifiRenamed: 'Red WiFi renombrada a «{ssid}». Los equipos deben reconectarse.',
             wifiPassUpdated: 'Contraseña WiFi actualizada. Los equipos deben reconectarse.',
             wifiWrongPass: 'Contraseña incorrecta. No se estableció la conexión WiFi.',
-            wifiConnected: 'Conectado a la red WiFi {ssid}'
+            wifiConnected: 'Conectado a la red WiFi {ssid}',
+            deviceDeleted: '«{name}» eliminado. Podés deshacerlo con Ctrl+Z.',
+            vpnTwoIps: '{name} ahora tiene dos IP: {local} (local) y {vpn} (VPN).',
+            vpnLeft: '{name} salió de la VPN.',
+            portOpened: 'Puerto UDP {port} abierto en {router} → {ip}.'
         }
     },
 
@@ -418,6 +603,7 @@ window.I18N_DICTS.es = {
         stepHint: 'Paso a paso: leé el cartel y presioná ▶ (o la barra espaciadora) para continuar.',
         tablesCleared: 'Tablas ARP y MAC borradas. La próxima comunicación vuelve a empezar desde cero.',
         gatewayHint: ' (su puerta de enlace)',
+        legNatRedirect: '{ip} → {public}:{port} (el router lo redirige a {target})',
         table: {
             empty: '(vacía)',
             new: '● NUEVA',
@@ -584,7 +770,8 @@ window.I18N_DICTS.es = {
         status: {
             noPath: 'FALLO: no existe un camino físico entre origen y destino.',
             running: '{label}: {s} ⇄ {d} · {hops} salto(s) de ida y otros {hops} de vuelta',
-            completed: 'COMPLETADO: {label} fue y volvió entre {s} y {d}.'
+            completed: 'COMPLETADO: {label} fue y volvió entre {s} y {d}.',
+            stopped: 'Simulación detenida. Puedes iniciar otra comunicación.'
         },
         toast: {
             needTwoDevices: 'Agrega al menos dos dispositivos para simular una comunicación.',
@@ -797,10 +984,5 @@ window.I18N_DICTS.es = {
             delete: 'Eliminar',
             deleteTitle: 'Eliminar este dispositivo de la red'
         }
-    },
-    tour: {
-        prev: 'Anterior',
-        next: 'Siguiente',
-        closeTitle: 'Cerrar recorrido'
     }
 };
