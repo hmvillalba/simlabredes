@@ -4,7 +4,7 @@ Simulador interactivo y pedagógico de redes de computadoras diseñado para la e
 
 Desarrollado como una aplicación web autónoma (Single Page Application) basada en tecnologías web estándar, sin dependencias pesadas de servidor ni requerimientos de instalación compleja.
 
-> 🌐 **Acceso en línea:** Puedes utilizar el simulador directamente desde tu navegador en **[https://simlabredes.netlify.app](https://simlabredes.netlify.app/)**
+> 🌐 **Acceso en línea:** Puedes utilizar el simulador directamente desde tu navegador en **[https://simlabredes.vercel.app](https://simlabredes.vercel.app/)**
 
 ---
 
@@ -56,8 +56,8 @@ Desarrollado como una aplicación web autónoma (Single Page Application) basada
 ## 💻 Acceso e Instalación
 
 ### Opción 1: En línea (Recomendada - Sin instalación)
-Disponible directamente en Netlify:
-👉 **[https://simlabredes.netlify.app](https://simlabredes.netlify.app/)**
+Disponible directamente en Vercel:
+👉 **[https://simlabredes.vercel.app](https://simlabredes.vercel.app/)**
 
 ### Opción 2: Abrir localmente en el navegador
 1. Clona el repositorio:

@@ -234,7 +234,7 @@ md.append("1. ¿Se traduce la salida de la consola/CLI simulada o se mantiene en
 md.append("2. ¿Diccionarios en `lang/*.js` separados? (propuesta: sí, funciona con file://)")
 md.append("3. ¿El log de tráfico se guarda como claves + variables (cambia de idioma en vivo) o como texto fijo? (propuesta: claves + variables)")
 md.append("4. ¿Quién revisa cada idioma y con qué criterio de calidad?")
-md.append("5. ¿Dominio propio o URL pública al inicio? (ya existe Netlify: simlabredes.netlify.app)")
+md.append("5. ¿Dominio propio o URL pública al inicio? (ya existe despliegue público: simlabredes.vercel.app)")
 md.append("6. ¿Un único archivo distribuible o estructura con carpetas? (propuesta: index.html + carpeta lang/ al inicio)\n")
 md.append("## Proximos pasos\n")
 md.append("1. Revisar el CSV completo (`docs/auditoria-textos.csv`) y ajustar `decision_sugerida`.")

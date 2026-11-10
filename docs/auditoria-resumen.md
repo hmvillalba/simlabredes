@@ -131,7 +131,7 @@ ARP, DHCP, DNS, MAC, Router, Switch
 2. ¿Diccionarios en `lang/*.js` separados? (propuesta: sí, funciona con file://)
 3. ¿El log de tráfico se guarda como claves + variables (cambia de idioma en vivo) o como texto fijo? (propuesta: claves + variables)
 4. ¿Quién revisa cada idioma y con qué criterio de calidad?
-5. ¿Dominio propio o URL pública al inicio? (ya existe Netlify: simlabredes.netlify.app)
+5. ¿Dominio propio o URL pública al inicio? (ya existe despliegue público: simlabredes.vercel.app)
 6. ¿Un único archivo distribuible o estructura con carpetas? (propuesta: index.html + carpeta lang/ al inicio)
 
 ## Proximos pasos
