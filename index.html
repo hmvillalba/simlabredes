@@ -2658,32 +2658,32 @@
             if (ipv4ToInt(host) === null) {
                 dnsDev = state.devices.find(d => d.type === 'dns' && d.id !== dev.id);
                 if (dnsDev) {
-                    if (dnsDev.dnsOnline === false || diagnose(dev, dnsDev)) { err('fa-plug-circle-xmark', 'ERR_NAME_NOT_RESOLVED', `No se pudo consultar al servidor DNS (${dnsDev.name}): está apagado o no es alcanzable.`); return; }
+                    if (dnsDev.dnsOnline === false || diagnose(dev, dnsDev)) { err('fa-plug-circle-xmark', 'ERR_NAME_NOT_RESOLVED', I18N.t('dev.browser.dnsUnreachable', { dns: dnsDev.name })); return; }
                     ip = (dnsDev.records || []).find(r => r.name === host)?.ip || null;
-                    if (!ip) { err('fa-plug-circle-xmark', 'ERR_NAME_NOT_RESOLVED', `El servidor DNS (${dnsDev.name}) no conoce el nombre «${escapeHtml(host)}».`); return; }
+                    if (!ip) { err('fa-plug-circle-xmark', 'ERR_NAME_NOT_RESOLVED', I18N.t('dev.browser.dnsUnknownHost', { dns: dnsDev.name, host: escapeHtml(host) })); return; }
                 } else if (dnsRecords[host]) ip = dnsRecords[host];
                 else {
                     // Sin servidor DNS en la red: se mantiene el comportamiento clásico (Internet si hay nube alcanzable).
                     const cloud = state.devices.find(d => d.type === 'cloud');
                     if (/router|switch/.test(host)) { ip = (findConnectedGateway(dev.id) || {}).ip || null; }
-                    else if (cloud && !diagnose(dev, cloud)) { viewport.innerHTML = `<div class="text-slate-100 space-y-2"><i class="fa-brands fa-google text-4xl text-blue-400"></i><h4 class="text-sm font-bold">Página cargada exitosamente</h4><p class="text-xs text-emerald-400">Conexión a Internet establecida a través de la nube ISP.</p></div>`; return; }
-                    else { err('fa-plug-circle-xmark', 'ERR_NAME_NOT_RESOLVED', 'No hay servidor DNS ni salida a Internet alcanzable desde esta red.'); return; }
-                    if (!ip) { err('fa-plug-circle-xmark', 'ERR_NAME_NOT_RESOLVED', 'No se pudo resolver el nombre.'); return; }
+                    else if (cloud && !diagnose(dev, cloud)) { viewport.innerHTML = `<div class="text-slate-100 space-y-2"><i class="fa-brands fa-google text-4xl text-blue-400"></i><h4 class="text-sm font-bold">${I18N.t('dev.browser.pageLoaded')}</h4><p class="text-xs text-emerald-400">${I18N.t('dev.browser.pageLoadedCloud')}</p></div>`; return; }
+                    else { err('fa-plug-circle-xmark', 'ERR_NAME_NOT_RESOLVED', I18N.t('dev.browser.noDnsNoInternet')); return; }
+                    if (!ip) { err('fa-plug-circle-xmark', 'ERR_NAME_NOT_RESOLVED', I18N.t('dev.browser.nameNotResolved')); return; }
                 }
             }
 
             // 2) ¿Hay alguien con esa IP y llegan los paquetes (ida y vuelta)?
             const target = state.devices.find(d => d.id !== dev.id && ownsIp(d, ip));
-            if (!target || diagnose(dev, { ...target, ip })) { err('fa-hourglass-end', 'ERR_CONNECTION_TIMED_OUT', `El equipo ${escapeHtml(ip)} no responde. Revisá cables, IP, máscara, puerta de enlace y rutas.`, 'text-rose-400'); return; }
+            if (!target || diagnose(dev, { ...target, ip })) { err('fa-hourglass-end', 'ERR_CONNECTION_TIMED_OUT', I18N.t('dev.browser.timeout', { ip: escapeHtml(ip) }), 'text-rose-400'); return; }
 
             // 3) Respuesta
             const isGw = target.type === 'router' || target.type === 'lrouter' || (target.type === 'switch' && target.switchLayer === 'L3');
             if (isGw) {
-                viewport.innerHTML = `<div class="text-slate-200 space-y-2 w-full max-w-sm text-left bg-slate-950 p-4 rounded-xl border border-slate-800"><h4 class="text-xs font-bold text-emerald-400 flex items-center space-x-2"><i class="fa-solid fa-shield-halved"></i><span>Panel de gestión (${escapeHtml(target.name)})</span></h4><p class="text-[11px] text-slate-400">Conexión establecida con ${escapeHtml(target.name)} (${escapeHtml(ip)}).</p><div class="text-[10px] text-slate-500 font-mono">Estado: EN LÍNEA${target.type === 'router' ? ` | DHCP: ${target.dhcpEnabled ? 'ACTIVO' : 'INACTIVO'}` : ''}</div></div>`;
+                viewport.innerHTML = `<div class="text-slate-200 space-y-2 w-full max-w-sm text-left bg-slate-950 p-4 rounded-xl border border-slate-800"><h4 class="text-xs font-bold text-emerald-400 flex items-center space-x-2"><i class="fa-solid fa-shield-halved"></i><span>${I18N.t('dev.browser.mgmtPanel', { name: escapeHtml(target.name) })}</span></h4><p class="text-[11px] text-slate-400">${I18N.t('dev.browser.connectedTo', { name: escapeHtml(target.name), ip: escapeHtml(ip) })}</p><div class="text-[10px] text-slate-500 font-mono">${I18N.t('dev.browser.statusOnline')}${target.type === 'router' ? ` | ${target.dhcpEnabled ? I18N.t('dev.browser.dhcpActive') : I18N.t('dev.browser.dhcpInactive')}` : ''}</div></div>`;
             } else if (target.type === 'cloud') {
-                viewport.innerHTML = `<div class="text-slate-100 space-y-2"><i class="fa-brands fa-google text-4xl text-blue-400"></i><h4 class="text-sm font-bold">Página cargada exitosamente</h4><p class="text-xs text-emerald-400">Conexión a Internet establecida (${escapeHtml(ip)}).</p></div>`;
+                viewport.innerHTML = `<div class="text-slate-100 space-y-2"><i class="fa-brands fa-google text-4xl text-blue-400"></i><h4 class="text-sm font-bold">${I18N.t('dev.browser.pageLoaded')}</h4><p class="text-xs text-emerald-400">${I18N.t('dev.browser.pageLoadedIp', { ip: escapeHtml(ip) })}</p></div>`;
             } else {
-                viewport.innerHTML = `<div class="text-slate-100 space-y-2"><i class="fa-solid fa-server text-4xl text-emerald-400"></i><h4 class="text-sm font-bold">200 OK · ${escapeHtml(host)}</h4><p class="text-xs text-emerald-400">Respondió ${escapeHtml(target.name)} (${escapeHtml(ip)}).</p></div>`;
+                viewport.innerHTML = `<div class="text-slate-100 space-y-2"><i class="fa-solid fa-server text-4xl text-emerald-400"></i><h4 class="text-sm font-bold">200 OK · ${escapeHtml(host)}</h4><p class="text-xs text-emerald-400">${I18N.t('dev.browser.responded', { name: escapeHtml(target.name), ip: escapeHtml(ip) })}</p></div>`;
             }
         }
 
@@ -2695,7 +2695,7 @@
         }
         function openSaveDialog() {
             const modal = document.getElementById('save-modal'), input = document.getElementById('save-name');
-            const base = currentActivity ? currentActivity.title : (currentTopologyName || 'Mi red');
+            const base = currentActivity ? actTitle(currentActivity) : (currentTopologyName || I18N.t('file.myNetwork'));
             input.value = (currentStudent && !/^\s*$/.test(currentStudent) ? `${currentStudent} - ` : '') + base;
             modal.classList.remove('hidden');
             setTimeout(() => { input.focus(); input.select(); }, 30);
@@ -2703,26 +2703,26 @@
         function closeSaveDialog() { document.getElementById('save-modal').classList.add('hidden'); }
         function confirmSave() {
             const raw = document.getElementById('save-name').value.trim();
-            const name = raw.replace(/[\\/:*?"<>|]/g, '').trim() || 'Mi red';
+            const name = raw.replace(/[\\/:*?"<>|]/g, '').trim() || I18N.t('file.myNetwork');
             saveTopologyToFile(name);
             closeSaveDialog();
         }
         function saveTopologyToFile(name) {
-            name = name || currentTopologyName || 'Mi red';
+            name = name || currentTopologyName || I18N.t('file.myNetwork');
             const payload = { format: 'NetSimLabTopology', version: 2, name, devices: state.devices, connections: state.connections, nextDeviceId: state.nextDeviceId, student: currentStudent || null, savedAt: new Date().toISOString(), activity: activityForSave(), tables: { arp: netTables.arp, mac: netTables.mac, dns: netTables.dns } };
             const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a'); a.href = url; a.download = `${name}.json`; a.click();
             URL.revokeObjectURL(url);
             setTopologyName(name);
-            showToast(`Red «${name}» guardada.`, 'success');
+            showToast(I18N.t('file.saved', { name: name }), 'success');
         }
 
         function checkTopologyData(data) {
-            if (!data || data.format !== 'NetSimLabTopology' || !Array.isArray(data.devices) || !Array.isArray(data.connections)) throw new Error('Formato no reconocido');
+            if (!data || data.format !== 'NetSimLabTopology' || !Array.isArray(data.devices) || !Array.isArray(data.connections)) throw new Error(I18N.t('file.unknownFormat'));
             const validIds = new Set(data.devices.map(d => Number(d.id)));
-            if (data.devices.some(d => !Number.isFinite(Number(d.id)) || !['router', 'lrouter', 'dns', 'vpn', 'switch', 'pc', 'phone', 'laptop', 'tv', 'cloud'].includes(d.type) || ipv4ToInt(d.ip) === null)) throw new Error('Hay dispositivos o direcciones IP inválidas');
-            if (data.connections.some(c => !validIds.has(Number(c.from)) || !validIds.has(Number(c.to)) || !['ethernet', 'wifi'].includes(c.type))) throw new Error('Hay conexiones inválidas');
+            if (data.devices.some(d => !Number.isFinite(Number(d.id)) || !['router', 'lrouter', 'dns', 'vpn', 'switch', 'pc', 'phone', 'laptop', 'tv', 'cloud'].includes(d.type) || ipv4ToInt(d.ip) === null)) throw new Error(I18N.t('file.invalidDevices'));
+            if (data.connections.some(c => !validIds.has(Number(c.from)) || !validIds.has(Number(c.to)) || !['ethernet', 'wifi'].includes(c.type))) throw new Error(I18N.t('file.invalidConnections'));
         }
         function applyTopologyData(data, fileName, quiet) {
             checkTopologyData(data);
@@ -2736,10 +2736,10 @@
             }
             const loadedName = (typeof data.name === 'string' && data.name.trim()) || fileName.replace(/\.[^.]+$/, '');
             setTopologyName(quiet ? (data.name || '') : loadedName);
-            if (!quiet) showToast(`Red «${loadedName}» cargada.`, 'success');
+            if (!quiet) showToast(I18N.t('file.loaded', { name: loadedName }), 'success');
 
             if (data.activity && Array.isArray(data.activity.goals)) resumeActivity(data.activity, data);
-            if (!quiet && data.student && data.student !== currentStudent) showToast(`Entrega de ${data.student} abierta.`, 'info');
+            if (!quiet && data.student && data.student !== currentStudent) showToast(I18N.t('file.submissionOpened', { student: data.student }), 'info');
         }
 
         function loadTopologyFromFile(event) {
@@ -2751,10 +2751,10 @@
             reader.onload = () => {
                 try {
                     const data = JSON.parse(reader.result);
-                    if (!data || data.format !== 'NetSimLabTopology' || !Array.isArray(data.devices) || !Array.isArray(data.connections)) throw new Error('Formato no reconocido');
+                    if (!data || data.format !== 'NetSimLabTopology' || !Array.isArray(data.devices) || !Array.isArray(data.connections)) throw new Error(I18N.t('file.unknownFormat'));
                     applyTopologyData(data, file.name);
                 } catch (error) {
-                    showToast(`No se pudo abrir el archivo: ${error.message}`, 'warning');
+                    showToast(I18N.t('file.cannotOpen', { error: error.message }), 'warning');
                 } finally { event.target.value = ''; }
             };
             reader.readAsText(file);
@@ -2786,18 +2786,18 @@
             phone.wifiAuthenticated = true;
 
             reevaluateNetworkState();
-            showToast("Topología de ejemplo cargada", "info");
+            showToast(I18N.t('file.demoLoaded'), "info");
         }
 
         function clearAll() {
             if (typeof clearNetworkTables === "function") clearNetworkTables(false);
             if (typeof closeActivity === "function") closeActivity();
-            if (state.devices.length && !confirm('¿Seguro que quieres borrar todos los dispositivos y conexiones?')) return;
+            if (state.devices.length && !confirm(I18N.t('file.confirmClear'))) return;
             state.devices = [];
             state.connections = [];
             state.nextDeviceId = 1;
             renderDevices();
-            showToast("Área de trabajo limpiada", "warning");
+            showToast(I18N.t('file.cleared'), "warning");
         }
 
         // TOAST NOTIFICATIONS

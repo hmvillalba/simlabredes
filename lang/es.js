@@ -223,7 +223,21 @@ window.I18N_DICTS.es = {
             hint: 'Introduce una URL como {example} o la IP del Router para navegar.',
             noIp: 'El equipo no posee una IP válida asignada (Dirección APIPA o sin red).',
             emptyUrl: 'URL vacía',
-            emptyUrlMsg: 'Escribí una dirección, por ejemplo www.ejemplo.com o una IP.'
+            emptyUrlMsg: 'Escribí una dirección, por ejemplo www.ejemplo.com o una IP.',
+            dnsUnreachable: 'No se pudo consultar al servidor DNS ({dns}): está apagado o no es alcanzable.',
+            dnsUnknownHost: 'El servidor DNS ({dns}) no conoce el nombre «{host}».',
+            pageLoaded: 'Página cargada exitosamente',
+            pageLoadedCloud: 'Conexión a Internet establecida a través de la nube ISP.',
+            noDnsNoInternet: 'No hay servidor DNS ni salida a Internet alcanzable desde esta red.',
+            nameNotResolved: 'No se pudo resolver el nombre.',
+            timeout: 'El equipo {ip} no responde. Revisá cables, IP, máscara, puerta de enlace y rutas.',
+            mgmtPanel: 'Panel de gestión ({name})',
+            connectedTo: 'Conexión establecida con {name} ({ip}).',
+            statusOnline: 'Estado: EN LÍNEA',
+            dhcpActive: 'DHCP: ACTIVO',
+            dhcpInactive: 'DHCP: INACTIVO',
+            pageLoadedIp: 'Conexión a Internet establecida ({ip}).',
+            responded: 'Respondió {name} ({ip}).'
         },
         vpn: {
             statusOk: '● Conectado',
@@ -266,6 +280,19 @@ window.I18N_DICTS.es = {
     },
 
     // Fase 3 · zona 4 — mensajes dinámicos (toasts y diagnósticos):
+    file: {
+        myNetwork: 'Mi red',
+        saved: 'Red «{name}» guardada.',
+        loaded: 'Red «{name}» cargada.',
+        submissionOpened: 'Entrega de {student} abierta.',
+        cannotOpen: 'No se pudo abrir el archivo: {error}',
+        unknownFormat: 'Formato no reconocido',
+        invalidDevices: 'Hay dispositivos o direcciones IP inválidas',
+        invalidConnections: 'Hay conexiones inválidas',
+        demoLoaded: 'Topología de ejemplo cargada',
+        confirmClear: '¿Seguro que quieres borrar todos los dispositivos y conexiones?',
+        cleared: 'Área de trabajo limpiada'
+    },
     toast: {
         deviceAdded: 'Dispositivo agregado: {name}',
         clickCableToDelete: 'Haz clic directamente en la línea del cable para eliminarlo',
