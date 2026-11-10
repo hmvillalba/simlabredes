@@ -37,11 +37,45 @@ function flat(obj, prefix, out) {
     return out;
 }
 
+// El motor t() solo resuelve strings: si una "hoja" del diccionario es un array
+// o un objeto, I18N.t() devolvería la clave y avisaría por consola.
+function nonStringLeaves(obj, prefix, out) {
+    out = out || [];
+    for (const k of Object.keys(obj)) {
+        const v = obj[k];
+        const key = prefix ? prefix + '.' + k : k;
+        if (Array.isArray(v)) out.push(key);
+        else if (v && typeof v === 'object') nonStringLeaves(v, key, out);
+    }
+    return out;
+}
+
+// Zonas de primer nivel del diccionario (para detectar duplicados: la última pisa).
+function topLevelZones(code) {
+    const re = /^\s{4}([A-Za-z_][A-Za-z0-9_]*):/gm;
+    const out = [];
+    let m;
+    while ((m = re.exec(code))) out.push(m[1]);
+    return out;
+}
+
 const dicts = {};
+const dictIssues = [];
 for (const f of fs.readdirSync(path.join(root, 'lang'))) {
     if (f.endsWith('.js')) {
-        const d = loadDict(fs.readFileSync(path.join(root, 'lang', f), 'utf8'));
+        const code = fs.readFileSync(path.join(root, 'lang', f), 'utf8');
+        const d = loadDict(code);
         for (const l of Object.keys(d)) dicts[l] = flat(d[l]);
+        // hojas no-string
+        for (const l of Object.keys(d)) {
+            for (const key of nonStringLeaves(d[l])) dictIssues.push(`lang/${f}: '${key}' no es un texto (array u objeto): I18N.t() no la puede resolver`);
+        }
+        // zonas duplicadas
+        const seen = new Set();
+        for (const z of topLevelZones(code)) {
+            if (seen.has(z)) dictIssues.push(`lang/${f}: la zona '${z}' está definida dos veces (la segunda pisa a la primera)`);
+            seen.add(z);
+        }
     }
 }
 const esKeys = new Set(Object.keys(dicts.es || {}));
@@ -60,6 +94,14 @@ const jsRe = /(?:I18N\.t|I18N\.log|\bt)\(\s*'([a-zA-Z0-9_.]+)'/g;
 while ((m = jsRe.exec(html))) if (!used.has(m[1])) used.set(m[1], { attr: 'js-inline', line: html.slice(0, m.index).split('\n').length });
 
 let errors = 0;
+
+if (dictIssues.length) {
+    errors++;
+    console.log('PROBLEMAS DEL DICCIONARIO:');
+    dictIssues.forEach(i => console.log('  *', i));
+} else {
+    console.log('OK: el diccionario solo contiene textos y no repite zonas');
+}
 
 if (checkAll) {
     for (const [l, keys] of Object.entries(dicts)) {

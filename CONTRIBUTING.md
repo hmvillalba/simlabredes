@@ -77,6 +77,7 @@ test:  scripts de control de calidad
 ├── tools/
 │   ├── audit_texts.py  # Fase 1: auditoría de textos
 │   ├── check_keys.mjs  # control de claves i18n: node tools/check_keys.mjs [es|en|pt|fr|--all]
+│   ├── check_vars.mjs  # control de variables: node tools/check_vars.mjs
 │   └── test_i18n.mjs   # tests del motor: node tools/test_i18n.mjs
 ├── docs/               # auditoría (auditoria-textos.csv, auditoria-resumen.md)
 ├── README.md
