@@ -1995,8 +1995,8 @@
         }
         function routeRows(router) {
             const list = [];
-            for (const id of Object.keys(router.ifaces || {})) { const f = router.ifaces[id]; list.push({ a: `${netOf(f.ip, f.mask)}/${prefixFromMask(f.mask)}`, b: `conectada · interfaz hacia ${devName(Number(id))}`, ref: f }); }
-            for (const r of router.routes || []) list.push({ a: `${r.net}/${r.prefix}`, b: `vía ${r.via}`, ref: r });
+            for (const id of Object.keys(router.ifaces || {})) { const f = router.ifaces[id]; list.push({ a: `${netOf(f.ip, f.mask)}/${prefixFromMask(f.mask)}`, b: I18N.t('sim.table.routeConnected', { name: devName(Number(id)) }), ref: f }); }
+            for (const r of router.routes || []) list.push({ a: `${r.net}/${r.prefix}`, b: I18N.t('sim.table.routeVia', { via: r.via }), ref: r });
             return list;
         }
         function loadDemoTwoNetworks() {
@@ -2896,12 +2896,12 @@
 
         // ===== VISTA POR CAPAS: el paquete como cajas anidadas (Ethernet > IP > TCP/UDP > Aplicación) =====
         const LAYER_DEF = {
-            link: { n: 'Enlace · Ethernet', c: '#d97706' },
-            net: { n: 'Red · IP', c: '#059669' },
-            vpn: { n: 'Túnel VPN (cifrado)', c: '#a855f7' },
-            inet: { n: 'Red interna · IP VPN', c: '#0d9488' },
-            tr: { n: 'Transporte', c: '#2563eb' },
-            app: { n: 'Aplicación', c: '#7c3aed' }
+            link: { n: () => I18N.t('packet.link'), c: '#d97706' },
+            net: { n: () => I18N.t('packet.net'), c: '#059669' },
+            vpn: { n: () => I18N.t('packet.vpn'), c: '#a855f7' },
+            inet: { n: () => I18N.t('packet.inet'), c: '#0d9488' },
+            tr: { n: () => I18N.t('packet.tr'), c: '#2563eb' },
+            app: { n: () => I18N.t('packet.app'), c: '#7c3aed' }
         };
         function macOf(dev) { return 'AA:BB:CC:00:00:' + Number(dev.id).toString(16).padStart(2, '0').toUpperCase(); }
         let vpnCtx = null, vpnLegTxt = '';
@@ -2909,31 +2909,31 @@
             if (!vpnCtx || !['ICMP', 'HTTP', 'DNS', 'SYN'].includes(protocol)) return layerDataBase(protocol, s, d, hf, ht, isReply);
             const ov = x => x.id === vpnCtx.srcId ? vpnCtx.srcIp : (x.id === vpnCtx.dstId ? vpnCtx.dstIp : x.ip);
             const inner = layerDataBase(protocol, { ...s, ip: ov(s) }, { ...d, ip: ov(d) }, hf, ht, isReply);
-            return { app: inner.app, tr: inner.tr, inet: inner.net, vpn: `${vpnCtx.preset}: túnel UDP puerto ${vpnCtx.port} · todo lo de adentro va cifrado`, net: vpnLegTxt || `${s.ip} → ${d.ip}`, link: inner.link };
+            return { app: inner.app, tr: inner.tr, inet: inner.net, vpn: I18N.t('packet.tunnel', { preset: vpnCtx.preset, port: vpnCtx.port }), net: vpnLegTxt || `${s.ip} → ${d.ip}`, link: inner.link };
         }
         function layerDataBase(protocol, s, d, hf, ht, isReply) {
             const sport = 49152 + Number(s.id === undefined ? 0 : (isReply ? d.id : s.id));
-            const macTxt = (['ARP', 'DISCOVER', 'REQUEST'].includes(protocol) && !isReply) ? `${macOf(hf)} → FF:FF:FF:FF:FF:FF (todos)` : `${macOf(hf)} → ${macOf(ht)}`;
+            const macTxt = (['ARP', 'DISCOVER', 'REQUEST'].includes(protocol) && !isReply) ? I18N.t('packet.broadcastMac', { mac: macOf(hf) }) : `${macOf(hf)} → ${macOf(ht)}`;
             const data = { app: null, tr: null, net: null, link: macTxt };
             if (protocol === 'ICMP') {
-                data.net = `${s.ip} → ${d.ip} · ICMP ${isReply ? 'Echo Reply' : 'Echo Request'}`;
+                data.net = I18N.t('packet.icmp', { src: s.ip, dst: d.ip, type: isReply ? I18N.t('packet.icmpReply') : I18N.t('packet.icmpRequest') });
             } else if (protocol === 'ARP') {
-                data.link = macTxt + (isReply ? ` · «${s.ip} está en ${macOf(s)}»` : ` · «¿Quién tiene ${arpTargetIp || d.ip}?»`);
+                data.link = macTxt + (isReply ? I18N.t('packet.arpReply', { ip: s.ip, mac: macOf(s) }) : I18N.t('packet.arpRequest', { ip: arpTargetIp || d.ip }));
             } else if (protocol === 'DNS') {
-                data.app = isReply ? (trafficSite.ip ? `DNS: ${trafficSite.name} = ${trafficSite.ip}` : `DNS: ${trafficSite.name} no existe (NXDOMAIN)`) : `DNS: ¿cuál es la IP de ${trafficSite.name}?`;
-                data.tr = isReply ? `UDP puerto 53 → ${sport}` : `UDP puerto ${sport} → 53`;
+                data.app = isReply ? (trafficSite.ip ? I18N.t('packet.dnsResolved', { name: trafficSite.name, ip: trafficSite.ip }) : I18N.t('packet.dnsNxdomain', { name: trafficSite.name })) : I18N.t('packet.dnsQuery', { name: trafficSite.name });
+                data.tr = isReply ? I18N.t('packet.udp53to', { port: sport }) : I18N.t('packet.udpTo53', { port: sport });
                 data.net = `${s.ip} → ${d.ip}`;
             } else if (protocol === 'SYN') {
-                data.tr = isReply ? `TCP puerto 80 → ${sport} · banderas SYN + ACK` : `TCP puerto ${sport} → 80 · bandera SYN`;
+                data.tr = isReply ? I18N.t('packet.tcp80to', { port: sport }) : I18N.t('packet.tcpTo80', { port: sport });
                 data.net = `${s.ip} → ${d.ip}`;
             } else if (protocol === 'DISCOVER' || protocol === 'REQUEST') {
                 const disc = protocol === 'DISCOVER';
-                data.app = isReply ? `DHCP ${disc ? 'Offer' : 'Ack'}: IP ${dhcpInfo.ip}/${prefixFromMask(dhcpInfo.mask)} · puerta de enlace ${dhcpInfo.gw}` : (disc ? 'DHCP Discover: ¿hay un servidor DHCP?' : `DHCP Request: quiero la IP ${dhcpInfo.ip}`);
-                data.tr = isReply ? 'UDP puerto 67 → 68' : 'UDP puerto 68 → 67';
-                data.net = isReply ? `${s.ip} → ${dhcpInfo.ip}` : '0.0.0.0 → 255.255.255.255 (difusión)';
+                data.app = isReply ? (disc ? I18N.t('packet.dhcpOffer', { ip: dhcpInfo.ip, prefix: prefixFromMask(dhcpInfo.mask), gw: dhcpInfo.gw }) : I18N.t('packet.dhcpAck', { ip: dhcpInfo.ip, prefix: prefixFromMask(dhcpInfo.mask), gw: dhcpInfo.gw })) : (disc ? I18N.t('packet.dhcpDiscover') : I18N.t('packet.dhcpRequest', { ip: dhcpInfo.ip }));
+                data.tr = isReply ? I18N.t('packet.udp67to68') : I18N.t('packet.udp68to67');
+                data.net = isReply ? I18N.t('packet.dhcpNet', { src: s.ip, ip: dhcpInfo.ip }) : I18N.t('packet.broadcastNet');
             } else {
-                data.app = isReply ? 'HTTP 200 OK + página web' : 'HTTP GET / (pido la página)';
-                data.tr = isReply ? `TCP puerto 80 → ${sport}` : `TCP puerto ${sport} → 80${tcpOpened ? ' · bandera ACK (confirma la conexión)' : ''}`;
+                data.app = isReply ? I18N.t('packet.httpOk') : I18N.t('packet.httpGet');
+                data.tr = isReply ? I18N.t('packet.tcp80', { port: sport }) : (tcpOpened ? I18N.t('packet.tcpTo80ack', { port: sport }) : I18N.t('packet.tcpTo80', { port: sport }));
                 data.net = `${s.ip} → ${d.ip}`;
             }
             return data;
@@ -2947,7 +2947,7 @@
                 if (i >= list.length) return '';
                 const k = list[i], def = LAYER_DEF[k], on = active.has(k);
                 const style = `border:${on ? 3 : 1.5}px ${on ? 'solid' : 'dashed'} ${def.c};background:${def.c}${on ? '33' : '12'};border-radius:8px;padding:5px 7px;margin-top:${i ? 5 : 0}px;${on ? `box-shadow:0 0 10px ${def.c}99;` : ''}`;
-                return `<div style="${style}"><div class="text-[10px] font-bold" style="color:${def.c}">${def.n}</div><div class="text-[10px] font-mono break-words">${escapeHtml(data[k])}</div>${nest(i + 1)}</div>`;
+                return `<div style="${style}"><div class="text-[10px] font-bold" style="color:${def.c}">${def.n()}</div><div class="text-[10px] font-mono break-words">${escapeHtml(data[k])}</div>${nest(i + 1)}</div>`;
             };
             document.getElementById('layer-card-title').textContent = title;
             document.getElementById('layer-card-body').innerHTML = nest(0);
@@ -3754,7 +3754,7 @@
             document.querySelectorAll('.adv-only').forEach(el => { el.style.display = adv ? '' : 'none'; });
             if (!adv) { hideLayerCard(); hideTableCard(); }
             const st = document.getElementById('traffic-status');
-            if (userChange && st) st.textContent = adv ? 'Modo avanzado: verás capas, tablas ARP/MAC/DNS y rutas.' : 'Modo simple: solo el recorrido del paquete.';
+            if (userChange && st) st.textContent = adv ? I18N.t('sim.modeAdvancedHint') : I18N.t('sim.modeSimpleHint');
             try { localStorage.setItem('netsim-sim-mode', adv ? 'advanced' : 'simple'); } catch (_) { }
         }
         function restoreSimMode() {
@@ -3767,7 +3767,7 @@
         function intToIp(n) { return [n >>> 24, (n >>> 16) & 255, (n >>> 8) & 255, n & 255].join('.'); }
         function showDnsTable(dev, newName) {
             const c = netTables.dns[dev.id] || {}; const names = Object.keys(c);
-            renderTableCard(`Tabla DNS de ${dev.name}`, 'Nombre', 'IP', names.map(n => ({ a: n, b: c[n] })), names.indexOf(newName));
+            renderTableCard(I18N.t('sim.table.dnsTitle', { name: dev.name }), I18N.t('sim.table.headName'), I18N.t('sim.table.headIp'), names.map(n => ({ a: n, b: c[n] })), names.indexOf(newName));
         }
         function simFail(source, msg, logMsg, token) {
             addTrafficLog(logMsg, 'text-rose-400');
@@ -3782,7 +3782,7 @@
             const b = document.getElementById('traffic-pause');
             if (b) b.innerHTML = trafficPaused ? '<i class="fa-solid fa-play"></i>' : '<i class="fa-solid fa-pause"></i>';
             const st = document.getElementById('traffic-status');
-            if (st && trafficPaused) st.textContent = 'En pausa. Presiona ▶ para continuar.';
+            if (st && trafficPaused) st.textContent = I18N.t('sim.paused');
         }
         // El control es "velocidad" (0.2x lenta … 3x rápida); internamente se usa el factor de duración (1 / velocidad).
         function trafficSpeed() { const v = Number(document.getElementById('traffic-speed')?.value); return v > 0 ? 1 / v : 1; }
@@ -3828,13 +3828,13 @@
             const [bg, fg] = tones[tone] || tones.node;
             const box = document.getElementById('traffic-caption-box');
             box.style.background = bg; box.style.color = fg; box.style.borderColor = 'rgba(255,255,255,.35)';
-            document.getElementById('traffic-caption-step').textContent = step ? `Paso ${step} de ${total}` : '';
+            document.getElementById('traffic-caption-step').textContent = step ? I18N.t('sim.stepOf', { step: step, total: total }) : '';
             document.getElementById('traffic-caption-text').textContent = text;
             wrap.classList.remove('hidden');
             if (isStepMode() && tone !== 'fail') {
                 trafficPaused = true;
                 const b = document.getElementById('traffic-pause'); if (b) b.innerHTML = '<i class="fa-solid fa-play"></i>';
-                const st = document.getElementById('traffic-status'); if (st) st.textContent = 'Paso a paso: leé el cartel y presioná ▶ (o la barra espaciadora) para continuar.';
+                const st = document.getElementById('traffic-status'); if (st) st.textContent = I18N.t('sim.stepHint');
             }
         }
         function hideTrafficCaption() { document.getElementById('traffic-caption')?.classList.add('hidden'); }
@@ -3887,56 +3887,56 @@
         const TRAFFIC_TEXT = {
             ICMP: {
                 color: '#0ea5e9', req: 'ping', rep: 'pong',
-                reqTxt: (s, d) => `${s.name} envía un ping a ${d.name}: «¿estás ahí?»`,
-                destTxt: d => `${d.name} recibe el ping y prepara la respuesta`,
-                repTxt: (s, d) => `${d.name} responde «¡sí, acá estoy!» (echo reply)`
+                reqTxt: (s, d) => I18N.t('sim.text.icmp.req', { s: s.name, d: d.name }),
+                destTxt: d => I18N.t('sim.text.icmp.dest', { d: d.name }),
+                repTxt: (s, d) => I18N.t('sim.text.icmp.rep', { d: d.name })
             },
             ARP: {
                 color: '#f59e0b', req: 'ARP ¿quién?', rep: 'ARP mi MAC',
-                reqTxt: (s, d) => `${s.name} pregunta: «¿Quién tiene la IP ${arpTargetIp || d.ip}? ¿Cuál es su MAC?»`,
-                destTxt: d => `${d.name} reconoce su IP y prepara su respuesta`,
-                repTxt: (s, d) => `${d.name} contesta: «Esa IP es mía, esta es mi dirección MAC»`
+                reqTxt: (s, d) => I18N.t('sim.text.arp.req', { s: s.name, ip: arpTargetIp || d.ip }),
+                destTxt: d => I18N.t('sim.text.arp.dest', { d: d.name }),
+                repTxt: (s, d) => I18N.t('sim.text.arp.rep', { d: d.name })
             },
             DNS: {
                 color: '#8b5cf6', req: 'DNS ¿IP?', rep: 'DNS IP',
-                reqTxt: (s, d) => `${s.name} pregunta: «¿Qué IP tiene ${trafficSite.name}?»`,
-                destTxt: d => `${d.name} busca el nombre en su tabla de dominios`,
-                repTxt: (s, d) => trafficSite.ip ? `${d.name} responde: ${trafficSite.name} = ${trafficSite.ip}` : `${d.name} responde: «no conozco el nombre ${trafficSite.name}» (no existe)`
+                reqTxt: (s, d) => I18N.t('sim.text.dns.req', { s: s.name, site: trafficSite.name }),
+                destTxt: d => I18N.t('sim.text.dns.dest', { d: d.name }),
+                repTxt: (s, d) => trafficSite.ip ? I18N.t('sim.text.dns.rep', { d: d.name, site: trafficSite.name, ip: trafficSite.ip }) : I18N.t('sim.text.dns.repUnknown', { d: d.name, site: trafficSite.name })
             },
             HTTP: {
                 color: '#10b981', req: 'GET /', rep: '200 OK',
-                reqTxt: (s, d) => `${s.name} pide una página web a ${d.name} (HTTP GET)`,
-                destTxt: d => `${d.name} prepara la página solicitada`,
-                repTxt: (s, d) => `${d.name} envía la página (200 OK)`
+                reqTxt: (s, d) => I18N.t('sim.text.http.req', { s: s.name, d: d.name }),
+                destTxt: d => I18N.t('sim.text.http.dest', { d: d.name }),
+                repTxt: (s, d) => I18N.t('sim.text.http.rep', { d: d.name })
             }
         };
         let tcpOpened = false;
         TRAFFIC_TEXT.SYN = {
             color: '#06b6d4', req: 'SYN', rep: 'SYN-ACK',
-            reqTxt: (s, d) => `1/3 SYN: ${s.name} dice «quiero abrir una conexión TCP con ${d.name}»`,
-            destTxt: d => `${d.name} acepta abrir la conexión y prepara su respuesta`,
-            repTxt: (s, d) => `2/3 SYN-ACK: ${d.name} responde «de acuerdo, ¿me confirmás?»`
+            reqTxt: (s, d) => I18N.t('sim.text.syn.req', { s: s.name, d: d.name }),
+            destTxt: d => I18N.t('sim.text.syn.dest', { d: d.name }),
+            repTxt: (s, d) => I18N.t('sim.text.syn.rep', { d: d.name })
         };
         let arpTargetIp = null;
         let dhcpInfo = { ip: '0.0.0.0', mask: '255.255.255.0', gw: '0.0.0.0', srv: '0.0.0.0' };
         TRAFFIC_TEXT.DISCOVER = {
             color: '#ec4899', req: 'DHCP Discover', rep: 'DHCP Offer',
-            reqTxt: (s, d) => `1/4 Discover: ${s.name} no tiene IP y le grita a toda la red: «¿Hay algún servidor DHCP?»`,
-            destTxt: d => `${d.name} (servidor DHCP) escucha el pedido y elige una IP libre de su rango`,
-            repTxt: (s, d) => `2/4 Offer: ${d.name} le ofrece a ${s.name} la IP ${dhcpInfo.ip}`
+            reqTxt: (s, d) => I18N.t('sim.text.discover.req', { s: s.name }),
+            destTxt: d => I18N.t('sim.text.discover.dest', { d: d.name }),
+            repTxt: (s, d) => I18N.t('sim.text.discover.rep', { d: d.name, s: s.name, ip: dhcpInfo.ip })
         };
         TRAFFIC_TEXT.REQUEST = {
             color: '#ec4899', req: 'DHCP Request', rep: 'DHCP Ack',
-            reqTxt: (s, d) => `3/4 Request: ${s.name} acepta la oferta: «Quiero usar la IP ${dhcpInfo.ip}»`,
-            destTxt: d => `${d.name} reserva la IP ${dhcpInfo.ip} para ese equipo`,
-            repTxt: (s, d) => `4/4 Ack: ${d.name} confirma «es tuya» y entrega máscara y puerta de enlace`
+            reqTxt: (s, d) => I18N.t('sim.text.request.req', { s: s.name, ip: dhcpInfo.ip }),
+            destTxt: d => I18N.t('sim.text.request.dest', { d: d.name, ip: dhcpInfo.ip }),
+            repTxt: (s, d) => I18N.t('sim.text.request.rep', { d: d.name })
         };
         function nodeAction(dev) {
-            if (dev.type === 'switch') return `${dev.name} (switch) recibe la trama y la reenvía por el puerto correcto`;
-            if (dev.type === 'router' || dev.type === 'lrouter') return `${dev.name} (router) recibe el paquete y decide por dónde enviarlo`;
-            if (dev.type === 'cloud') return `${dev.name} (Internet) recibe el paquete y lo hace avanzar`;
-            if (dev.type === 'vpn') return `${dev.name} (servidor VPN) recibe el tráfico cifrado y lo reenvía`;
-            return `${dev.name} recibe el paquete y lo pasa al siguiente equipo`;
+            if (dev.type === 'switch') return I18N.t('sim.node.switch', { name: dev.name });
+            if (dev.type === 'router' || dev.type === 'lrouter') return I18N.t('sim.node.router', { name: dev.name });
+            if (dev.type === 'cloud') return I18N.t('sim.node.cloud', { name: dev.name });
+            if (dev.type === 'vpn') return I18N.t('sim.node.vpn', { name: dev.name });
+            return I18N.t('sim.node.default', { name: dev.name });
         }
         // ===== TABLAS DE RED (solo en memoria): ARP en cada equipo y MAC en cada switch =====
         const netTables = { arp: {}, mac: {}, dns: {} };   // arp[idEquipo][ip] = mac ; mac[idSwitch][mac] = idEquipoVecino
@@ -3944,7 +3944,7 @@
         function clearNetworkTables(showMsg) {
             netTables.arp = {}; netTables.mac = {}; netTables.dns = {};
             hideTableCard();
-            if (showMsg) showToast('Tablas ARP y MAC borradas. La próxima comunicación vuelve a empezar desde cero.', 'success');
+            if (showMsg) showToast(I18N.t('sim.tablesCleared'), 'success');
         }
         function renderTableCard(title, headA, headB, rows, newIdx) {
             const card = document.getElementById('table-card');
@@ -3952,8 +3952,8 @@
             document.getElementById('table-card-title').textContent = title;
             const body = rows.length ? rows.map((r, i) => {
                 const hot = i === newIdx;
-                return `<tr style="${hot ? 'background:#10b98133;' : ''}"><td class="py-1 pr-2 font-mono text-[10px] ${hot ? 'font-bold' : ''}">${escapeHtml(r.a)}</td><td class="py-1 text-[10px] ${hot ? 'font-bold' : ''}">${escapeHtml(r.b)}${hot ? ' <span style="color:#10b981">● NUEVA</span>' : ''}</td></tr>`;
-            }).join('') : '<tr><td colspan="2" class="py-1 text-[10px] opacity-70">(vacía)</td></tr>';
+                return `<tr style="${hot ? 'background:#10b98133;' : ''}"><td class="py-1 pr-2 font-mono text-[10px] ${hot ? 'font-bold' : ''}">${escapeHtml(r.a)}</td><td class="py-1 text-[10px] ${hot ? 'font-bold' : ''}">${escapeHtml(r.b)}${hot ? ` <span style="color:#10b981">${I18N.t('sim.table.new')}</span>` : ''}</td></tr>`;
+            }).join('') : `<tr><td colspan="2" class="py-1 text-[10px] opacity-70">${I18N.t('sim.table.empty')}</td></tr>`;
             document.getElementById('table-card-body').innerHTML = `<table class="w-full text-left"><thead><tr class="text-[9px] uppercase tracking-wider opacity-70"><th class="pb-1">${headA}</th><th class="pb-1">${headB}</th></tr></thead><tbody>${body}</tbody></table>`;
             card.classList.remove('hidden');
         }
@@ -3961,12 +3961,12 @@
         function showArpTable(dev, newIp) {
             const cache = netTables.arp[dev.id] || {};
             const ips = Object.keys(cache);
-            renderTableCard(`Tabla ARP de ${dev.name}`, 'IP', 'MAC', ips.map(ip => ({ a: ip, b: cache[ip] })), ips.indexOf(newIp));
+            renderTableCard(I18N.t('sim.table.arpTitle', { name: dev.name }), I18N.t('sim.table.headIp'), I18N.t('sim.table.headMac'), ips.map(ip => ({ a: ip, b: cache[ip] })), ips.indexOf(newIp));
         }
         function showMacTable(sw, newMac) {
             const t = netTables.mac[sw.id] || {};
             const macs = Object.keys(t);
-            renderTableCard(`Tabla MAC de ${sw.name}`, 'MAC', 'Puerto hacia', macs.map(m => ({ a: m, b: devName(t[m]) })), macs.indexOf(newMac));
+            renderTableCard(I18N.t('sim.table.macTitle', { name: sw.name }), I18N.t('sim.table.headMac'), I18N.t('sim.table.headPort'), macs.map(m => ({ a: m, b: devName(t[m]) })), macs.indexOf(newMac));
         }
         function neighborIds(id) {
             return state.connections.filter(c => c.from === id || c.to === id).map(c => c.from === id ? c.to : c.from);
@@ -4016,8 +4016,8 @@
             const isGw = hop.id !== target.id;
             const askIp = isGw ? source.gateway : target.ip;
             if ((netTables.arp[source.id] || {})[askIp]) {
-                showTrafficCaption(`${source.name} ya conoce la MAC de ${hop.name} (${hop.ip}). Mira su tabla ARP: no necesita preguntar de nuevo.`, 0, 0, 'node');
-                addTrafficLog(`${source.name} usa su tabla ARP (ya conoce a ${hop.name}).`, 'text-emerald-500');
+                showTrafficCaption(I18N.t('sim.cap.arpKnown', { s: source.name, hop: hop.name, ip: hop.ip }), 0, 0, 'node');
+                addTrafficLog(I18N.t('sim.log.arpKnown', { s: source.name, hop: hop.name }), 'text-emerald-500');
                 showArpTable(source, null);
                 if (!(await waitTraffic(3600 * k(), token))) return false;
                 hideTableCard();
@@ -4025,8 +4025,8 @@
             }
             const p = findConnectionPath(source.id, hop.id);
             if (!p) return true;
-            showTrafficCaption(`${source.name} no conoce la MAC de ${hop.name}${isGw ? ' (su puerta de enlace)' : ''}. Antes de enviar datos, la pregunta con ARP.`, 0, 0, 'node');
-            addTrafficLog(`${source.name} no tiene a ${hop.name} en su tabla ARP: hace una consulta ARP primero.`, 'text-amber-500');
+            showTrafficCaption(I18N.t('sim.cap.arpUnknown', { s: source.name, hop: hop.name, gw: isGw ? I18N.t('sim.gatewayHint') : '' }), 0, 0, 'node');
+            addTrafficLog(I18N.t('sim.log.arpUnknown', { s: source.name, hop: hop.name }), 'text-amber-500');
             showArpTable(source, null);
             if (!(await waitTraffic(3600 * k(), token))) return false;
             arpTargetIp = askIp;
@@ -4042,34 +4042,34 @@
             const destination = state.devices.find(d => d.id === destinationId);
             const status = document.getElementById('traffic-status');
             const log = document.getElementById('traffic-log');
-            if (!source || !destination) { showToast('Agrega al menos dos dispositivos para simular una comunicación.', 'warning'); return; }
-            if (source.id === destination.id) { showToast('El origen y el destino deben ser diferentes.', 'warning'); return; }
+            if (!source || !destination) { showToast(I18N.t('sim.toast.needTwoDevices'), 'warning'); return; }
+            if (source.id === destination.id) { showToast(I18N.t('sim.toast.sameDevice'), 'warning'); return; }
             const path = findConnectionPath(source.id, destination.id);
             if (log) log.innerHTML = '';
             const token = trafficRunToken;
             trafficPaused = false;
             const pb = document.getElementById('traffic-pause'); if (pb) pb.innerHTML = '<i class="fa-solid fa-pause"></i>';
             if (!path) {
-                const msg = `${source.name} no puede llegar a ${destination.name}: no hay cables ni Wi‑Fi que los unan`;
-                if (status) status.textContent = 'FALLO: no existe un camino físico entre origen y destino.';
-                addTrafficLog(`FALLO: ${source.name} no tiene una ruta de enlaces hasta ${destination.name}.`, 'text-rose-400');
+                const msg = I18N.t('sim.cap.noPath', { s: source.name, d: destination.name });
+                if (status) status.textContent = I18N.t('sim.status.noPath');
+                addTrafficLog(I18N.t('sim.log.noPath', { s: source.name, d: destination.name }), 'text-rose-400');
                 showTrafficCaption(msg, 0, 0, 'fail');
                 pulseDevice(source, '#f43f5e', 2400, token).then(ok => { if (ok) hideTrafficCaption(); });
-                showToast('No hay un camino conectado entre esos dispositivos.', 'warning');
+                showToast(I18N.t('sim.toast.noPath'), 'warning');
                 return;
             }
             const k = () => trafficSpeed();
             tcpOpened = false;
             if (protocol === 'DHCP') {
                 const server = destination, isSrv = server.type === 'router' || (server.type === 'switch' && server.switchLayer === 'L3');
-                if (source.ipMode !== 'dhcp') return simFail(source, `${source.name} tiene IP fija: no usa DHCP. Cambiá su modo a DHCP en la configuración IP.`, `${source.name} usa IP fija, no pide IP por DHCP.`, token);
-                if (!isSrv || !server.dhcpEnabled) return simFail(source, `${server.name} no es un servidor DHCP (o lo tiene apagado): nadie responde al Discover.`, `${server.name} no responde DHCP.`, token);
-                if (!source.ip || source.ip.startsWith('169.254')) return simFail(source, `${server.name} no pudo ofrecer una IP a ${source.name}: revisá el rango DHCP del servidor (o que el cable llegue hasta él).`, `${server.name} no tiene IP para ofrecer a ${source.name}.`, token);
+                if (source.ipMode !== 'dhcp') return simFail(source, I18N.t('sim.fail.dhcpStaticIp', { s: source.name }), I18N.t('sim.fail.logDhcpStaticIp', { s: source.name }), token);
+                if (!isSrv || !server.dhcpEnabled) return simFail(source, I18N.t('sim.fail.dhcpNotServer', { s: server.name }), I18N.t('sim.fail.logDhcpNotServer', { s: server.name }), token);
+                if (!source.ip || source.ip.startsWith('169.254')) return simFail(source, I18N.t('sim.fail.dhcpNoIp', { s: server.name, target: source.name }), I18N.t('sim.fail.logDhcpNoIp', { s: server.name, target: source.name }), token);
                 dhcpInfo = { ip: source.ip, mask: source.mask, gw: source.gateway, srv: server.ip };
                 if (!(await runExchange({ protocol: 'DISCOVER', source, destination: server, path, token, pre: 'REQUEST' }))) return;
                 if (!(await runExchange({ protocol: 'REQUEST', source, destination: server, path, token, pre: null }))) return;
                 if (isAdvanced()) {
-                    renderTableCard(`Concesión DHCP de ${source.name}`, 'Dato', 'Valor', [{ a: 'Dirección IP', b: source.ip }, { a: 'Máscara', b: source.mask }, { a: 'Puerta de enlace', b: source.gateway }, { a: 'Servidor DHCP', b: server.name }], 0);
+                    renderTableCard(I18N.t('sim.table.leaseTitle', { name: source.name }), I18N.t('sim.table.headData'), I18N.t('sim.table.headValue'), [{ a: I18N.t('sim.table.dhcpIp'), b: source.ip }, { a: I18N.t('sim.table.dhcpMask'), b: source.mask }, { a: I18N.t('sim.table.dhcpGateway'), b: source.gateway }, { a: I18N.t('sim.table.dhcpServer'), b: server.name }], 0);
                     await waitTraffic(4500 * k(), token);
                     hideTableCard();
                 }
@@ -4089,27 +4089,27 @@
                 if (protocol !== 'ARP' && !sameSubnet(source.ip, destination.ip, source.mask)) {
                     const gwSet = source.gateway && source.gateway !== '0.0.0.0';
                     const gwDev = gwSet ? state.devices.find(d => d.id !== source.id && ownsIp(d, source.gateway)) : null;
-                    if (!gwSet) return simFail(source, `${source.name} quiere llegar a otra red (${destination.ip}) pero no tiene puerta de enlace: no sabe por dónde salir.`, `${source.name} no tiene puerta de enlace configurada.`, token);
-                    if (!gwDev) return simFail(source, `La puerta de enlace de ${source.name} (${source.gateway}) no existe en esta red: el paquete no sabe por dónde salir.`, `La puerta de enlace ${source.gateway} no existe.`, token);
-                    if (!sameSubnet(source.ip, source.gateway, source.mask)) return simFail(source, `La puerta de enlace ${source.gateway} no está en la misma red que ${source.name} (${source.ip}): revisá su IP y su máscara.`, `Puerta de enlace fuera de la red de ${source.name}.`, token);
-                    if (!path.includes(gwDev.id)) return simFail(source, `El camino hacia ${destination.name} no pasa por la puerta de enlace ${gwDev.name}. Revisá los cables.`, `El camino físico no pasa por ${gwDev.name}.`, token);
+                    if (!gwSet) return simFail(source, I18N.t('sim.fail.noGateway', { s: source.name, ip: destination.ip }), I18N.t('sim.fail.logNoGateway', { s: source.name }), token);
+                    if (!gwDev) return simFail(source, I18N.t('sim.fail.gatewayMissing', { s: source.name, gw: source.gateway }), I18N.t('sim.fail.logGatewayMissing', { gw: source.gateway }), token);
+                    if (!sameSubnet(source.ip, source.gateway, source.mask)) return simFail(source, I18N.t('sim.fail.gatewayOtherNet', { gw: source.gateway, s: source.name, ip: source.ip }), I18N.t('sim.fail.logGatewayOtherNet', { s: source.name }), token);
+                    if (!path.includes(gwDev.id)) return simFail(source, I18N.t('sim.fail.pathNotViaGw', { d: destination.name, gw: gwDev.name }), I18N.t('sim.fail.logPathNotViaGw', { gw: gwDev.name }), token);
                     if ((destination.type === 'pc' || isWifiClient(destination)) && !sameSubnet(destination.ip, source.ip, destination.mask)) {
                         const dg = destination.gateway && destination.gateway !== '0.0.0.0';
-                        if (!dg || !state.devices.some(d => d.id !== destination.id && ownsIp(d, destination.gateway))) return simFail(source, `${destination.name} recibiría el paquete pero no sabe cómo responder: ${dg ? `su puerta de enlace ${destination.gateway} no existe` : 'no tiene puerta de enlace'}.`, `${destination.name} no puede responder (puerta de enlace).`, token);
+                        if (!dg || !state.devices.some(d => d.id !== destination.id && ownsIp(d, destination.gateway))) return simFail(source, I18N.t('sim.fail.destNoGateway', { d: destination.name, reason: dg ? I18N.t('sim.fail.reasonGwMissing', { gw: destination.gateway }) : I18N.t('sim.fail.reasonNoGw') }), I18N.t('sim.fail.logDestNoGateway', { d: destination.name }), token);
                     }
                 }
                 const name = (document.getElementById('traffic-site')?.value || '').trim().toLowerCase() || 'www.ejemplo.com';
                 const recordOf = (dnsDev, host) => (dnsDev.records || []).find(r => r.name === host)?.ip || null;
                 const dnsOff = dnsDev => dnsDev.type === 'dns' && dnsDev.dnsOnline === false;
                 if (protocol === 'DNS') {
-                    if (dnsOff(destination)) return simFail(source, `${destination.name} (servidor DNS) está apagado: nadie responde a la consulta.`, `${destination.name} está apagado.`, token);
+                    if (dnsOff(destination)) return simFail(source, I18N.t('sim.fail.dnsOff', { d: destination.name }), I18N.t('sim.fail.logDnsOff', { d: destination.name }), token);
                     trafficSite = { name, ip: destination.type === 'dns' ? recordOf(destination, name) : (dnsRecords[name] || '93.184.216.34') };
                 } else trafficSite = { name, ip: destination.ip };
                 let target = destination, tpath = path;
                 if (protocol === 'HTTP') {
                     let resolved = (netTables.dns[source.id] || {})[name];
                     if (resolved) {
-                        showTrafficCaption(`${source.name} ya conoce la IP de ${name} (tabla DNS): no necesita preguntar.`, 0, 0, 'node');
+                        showTrafficCaption(I18N.t('sim.cap.dnsKnown', { s: source.name, name: name }), 0, 0, 'node');
                         showDnsTable(source, null);
                         if (!(await waitTraffic(3600 * k(), token))) return;
                         hideTableCard();
@@ -4118,13 +4118,13 @@
                         let dnsDev = state.devices.find(d => d.id === sel) || state.devices.find(d => d.type === 'dns' && d.id !== source.id) || state.devices.find(d => d.type === 'cloud' && d.id !== source.id) || destination;
                         if (dnsDev.id === source.id) dnsDev = destination;
                         const dp = findConnectionPath(source.id, dnsDev.id);
-                        if (!dp) return simFail(source, `${source.name} no puede llegar al servidor DNS ${dnsDev.name}: no hay camino.`, `Sin camino hasta el servidor DNS ${dnsDev.name}.`, token);
-                        if (dnsOff(dnsDev)) return simFail(source, `El servidor DNS ${dnsDev.name} está apagado: nadie responde a la consulta.`, `${dnsDev.name} está apagado.`, token);
+                        if (!dp) return simFail(source, I18N.t('sim.fail.noDnsPath', { s: source.name, dns: dnsDev.name }), I18N.t('sim.fail.logNoDnsPath', { dns: dnsDev.name }), token);
+                        if (dnsOff(dnsDev)) return simFail(source, I18N.t('sim.fail.dnsOff', { d: dnsDev.name }), I18N.t('sim.fail.logDnsOff', { d: dnsDev.name }), token);
                         resolved = dnsDev.type === 'dns' ? recordOf(dnsDev, name) : destination.ip;
                         if (dnsDev.type !== 'dns') dnsRecords[name] = destination.ip;
                         trafficSite = { name, ip: resolved };
-                        showTrafficCaption(`${source.name} conoce el nombre ${name} pero no su IP. Primero le pregunta a un servidor DNS (${dnsDev.name}).`, 0, 0, 'node');
-                        addTrafficLog(`${source.name} necesita resolver ${name} con DNS.`, 'text-amber-500');
+                        showTrafficCaption(I18N.t('sim.cap.dnsAsk', { s: source.name, name: name, dns: dnsDev.name }), 0, 0, 'node');
+                        addTrafficLog(I18N.t('sim.log.dnsNeed', { s: source.name, name: name }), 'text-amber-500');
                         showDnsTable(source, null);
                         if (!(await waitTraffic(3600 * k(), token))) return;
                         if (!(await ensureArp(source, dnsDev, 'DNS', token))) return;
@@ -4133,12 +4133,12 @@
                     trafficSite = { name, ip: resolved };
                     // El destino real es el equipo dueño de la IP a la que apunta el nombre.
                     const real = state.devices.find(d => ownsIp(d, resolved));
-                    if (!real) return simFail(source, `El nombre ${name} se resolvió a ${resolved}, pero ningún equipo de la red tiene esa IP.`, `Ningún equipo tiene la IP ${resolved}.`, token);
+                    if (!real) return simFail(source, I18N.t('sim.fail.noIpOwner', { name: name, ip: resolved }), I18N.t('sim.fail.logNoIpOwner', { ip: resolved }), token);
                     if (real.id !== destination.id) {
                         const rp = findConnectionPath(source.id, real.id);
-                        if (!rp) return simFail(source, `${name} apunta a ${real.name} (${resolved}), pero no hay camino hasta ese equipo.`, `Sin camino hasta ${real.name}.`, token);
-                        showTrafficCaption(`El nombre ${name} apunta a ${real.name} (${resolved}), no a ${destination.name}. La página se pide a ${real.name}.`, 0, 0, 'node');
-                        addTrafficLog(`${name} → ${resolved}: el pedido va a ${real.name}.`, 'text-amber-500');
+                        if (!rp) return simFail(source, I18N.t('sim.fail.noPathToReal', { name: name, real: real.name, ip: resolved }), I18N.t('sim.fail.logNoPathToReal', { real: real.name }), token);
+                        showTrafficCaption(I18N.t('sim.cap.dnsWrongHost', { name: name, real: real.name, ip: resolved, dest: destination.name }), 0, 0, 'node');
+                        addTrafficLog(I18N.t('sim.log.dnsWrongHost', { name: name, ip: resolved, real: real.name }), 'text-amber-500');
                         if (!(await waitTraffic(3600 * k(), token))) return;
                         target = real; tpath = rp;
                     }
@@ -4166,18 +4166,18 @@
             const adv = isAdvanced();
             const label = { SYN: 'TCP SYN/SYN-ACK', DISCOVER: 'DHCP Discover/Offer', REQUEST: 'DHCP Request/Ack' }[protocol] || protocol;
             const kp = () => k() * (adv ? 1 : 0.55);
-            if (status) status.textContent = `${label}: ${source.name} ⇄ ${destination.name} · ${hops} salto(s) de ida y otros ${hops} de vuelta`;
-            addTrafficLog(`${label} · Recorrido: ${seqF.map(d => d.name).join(' → ')}`);
+            if (status) status.textContent = I18N.t('sim.status.running', { label: label, s: source.name, d: destination.name, hops: hops });
+            addTrafficLog(I18N.t('sim.log.route', { label: label, path: seqF.map(d => d.name).join(' → ') }));
 
             const reqLabel = (protocol === 'HTTP' && tcpOpened) ? 'ACK + GET /' : info.req;
-            const reqText = (vpnCtx && protocol !== 'ARP') ? `${source.name} (IP VPN ${vpnCtx.srcIp}) le escribe a ${destination.name} (IP VPN ${vpnCtx.dstIp}) por el túnel ${vpnCtx.preset}${vpnCtx.mode === 'relevo' ? ' · pasa por el servidor VPN' : ' · conexión directa'}` : (protocol === 'HTTP' && tcpOpened) ? `3/3 ACK: ${source.name} confirma la conexión y pide la página a ${destination.name} (HTTP GET)` : info.reqTxt(source, destination);
+            const reqText = (vpnCtx && protocol !== 'ARP') ? I18N.t('sim.req.vpn', { s: source.name, d: destination.name, srcIp: vpnCtx.srcIp, dstIp: vpnCtx.dstIp, preset: vpnCtx.preset, mode: vpnCtx.mode === 'relevo' ? I18N.t('sim.req.vpnRelay') : I18N.t('sim.req.vpnDirect') }) : (protocol === 'HTTP' && tcpOpened) ? I18N.t('sim.req.ackGet', { s: source.name, d: destination.name }) : info.reqTxt(source, destination);
             const ORDER_IN = ['app', 'tr', 'inet', 'vpn', 'net', 'link'];
             // Con VPN, el IP de afuera (el tramo del túnel) depende de en qué parte del recorrido estemos.
             const setLeg = (sq, j) => { vpnLegTxt = ''; if (!vpnCtx) return; const si = vpnCtx.mode === 'relevo' ? sq.findIndex(x => x.id === vpnCtx.serverId) : -1; let a = sq[0], b = sq[sq.length - 1]; if (si > 0 && si < sq.length - 1) { if (j < si) b = sq[si]; else a = sq[si]; } vpnLegTxt = `${a.ip} → ${b.ip}`; if (b.type === 'vpn' && vpnCtx.natFor && vpnCtx.natFor[a.id]) vpnLegTxt = `${a.ip} → ${routerPublicIp(vpnCtx.natFor[a.id])}:${vpnCtx.port} (el router lo redirige a ${b.ip})`; };
             function encap(s, d, pair, isReply, ms) {
                 const data = layerData(protocol, s, d, pair.from, pair.to, isReply);
                 const order = ORDER_IN.filter(x => data[x]);
-                const title = `Encapsulación en ${s.name}: cada capa agrega su encabezado`;
+                const title = I18N.t('sim.layer.encapTitle', { name: s.name });
                 return animateFor(ms, token, t => {
                     const n = Math.max(1, Math.min(order.length, Math.ceil(t * order.length - 1e-6)));
                     renderLayerCard(title, data, order.slice(0, n), new Set([order[n - 1]]));
@@ -4186,7 +4186,7 @@
             function decap(s, d, pair, isReply, who, ms) {
                 const data = layerData(protocol, s, d, pair.from, pair.to, isReply);
                 const order = ['link', 'net', 'vpn', 'inet', 'tr', 'app'].filter(x => data[x]);
-                const title = `Desencapsulación en ${who.name}: se quita una capa a la vez, de afuera hacia adentro`;
+                const title = I18N.t('sim.layer.decapTitle', { name: who.name });
                 return animateFor(ms, token, t => {
                     const m = Math.min(order.length - 1, Math.floor(t * order.length));
                     renderLayerCard(title, data, order.slice(m), new Set([order[m]]));
@@ -4200,9 +4200,9 @@
                 if (node.type === 'vpn' && vpnCtx && vpnCtx.mode === 'relevo' && node.id === vpnCtx.serverId) {
                     const pr = macPair(seq, j);
                     const rows = state.devices.filter(x => x.vpn && x.vpn.server === node.id).map(x => ({ a: x.vpn.ip, b: x.name }));
-                    renderTableCard(`Equipos conectados a ${node.name} (${vpnCtx.preset})`, 'IP VPN', 'Equipo', rows, -1);
-                    renderLayerCard('El servidor VPN descifra el paquete, lee la IP VPN de destino y lo vuelve a cifrar hacia el otro equipo', layerData(protocol, s, d, pr.from, pr.to, isReply), ORDER_IN, new Set(['vpn', 'inet']));
-                    addTrafficLog(`${node.name} (servidor VPN) reenvía el tráfico del túnel hacia ${isReply ? vpnCtx.srcIp : vpnCtx.dstIp}.`, 'text-violet-400');
+                    renderTableCard(I18N.t('sim.table.vpnMembersTitle', { name: node.name, preset: vpnCtx.preset }), I18N.t('sim.table.headVpnIp'), I18N.t('sim.table.headDevice'), rows, -1);
+                    renderLayerCard(I18N.t('sim.layer.vpnDecrypt'), layerData(protocol, s, d, pr.from, pr.to, isReply), ORDER_IN, new Set(['vpn', 'inet']));
+                    addTrafficLog(I18N.t('sim.log.vpnForward', { name: node.name, ip: isReply ? vpnCtx.srcIp : vpnCtx.dstIp }), 'text-violet-400');
                     return pulseDevice(node, '#a855f7', 2800 * kp(), token);
                 }
                 if (node.type === 'switch') {
@@ -4213,12 +4213,14 @@
                     table[srcMac] = seq[j - 1].id;
                     const broadcast = (['ARP', 'DISCOVER', 'REQUEST'].includes(protocol) && !isReply);
                     const known = !broadcast && table[dstMac] !== undefined;
-                    const title = broadcast ? 'Difusión (FF:FF…): el switch la envía por TODOS los puertos'
-                        : known ? 'El switch ya conoce la MAC destino: la envía solo por un puerto'
-                            : 'El switch todavía no conoce la MAC destino: la envía por todos los puertos (inundación)';
+                    const title = broadcast ? I18N.t('sim.layer.switchBroadcast')
+                        : known ? I18N.t('sim.layer.switchKnown')
+                            : I18N.t('sim.layer.switchUnknown');
                     renderLayerCard(title, layerData(protocol, s, d, pair.from, pair.to, isReply), ORDER_IN, new Set(['link']));
                     showMacTable(node, isNew ? srcMac : null);
-                    addTrafficLog(`${node.name} (switch) ${isNew ? 'aprendió' : 'ya conocía'} la MAC de ${pair.from.name}${known ? ' y reenvía solo por un puerto' : ' y reenvía por todos los puertos'}.`, isNew ? 'text-emerald-500' : '');
+                    addTrafficLog(known
+                        ? (isNew ? I18N.t('sim.log.switchLearnedOne', { name: node.name, mac: pair.from.name }) : I18N.t('sim.log.switchKnewOne', { name: node.name, mac: pair.from.name }))
+                        : (isNew ? I18N.t('sim.log.switchLearned', { name: node.name, mac: pair.from.name }) : I18N.t('sim.log.switchKnew', { name: node.name, mac: pair.from.name })), isNew ? 'text-emerald-500' : '');
                     const tasks = [pulseDevice(node, '#94a3b8', 2800 * kp(), token)];
                     if (!known) tasks.push(floodGhosts(node, [seq[j - 1].id, seq[j + 1].id], '#94a3b8', 2800 * kp(), token));
                     return Promise.all(tasks).then(r => r.every(Boolean));
@@ -4226,28 +4228,30 @@
                 const pair = macPair(seq, j); // tramo de salida del router
                 if (node.type === 'lrouter' && protocol !== 'ARP') {
                     const hit = routeLookup(node, d.ip), rows = routeRows(node);
-                    renderTableCard(`Tabla de rutas de ${node.name}`, 'Destino', 'Salida', rows, hit ? rows.findIndex(x => x.ref === hit.ref) : -1);
+                    renderTableCard(I18N.t('sim.table.routesTitle', { name: node.name }), I18N.t('sim.table.headDest'), I18N.t('sim.table.headOut'), rows, hit ? rows.findIndex(x => x.ref === hit.ref) : -1);
                     const drop = (msg, lg) => {
                         hideLayerCard(); showTrafficCaption(msg, 0, 0, 'fail'); addTrafficLog(lg, 'text-rose-400');
                         if (status) status.textContent = 'FALLO: ' + lg;
                         return pulseDevice(node, '#f43f5e', 3600 * kp(), token).then(() => false);
                     };
-                    if (!hit) return drop(`${node.name} busca ${d.ip} en su tabla de rutas y no encuentra ninguna: descarta el paquete. Falta agregar una ruta.`, `${node.name} no tiene ruta hacia ${d.ip}: paquete descartado.`);
-                    if (hit.kind === 'static' && !ownsIp(pair.to, hit.ref.via)) return drop(`La ruta de ${node.name} apunta a ${hit.ref.via}, pero el siguiente equipo conectado es ${pair.to.name}. Revisá la ruta o los cables.`, `Siguiente salto incorrecto en ${node.name}.`);
-                    addTrafficLog(`${node.name} busca ${d.ip} en su tabla de rutas: ${hit.kind === 'connected' ? 'está en una red conectada a una de sus interfaces' : `usa la ruta ${hit.ref.net}/${hit.ref.prefix} vía ${hit.ref.via}`}.`);
-                    renderLayerCard('El router lee la IP, elige la interfaz de salida y arma una trama nueva con otras MAC', layerData(protocol, s, d, pair.from, pair.to, isReply), ORDER_IN, new Set(['net', 'link']));
+                    if (!hit) return drop(I18N.t('sim.route.notFound', { name: node.name, ip: d.ip }), I18N.t('sim.log.routeNotFound', { name: node.name, ip: d.ip }));
+                    if (hit.kind === 'static' && !ownsIp(pair.to, hit.ref.via)) return drop(I18N.t('sim.route.wrongNext', { name: node.name, via: hit.ref.via, next: pair.to.name }), I18N.t('sim.log.routeWrongNext', { name: node.name }));
+                    addTrafficLog(hit.kind === 'connected'
+                        ? I18N.t('sim.log.routeConnected', { name: node.name, ip: d.ip })
+                        : I18N.t('sim.log.routeStatic', { name: node.name, ip: d.ip, net: hit.ref.net, prefix: hit.ref.prefix, via: hit.ref.via }));
+                    renderLayerCard(I18N.t('sim.layer.routerRoute'), layerData(protocol, s, d, pair.from, pair.to, isReply), ORDER_IN, new Set(['net', 'link']));
                     return pulseDevice(node, '#94a3b8', 2800 * kp(), token);
                 }
                 if (protocol !== 'ARP') {
                     const net = ipv4ToInt(node.ip) & ipv4ToInt(node.mask) >>> 0, pre = ipv4ToInt(node.mask).toString(2).replace(/0/g, '').length;
                     const local = sameSubnet(node.ip, d.ip, node.mask);
-                    renderTableCard(`Tabla de rutas de ${node.name}`, 'Destino', 'Salida', [
-                        { a: `${intToIp(net >>> 0)}/${pre}`, b: 'red local (conectada)' },
-                        { a: '0.0.0.0/0', b: `ruta predeterminada → ${seq[j + 1].name}` }], local ? 0 : 1);
-                    addTrafficLog(`${node.name} busca ${d.ip} en su tabla de rutas: ${local ? 'es de su red local' : 'usa la ruta predeterminada'}.`);
+                    renderTableCard(I18N.t('sim.table.routesTitle', { name: node.name }), I18N.t('sim.table.headDest'), I18N.t('sim.table.headOut'), [
+                        { a: `${intToIp(net >>> 0)}/${pre}`, b: I18N.t('sim.table.routeLocal') },
+                        { a: '0.0.0.0/0', b: I18N.t('sim.table.routeDefault', { name: seq[j + 1].name }) }], local ? 0 : 1);
+                    addTrafficLog(local ? I18N.t('sim.log.routeLocal', { name: node.name, ip: d.ip }) : I18N.t('sim.log.routeDefault', { name: node.name, ip: d.ip }));
                 }
-                const title = protocol === 'ARP' ? 'Ojo: ARP normalmente no cruza un router; solo sirve dentro de la misma red'
-                    : 'El router lee la IP, descarta la trama vieja y arma otra con nuevas MAC';
+                const title = protocol === 'ARP' ? I18N.t('sim.layer.routerArp')
+                    : I18N.t('sim.layer.routerNewFrame');
                 renderLayerCard(title, layerData(protocol, s, d, pair.from, pair.to, isReply), ORDER_IN, new Set(['net', 'link']));
                 return pulseDevice(node, '#94a3b8', 2400 * kp(), token);
             }
@@ -4261,7 +4265,7 @@
                 if (line) { line.setAttribute('stroke', color); line.setAttribute('stroke-width', '6'); line.setAttribute('stroke-dasharray', '8 6'); }
                 const packet = makePacket(color, isReply ? info.rep : reqLabel, isReply);
                 const pair = macPair(seq, j);
-                renderLayerCard('Viaja el paquete completo, con todas sus capas juntas', layerData(protocol, isReply ? destination : source, isReply ? source : destination, pair.from, pair.to, isReply), ORDER_IN, new Set(ORDER_IN));
+                renderLayerCard(I18N.t('sim.layer.travels'), layerData(protocol, isReply ? destination : source, isReply ? source : destination, pair.from, pair.to, isReply), ORDER_IN, new Set(ORDER_IN));
                 svgCanvas.appendChild(packet);
                 const x1 = fromDev.x + 28, y1 = fromDev.y + 28, x2 = toDev.x + 28, y2 = toDev.y + 28;
                 const dur = (conn.type === 'wifi' ? 2200 : 1800) * k();
@@ -4289,7 +4293,7 @@
             // IDA
             for (let i = 0; i < hops; i++) {
                 const from = seqF[i], to = seqF[i + 1];
-                showTrafficCaption(`${from.name} → ${to.name}: el paquete viaja por ${getConnectionBetween(from.id, to.id)?.type === 'wifi' ? 'Wi‑Fi' : 'el cable'}`, ++step, total, 'go');
+                showTrafficCaption(I18N.t('sim.cap.travel', { from: from.name, to: to.name, link: getConnectionBetween(from.id, to.id)?.type === 'wifi' ? I18N.t('sim.cap.travelWifi') : I18N.t('sim.cap.travelCable') }), ++step, total, 'go');
                 if (!(await travel(seqF, i, false))) return false;
                 if (i < hops - 1) {
                     showTrafficCaption(nodeAction(to), step, total, 'node');
@@ -4304,7 +4308,7 @@
             if (protocol === 'ARP' && adv) {
                 (netTables.arp[destination.id] || (netTables.arp[destination.id] = {}))[source.ip] = macOf(source);
                 showArpTable(destination, source.ip);
-                addTrafficLog(`${destination.name} guarda en su tabla ARP: ${source.ip} → ${macOf(source)}.`, 'text-emerald-500');
+                addTrafficLog(I18N.t('sim.log.arpSave', { name: destination.name, ip: source.ip, mac: macOf(source) }), 'text-emerald-500');
             }
             setLeg(seqF, hops - 1);
             if (!(await Promise.all([pulseDevice(destination, info.color, 2600 * kp(), token), decap(source, destination, macPair(seqF, hops - 1), false, destination, 2600 * kp())])).every(Boolean)) return false;
@@ -4318,7 +4322,7 @@
             for (let i = 0; i < hops; i++) {
                 const from = seqB[i], to = seqB[i + 1];
                 if (token !== trafficRunToken) return false;
-                if (i > 0) showTrafficCaption(`${from.name} → ${to.name}: la respuesta regresa`, ++step, total, 'back');
+                if (i > 0) showTrafficCaption(I18N.t('sim.cap.back', { from: from.name, to: to.name }), ++step, total, 'back');
                 if (!(await travel(seqB, i, true))) return false;
                 if (i < hops - 1) {
                     showTrafficCaption(nodeAction(to), step, total, 'node');
@@ -4331,31 +4335,31 @@
                 const askedIp = arpTargetIp || destination.ip;
                 (netTables.arp[source.id] || (netTables.arp[source.id] = {}))[askedIp] = macOf(destination);
                 showArpTable(source, askedIp);
-                addTrafficLog(`${source.name} guarda en su tabla ARP: ${askedIp} → ${macOf(destination)}.`, 'text-emerald-500');
+                addTrafficLog(I18N.t('sim.log.arpSave', { name: source.name, ip: askedIp, mac: macOf(destination) }), 'text-emerald-500');
             }
             if (protocol === 'DNS' && adv && !trafficSite.ip) {
-                simFail(source, `${destination.name} no conoce el nombre ${trafficSite.name} y responde «no existe». Agregalo en los registros del servidor DNS.`, `${destination.name}: el nombre ${trafficSite.name} no existe.`, token);
+                simFail(source, I18N.t('sim.fail.dnsNameMissing', { d: destination.name, site: trafficSite.name }), I18N.t('sim.fail.logDnsNameMissing', { d: destination.name, site: trafficSite.name }), token);
                 return false;
             }
             if (protocol === 'DNS' && adv) {
                 (netTables.dns[source.id] || (netTables.dns[source.id] = {}))[trafficSite.name] = trafficSite.ip;
                 showDnsTable(source, trafficSite.name);
-                addTrafficLog(`${source.name} guarda en su tabla DNS: ${trafficSite.name} → ${trafficSite.ip}.`, 'text-emerald-500');
+                addTrafficLog(I18N.t('sim.log.dnsSave', { name: source.name, site: trafficSite.name, ip: trafficSite.ip }), 'text-emerald-500');
             }
             setLeg(seqB, hops - 1);
             if (!(await decap(destination, source, macPair(seqB, hops - 1), true, source, 2600 * kp()))) return false;
 
             // Fin
             if (pre) {
-                showTrafficCaption(protocol === 'SYN' ? `¡Listo! La conexión TCP entre ${source.name} y ${destination.name} está abierta. Ahora ${source.name} confirma (ACK) y pide la página.` : protocol === 'DISCOVER' ? `¡Listo! ${source.name} recibió una oferta de ${destination.name}: la IP ${dhcpInfo.ip}. Ahora la va a aceptar.` : protocol === 'DNS' ? `¡Listo! ${source.name} ya sabe que ${trafficSite.name} es ${trafficSite.ip}. Ahora sí pide la página web.` : `¡Listo! ${source.name} ya sabe la MAC de ${destination.name} y la guardó en su tabla ARP. Ahora sí envía el ${pre}.`, total, total, 'ok');
+                showTrafficCaption(protocol === 'SYN' ? I18N.t('sim.done.syn', { s: source.name, d: destination.name }) : protocol === 'DISCOVER' ? I18N.t('sim.done.discover', { s: source.name, d: destination.name, ip: dhcpInfo.ip }) : protocol === 'DNS' ? I18N.t('sim.done.dns', { s: source.name, site: trafficSite.name, ip: trafficSite.ip }) : I18N.t('sim.done.arp', { s: source.name, d: destination.name, pre: pre }), total, total, 'ok');
                 await waitTraffic(3600 * kp(), token);
                 hideTableCard();
                 return token === trafficRunToken;
             }
-            showTrafficCaption(protocol === 'REQUEST' ? `¡Listo! ${source.name} ya tiene IP: ${dhcpInfo.ip}, puerta de enlace ${dhcpInfo.gw}. Ya puede comunicarse con la red.` : `¡Listo! ${source.name} recibió la respuesta de ${destination.name}. La comunicación funciona.`, total, total, 'ok');
-            addTrafficLog(`Fin: ${label} completado con éxito.`, 'text-emerald-500');
-            if (status) status.textContent = `COMPLETADO: ${label} fue y volvió entre ${source.name} y ${destination.name}.`;
-            showToast(`Simulación ${label} completada.`, 'success');
+            showTrafficCaption(protocol === 'REQUEST' ? I18N.t('sim.done.request', { s: source.name, ip: dhcpInfo.ip, gw: dhcpInfo.gw }) : I18N.t('sim.done.reply', { s: source.name, d: destination.name }), total, total, 'ok');
+            addTrafficLog(I18N.t('sim.log.end', { label: label }), 'text-emerald-500');
+            if (status) status.textContent = I18N.t('sim.status.completed', { label: label, s: source.name, d: destination.name });
+            showToast(I18N.t('sim.toast.completed', { label: label }), 'success');
             await pulseDevice(source, '#22c55e', 2200 * kp(), token);
             if (token === trafficRunToken) { hideTrafficCaption(); hideLayerCard(); hideTableCard(); }
             return true;

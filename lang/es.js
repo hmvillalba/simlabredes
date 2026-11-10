@@ -119,6 +119,41 @@ window.I18N_DICTS.es = {
         layer2: 'Modo Capa 2'
     },
 
+    // Detalle del paquete en la vista por capas (capas OSI y contenido).
+    packet: {
+        link: 'Enlace · Ethernet',
+        net: 'Red · IP',
+        vpn: 'Túnel VPN (cifrado)',
+        inet: 'Red interna · IP VPN',
+        tr: 'Transporte',
+        app: 'Aplicación',
+        broadcastMac: '{mac} → FF:FF:FF:FF:FF:FF (todos)',
+        tunnel: '{preset}: túnel UDP puerto {port} · todo lo de adentro va cifrado',
+        icmp: '{src} → {dst} · ICMP {type}',
+        icmpReply: 'Echo Reply',
+        icmpRequest: 'Echo Request',
+        arpReply: ' · «{ip} está en {mac}»',
+        arpRequest: ' · «¿Quién tiene {ip}?»',
+        dnsResolved: 'DNS: {name} = {ip}',
+        dnsNxdomain: 'DNS: {name} no existe (NXDOMAIN)',
+        dnsQuery: 'DNS: ¿cuál es la IP de {name}?',
+        udp53to: 'UDP puerto 53 → {port}',
+        udpTo53: 'UDP puerto {port} → 53',
+        tcp80to: 'TCP puerto 80 → {port} · banderas SYN + ACK',
+        tcpTo80: 'TCP puerto {port} → 80 · bandera SYN',
+        dhcpOffer: 'DHCP Offer: IP {ip}/{prefix} · puerta de enlace {gw}',
+        dhcpAck: 'DHCP Ack: IP {ip}/{prefix} · puerta de enlace {gw}',
+        dhcpDiscover: 'DHCP Discover: ¿hay un servidor DHCP?',
+        dhcpRequest: 'DHCP Request: quiero la IP {ip}',
+        udp67to68: 'UDP puerto 67 → 68',
+        udp68to67: 'UDP puerto 68 → 67',
+        dhcpNet: '{src} → {ip}',
+        broadcastNet: '0.0.0.0 → 255.255.255.255 (difusión)',
+        httpOk: 'HTTP 200 OK + página web',
+        httpGet: 'HTTP GET / (pido la página)',
+        tcp80: 'TCP puerto 80 → {port}',
+        tcpTo80ack: 'TCP puerto {port} → 80 · bandera ACK (confirma la conexión)'
+    },
     // Fase 3 · zona 4 — modal de dispositivo (pestañas y campos):
     dev: {
         subtitle: 'Tipo: {type}{layer} | MAC: {mac}',
@@ -375,7 +410,194 @@ window.I18N_DICTS.es = {
         stepTitle: 'La simulación se detiene en cada paso hasta que presiones ▶ (o la barra espaciadora)',
         clearTables: 'Borrar tablas (ARP, MAC, DNS)',
         clearTablesTitle: 'Vacía las tablas ARP de los equipos y las tablas MAC de los switches',
-        statusIdle: 'Selecciona origen, destino y protocolo para visualizar el recorrido.'
+        statusIdle: 'Selecciona origen, destino y protocolo para visualizar el recorrido.',
+        modeAdvancedHint: 'Modo avanzado: verás capas, tablas ARP/MAC/DNS y rutas.',
+        modeSimpleHint: 'Modo simple: solo el recorrido del paquete.',
+        paused: 'En pausa. Presiona ▶ para continuar.',
+        stepOf: 'Paso {step} de {total}',
+        stepHint: 'Paso a paso: leé el cartel y presioná ▶ (o la barra espaciadora) para continuar.',
+        tablesCleared: 'Tablas ARP y MAC borradas. La próxima comunicación vuelve a empezar desde cero.',
+        gatewayHint: ' (su puerta de enlace)',
+        table: {
+            empty: '(vacía)',
+            new: '● NUEVA',
+            arpTitle: 'Tabla ARP de {name}',
+            macTitle: 'Tabla MAC de {name}',
+            dnsTitle: 'Tabla DNS de {name}',
+            routesTitle: 'Tabla de rutas de {name}',
+            leaseTitle: 'Concesión DHCP de {name}',
+            vpnMembersTitle: 'Equipos conectados a {name} ({preset})',
+            headName: 'Nombre',
+            headIp: 'IP',
+            headMac: 'MAC',
+            headPort: 'Puerto hacia',
+            headDest: 'Destino',
+            headOut: 'Salida',
+            headData: 'Dato',
+            headValue: 'Valor',
+            headVpnIp: 'IP VPN',
+            headDevice: 'Equipo',
+            dhcpIp: 'Dirección IP',
+            dhcpMask: 'Máscara',
+            dhcpGateway: 'Puerta de enlace',
+            dhcpServer: 'Servidor DHCP',
+            routeConnected: 'conectada · interfaz hacia {name}',
+            routeVia: 'vía {via}',
+            routeLocal: 'red local (conectada)',
+            routeDefault: 'ruta predeterminada → {name}'
+        },
+        // Textos de cada protocolo durante la simulación (pedido / destino / respuesta).
+        text: {
+            icmp: {
+                req: '{s} envía un ping a {d}: «¿estás ahí?»',
+                dest: '{d} recibe el ping y prepara la respuesta',
+                rep: '{d} responde «¡sí, acá estoy!» (echo reply)'
+            },
+            arp: {
+                req: '{s} pregunta: «¿Quién tiene la IP {ip}? ¿Cuál es su MAC?»',
+                dest: '{d} reconoce su IP y prepara su respuesta',
+                rep: '{d} contesta: «Esa IP es mía, esta es mi dirección MAC»'
+            },
+            dns: {
+                req: '{s} pregunta: «¿Qué IP tiene {site}?»',
+                dest: '{d} busca el nombre en su tabla de dominios',
+                rep: '{d} responde: {site} = {ip}',
+                repUnknown: '{d} responde: «no conozco el nombre {site}» (no existe)'
+            },
+            http: {
+                req: '{s} pide una página web a {d} (HTTP GET)',
+                dest: '{d} prepara la página solicitada',
+                rep: '{d} envía la página (200 OK)'
+            },
+            syn: {
+                req: '1/3 SYN: {s} dice «quiero abrir una conexión TCP con {d}»',
+                dest: '{d} acepta abrir la conexión y prepara su respuesta',
+                rep: '2/3 SYN-ACK: {d} responde «de acuerdo, ¿me confirmás?»'
+            },
+            discover: {
+                req: '1/4 Discover: {s} no tiene IP y le grita a toda la red: «¿Hay algún servidor DHCP?»',
+                dest: '{d} (servidor DHCP) escucha el pedido y elige una IP libre de su rango',
+                rep: '2/4 Offer: {d} le ofrece a {s} la IP {ip}'
+            },
+            request: {
+                req: '3/4 Request: {s} acepta la oferta: «Quiero usar la IP {ip}»',
+                dest: '{d} reserva la IP {ip} para ese equipo',
+                rep: '4/4 Ack: {d} confirma «es tuya» y entrega máscara y puerta de enlace'
+            }
+        },
+        node: {
+            switch: '{name} (switch) recibe la trama y la reenvía por el puerto correcto',
+            router: '{name} (router) recibe el paquete y decide por dónde enviarlo',
+            cloud: '{name} (Internet) recibe el paquete y lo hace avanzar',
+            vpn: '{name} (servidor VPN) recibe el tráfico cifrado y lo reenvía',
+            default: '{name} recibe el paquete y lo pasa al siguiente equipo'
+        },
+        // Carteles (lo que se ve sobre el lienzo) y líneas del log de tráfico.
+        cap: {
+            arpKnown: '{s} ya conoce la MAC de {hop} ({ip}). Mira su tabla ARP: no necesita preguntar de nuevo.',
+            arpUnknown: '{s} no conoce la MAC de {hop}{gw}. Antes de enviar datos, la pregunta con ARP.',
+            noPath: '{s} no puede llegar a {d}: no hay cables ni Wi‑Fi que los unan',
+            travel: '{from} → {to}: el paquete viaja por {link}',
+            travelWifi: 'Wi‑Fi',
+            travelCable: 'el cable',
+            back: '{from} → {to}: la respuesta regresa',
+            dnsKnown: '{s} ya conoce la IP de {name} (tabla DNS): no necesita preguntar.',
+            dnsAsk: '{s} conoce el nombre {name} pero no su IP. Primero le pregunta a un servidor DNS ({dns}).',
+            dnsWrongHost: 'El nombre {name} apunta a {real} ({ip}), no a {dest}. La página se pide a {real}.'
+        },
+        log: {
+            arpKnown: '{s} usa su tabla ARP (ya conoce a {hop}).',
+            arpUnknown: '{s} no tiene a {hop} en su tabla ARP: hace una consulta ARP primero.',
+            noPath: 'FALLO: {s} no tiene una ruta de enlaces hasta {d}.',
+            route: '{label} · Recorrido: {path}',
+            arpSave: '{name} guarda en su tabla ARP: {ip} → {mac}.',
+            dnsSave: '{name} guarda en su tabla DNS: {site} → {ip}.',
+            dnsNeed: '{s} necesita resolver {name} con DNS.',
+            dnsWrongHost: '{name} → {ip}: el pedido va a {real}.',
+            vpnForward: '{name} (servidor VPN) reenvía el tráfico del túnel hacia {ip}.',
+            switchLearned: '{name} (switch) aprendió la MAC de {mac} y reenvía por todos los puertos.',
+            switchKnew: '{name} (switch) ya conocía la MAC de {mac} y reenvía por todos los puertos.',
+            switchLearnedOne: '{name} (switch) aprendió la MAC de {mac} y reenvía solo por un puerto.',
+            switchKnewOne: '{name} (switch) ya conocía la MAC de {mac} y reenvía solo por un puerto.',
+            routeNotFound: '{name} no tiene ruta hacia {ip}: paquete descartado.',
+            routeWrongNext: 'Siguiente salto incorrecto en {name}.',
+            routeConnected: '{name} busca {ip} en su tabla de rutas: está en una red conectada a una de sus interfaces.',
+            routeStatic: '{name} busca {ip} en su tabla de rutas: usa la ruta {net}/{prefix} vía {via}.',
+            routeLocal: '{name} busca {ip} en su tabla de rutas: es de su red local.',
+            routeDefault: '{name} busca {ip} en su tabla de rutas: usa la ruta predeterminada.',
+            end: 'Fin: {label} completado con éxito.'
+        },
+        layer: {
+            encapTitle: 'Encapsulación en {name}: cada capa agrega su encabezado',
+            decapTitle: 'Desencapsulación en {name}: se quita una capa a la vez, de afuera hacia adentro',
+            vpnDecrypt: 'El servidor VPN descifra el paquete, lee la IP VPN de destino y lo vuelve a cifrar hacia el otro equipo',
+            switchBroadcast: 'Difusión (FF:FF…): el switch la envía por TODOS los puertos',
+            switchKnown: 'El switch ya conoce la MAC destino: la envía solo por un puerto',
+            switchUnknown: 'El switch todavía no conoce la MAC destino: la envía por todos los puertos (inundación)',
+            routerArp: 'Ojo: ARP normalmente no cruza un router; solo sirve dentro de la misma red',
+            routerNewFrame: 'El router lee la IP, descarta la trama vieja y arma otra con nuevas MAC',
+            routerRoute: 'El router lee la IP, elige la interfaz de salida y arma una trama nueva con otras MAC',
+            travels: 'Viaja el paquete completo, con todas sus capas juntas'
+        },
+        route: {
+            notFound: '{name} busca {ip} en su tabla de rutas y no encuentra ninguna: descarta el paquete. Falta agregar una ruta.',
+            wrongNext: 'La ruta de {name} apunta a {via}, pero el siguiente equipo conectado es {next}. Revisá la ruta o los cables.'
+        },
+        done: {
+            syn: '¡Listo! La conexión TCP entre {s} y {d} está abierta. Ahora {s} confirma (ACK) y pide la página.',
+            discover: '¡Listo! {s} recibió una oferta de {d}: la IP {ip}. Ahora la va a aceptar.',
+            dns: '¡Listo! {s} ya sabe que {site} es {ip}. Ahora sí pide la página web.',
+            arp: '¡Listo! {s} ya sabe la MAC de {d} y la guardó en su tabla ARP. Ahora sí envía el {pre}.',
+            request: '¡Listo! {s} ya tiene IP: {ip}, puerta de enlace {gw}. Ya puede comunicarse con la red.',
+            reply: '¡Listo! {s} recibió la respuesta de {d}. La comunicación funciona.'
+        },
+        fail: {
+            noGateway: '{s} quiere llegar a otra red ({ip}) pero no tiene puerta de enlace: no sabe por dónde salir.',
+            logNoGateway: '{s} no tiene puerta de enlace configurada.',
+            gatewayMissing: 'La puerta de enlace de {s} ({gw}) no existe en esta red: el paquete no sabe por dónde salir.',
+            logGatewayMissing: 'La puerta de enlace {gw} no existe.',
+            gatewayOtherNet: 'La puerta de enlace {gw} no está en la misma red que {s} ({ip}): revisá su IP y su máscara.',
+            logGatewayOtherNet: 'Puerta de enlace fuera de la red de {s}.',
+            pathNotViaGw: 'El camino hacia {d} no pasa por la puerta de enlace {gw}. Revisá los cables.',
+            logPathNotViaGw: 'El camino físico no pasa por {gw}.',
+            destNoGateway: '{d} recibiría el paquete pero no sabe cómo responder: {reason}.',
+            logDestNoGateway: '{d} no puede responder (puerta de enlace).',
+            reasonGwMissing: 'su puerta de enlace {gw} no existe',
+            reasonNoGw: 'no tiene puerta de enlace',
+            dnsOff: '{d} (servidor DNS) está apagado: nadie responde a la consulta.',
+            logDnsOff: '{d} está apagado.',
+            noDnsPath: '{s} no puede llegar al servidor DNS {dns}: no hay camino.',
+            logNoDnsPath: 'Sin camino hasta el servidor DNS {dns}.',
+            noIpOwner: 'El nombre {name} se resolvió a {ip}, pero ningún equipo de la red tiene esa IP.',
+            logNoIpOwner: 'Ningún equipo tiene la IP {ip}.',
+            noPathToReal: '{name} apunta a {real} ({ip}), pero no hay camino hasta ese equipo.',
+            logNoPathToReal: 'Sin camino hasta {real}.',
+            dnsNameMissing: '{d} no conoce el nombre {site} y responde «no existe». Agregalo en los registros del servidor DNS.',
+            logDnsNameMissing: '{d}: el nombre {site} no existe.',
+            dhcpStaticIp: '{s} tiene IP fija: no usa DHCP. Cambiá su modo a DHCP en la configuración IP.',
+            logDhcpStaticIp: '{s} usa IP fija, no pide IP por DHCP.',
+            dhcpNotServer: '{s} no es un servidor DHCP (o lo tiene apagado): nadie responde al Discover.',
+            logDhcpNotServer: '{s} no responde DHCP.',
+            dhcpNoIp: '{s} no pudo ofrecer una IP a {target}: revisá el rango DHCP del servidor (o que el cable llegue hasta él).',
+            logDhcpNoIp: '{s} no tiene IP para ofrecer a {target}.'
+        },
+        status: {
+            noPath: 'FALLO: no existe un camino físico entre origen y destino.',
+            running: '{label}: {s} ⇄ {d} · {hops} salto(s) de ida y otros {hops} de vuelta',
+            completed: 'COMPLETADO: {label} fue y volvió entre {s} y {d}.'
+        },
+        toast: {
+            needTwoDevices: 'Agrega al menos dos dispositivos para simular una comunicación.',
+            sameDevice: 'El origen y el destino deben ser diferentes.',
+            noPath: 'No hay un camino conectado entre esos dispositivos.',
+            completed: 'Simulación {label} completada.'
+        },
+        req: {
+            vpn: '{s} (IP VPN {srcIp}) le escribe a {d} (IP VPN {dstIp}) por el túnel {preset}{mode}',
+            vpnRelay: ' · pasa por el servidor VPN',
+            vpnDirect: ' · conexión directa',
+            ackGet: '3/3 ACK: {s} confirma la conexión y pide la página a {d} (HTTP GET)'
+        },
     },
     act: {
         close: 'Cerrar actividad',
