@@ -10,8 +10,9 @@
 //   - metadatos OG/Twitter con imagen y locale;
 //   - que no haya recursos de CDNs (todo local, como el simulador);
 //   - que las imágenes y el CSS referenciados existan en disco;
+//   - que la sección de apoyo/derechos esté en los cuatro idiomas;
 //   - que el enlace al simulador apunte a un index.html que exista;
-//   - que sitemap.xml y robots.txt sean coherentes con las páginas.
+//   - que sitemap.xml, robots.txt y vercel.json sean coherentes con las páginas.
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -114,7 +115,7 @@ for (const lang of LANGS) {
 
     // navegación entre idiomas
     check(`[${lang}] enlaces a los otros idiomas`, LANGS.filter(l => l !== lang)
-        .every(l => html.includes(`href="../${l}/"`)));
+        .every(l => html.includes(`href="../${l}/index.html"`)));
 
     // Sin CDNs: los únicos recursos que se pueden cargar son locales. Las URLs
     // absolutas de canonical/hreflang/og:* son datos, no recursos, así que solo
@@ -140,7 +141,7 @@ for (const lang of LANGS) {
             && fs.existsSync(path.join(ROOT, 'assets', 'landing', img)));
     }
 
-    // enlaces al simulador y a la licencia (la raíz del sitio es el simulador)
+    // enlaces al simulador y a la licencia (el simulador conserva /index.html)
     check(`[${lang}] enlaza al simulador con ../index.html`,
         html.includes('href="../index.html"') && fs.existsSync(path.join(ROOT, 'index.html')));
     check(`[${lang}] enlaza a la licencia`,
@@ -151,16 +152,50 @@ for (const lang of LANGS) {
     check(`[${lang}] enlaces externos con rel de seguridad`,
         !/<a[^>]+target="_blank"(?![^>]*rel="noopener)/.test(html));
     check(`[${lang}] exactamente un <h1>`, (html.match(/<h1[\s>]/g) || []).length === 1);
+    check(`[${lang}] sección de apoyo y derechos`,
+        html.includes('id="apoyar"') &&
+        html.includes('cafecito.app/hmvillalba') &&
+        html.includes('ko-fi.com/hugomartinvillalba') &&
+        html.includes('href="../LICENSE"') &&
+        /© \d{4} Hugo Martín Villalba/.test(html));
+    check(`[${lang}] ancla de apoyo en la navegación`, html.includes('href="#apoyar"'));
 }
 
 
-// --- 3. Redirección por idioma en la raíz -------------------------------
-// La raíz es el simulador (/index.html). Para que una URL corta como /es/
-// redirija al idioma del visitante no hace falta servidor: la página en español
-// ofrece el cambio de idioma y el sitio declara hreflang + x-default.
-check('la raíz del sitio sigue siendo el simulador', fs.existsSync(path.join(ROOT, 'index.html')));
+// --- 3. Rutas del sitio: portada en la raíz y simulador aparte ------------
+// El dominio abre la portada (/ redirige a /es/, que es el x-default) y el
+// simulador queda accesible sin pasar por ella en /index.html y en el alias
+// /simulador. La configuración vive en vercel.json porque el sitio no tiene
+// servidor propio.
+check('el simulador sigue en index.html', fs.existsSync(path.join(ROOT, 'index.html')));
 check('/es/ es el x-default de hreflang',
     LANGS.every(l => (pages[l] || '').includes('hreflang="x-default" href="' + SITE + '/es/"')));
+
+const vercelFile = path.join(ROOT, 'vercel.json');
+check('vercel.json existe (rutas del despliegue)', fs.existsSync(vercelFile));
+if (fs.existsSync(vercelFile)) {
+    let cfg = null;
+    try { cfg = JSON.parse(fs.readFileSync(vercelFile, 'utf8')); }
+    catch (err) { check('vercel.json es JSON válido', false, err.message); }
+    if (cfg) {
+        const redirects = cfg.redirects || [];
+        // Sin cleanUrls, /index.html no se normaliza a /, que está redirigida
+        // a /es/; de lo contrario el simulador entraría en un bucle 307 -> /es/.
+        check('cleanUrls desactivado (evita bucle /index.html -> / -> /es/)', cfg.cleanUrls === false);
+        check('la raíz redirige a /es/',
+            redirects.some(r => r.source === '/' && r.destination === '/es/' && r.permanent === false));
+        // El alias debe redirigir (no reescribir): con rewrite, /simulador/ dejaría
+        // las rutas relativas assets/… apuntando a una carpeta inexistente.
+        for (const src of ['/simulador', '/simulador/']) {
+            check(`el alias ${src} abre el simulador`,
+                redirects.some(r => r.source === src && r.destination === '/index.html' && r.permanent === false));
+        }
+        check('el alias no usa rewrite (rompería las rutas relativas)',
+            !(cfg.rewrites || []).some(r => r.source.startsWith('/simulador')));
+        // Debe quedar accesible también el archivo directo (acceso sin portada).
+        check('el simulador conserva su URL propia', !redirects.some(r => r.source === '/index.html'));
+    }
+}
 
 // --- 4. sitemap.xml y robots.txt ----------------------------------------
 const sitemap = path.join(ROOT, 'sitemap.xml');
@@ -168,8 +203,12 @@ check('sitemap.xml existe', fs.existsSync(sitemap));
 if (fs.existsSync(sitemap)) {
     const xml = fs.readFileSync(sitemap, 'utf8');
     check('sitemap declara los 4 idiomas', LANGS.every(l => xml.includes(`<loc>${SITE}/${l}/</loc>`)));
-    check('sitemap incluye la raíz (simulador)', xml.includes(`<loc>${SITE}/</loc>`));
+    check('sitemap incluye el simulador', xml.includes(`<loc>${SITE}/index.html</loc>`));
+    check('sitemap no anuncia la raíz como página propia (es una redirección)',
+        !xml.includes(`<loc>${SITE}/</loc>`));
     check('sitemap con anotaciones hreflang', LANGS.every(l => xml.includes(`hreflang="${l}"`)));
+    check('sitemap no declara equivalentes por idioma del simulador',
+        !/<url>\s*<loc>[^<]*\/index\.html<\/loc>[\s\S]*?xhtml:link[\s\S]*?<\/url>/.test(xml));
     check('sitemap es XML bien formado (declaración y urlset)',
         xml.startsWith('<?xml') && xml.includes('</urlset>'));
 }

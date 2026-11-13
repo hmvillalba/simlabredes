@@ -12,10 +12,15 @@
 //   sitemap.xml
 //   robots.txt
 //
-// Las URLs quedan limpias (/es/, /en/…) y el simulador sigue en /index.html,
-// así que la landing lo enlaza con "../index.html" y comparte sus assets
-// (../assets/…). Todo es relativo: funciona en GitHub Pages, en un
-// subdirectorio y abriendo el archivo con file://.
+// Las URLs quedan limpias (/es/, /en/…). El simulador NO se mueve de
+// /index.html: vercel.json redirige la raíz (/) a /es/ y ofrece el alias
+// /simulador, así que el visitante que entra al dominio ve la portada y el que
+// necesita la herramienta la abre directo. La landing enlaza al simulador con
+// "../index.html" y comparte sus assets (../assets/…).
+//
+// Todo es relativo: funciona en Vercel, en GitHub Pages, en un subdirectorio y
+// abriendo el archivo con file:// (donde no hay redirecciones: el simulador se
+// abre en /index.html o en el enlace de la propia portada).
 //
 // landing/ contiene solo las fuentes (plantilla, diccionarios y la config de
 // Tailwind). El resultado se versiona: no hace falta compilar para publicar y
@@ -79,7 +84,7 @@ function altLinks(dicts, lang) {
         const current = l === lang;
         return current
             ? `<span aria-current="page">${l.toUpperCase()}</span>`
-            : `<a href="../${l}/" hreflang="${l}" lang="${l}" title="${name}">${l.toUpperCase()}</a>`;
+            : `<a href="../${l}/index.html" hreflang="${l}" lang="${l}" title="${name}">${l.toUpperCase()}</a>`;
     }).join('\n                ');
     return `<nav class="lang-nav" aria-label="${label}">\n                ${items}\n            </nav>`;
 }
@@ -117,21 +122,23 @@ function renderPage(template, dicts, lang, year) {
 
 
 // --- Sitemap y robots ----------------------------------------------------
-// La raíz del sitio es el simulador, así que se anuncia también como URL.
+// La raíz del sitio es la portada (/ redirige a /es/) y el simulador tiene URL
+// propia: /index.html (y el alias /simulador declarado en vercel.json).
 function renderSitemap(year) {
     const items = [
-        { loc: `${SITE}/`, priority: '0.9' },
-        ...LANGS.map(l => ({ loc: `${SITE}/${l}/`, priority: '1.0' }))
+        ...LANGS.map(l => ({ loc: `${SITE}/${l}/`, priority: '1.0', alternates: true })),
+        { loc: `${SITE}/index.html`, priority: '0.9', alternates: false }
     ];
-    const urls = items.map(({ loc, priority }) => {
-        const alts = LANGS.map(a => `        <xhtml:link rel="alternate" hreflang="${a}" href="${SITE}/${a}/"/>`).join('\n');
+    const urls = items.map(({ loc, priority, alternates }) => {
+        const alts = alternates
+            ? LANGS.map(a => `        <xhtml:link rel="alternate" hreflang="${a}" href="${SITE}/${a}/"/>`).join('\n') + '\n'
+            : '';
         return `    <url>
         <loc>${loc}</loc>
         <lastmod>${year}-01-01</lastmod>
         <changefreq>monthly</changefreq>
         <priority>${priority}</priority>
-${alts}
-    </url>`;
+${alts}    </url>`;
     }).join('\n');
     return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -174,8 +181,8 @@ function main() {
         console.log(`  ${lang}: ${lang}/index.html (${(html.length / 1024).toFixed(1)} KB, ${tokens.length} claves)`);
     }
 
-    // La raíz del sitio es el simulador (index.html ya existe): la redirección
-    // por idioma vive en /es/, que es también el x-default.
+    // La raíz del sitio es la portada: / redirige a /es/ (vercel.json) y el
+    // simulador conserva su URL propia, así que aquí solo se escribe el sitemap.
     fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), renderSitemap(year), 'utf8');
     fs.writeFileSync(path.join(ROOT, 'robots.txt'), renderRobots(), 'utf8');
 

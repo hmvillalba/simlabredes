@@ -48,7 +48,8 @@ Antes de abrir un PR, verificar manualmente que todo lo siguiente sigue funciona
 - [ ] `index.html` no carga recursos de CDNs (Tailwind, iconos y fuentes son locales)
 - [ ] Guardar copia offline y abrirla sin conexión: estilos, iconos y 4 idiomas disponibles
 - [ ] Landing: `npm run build:landing` y `node tools/test_landing.mjs` pasan sin errores
-- [ ] Landing: `es/`, `en/`, `pt/` y `fr/index.html` abren con estilos y «Abrir simulador» lleva al simulador
+- [ ] Landing: `es/`, `en/`, `pt/` y `fr/index.html` abren con estilos, incluyen «Apoyar el proyecto» y «Abrir simulador» lleva al simulador
+- [ ] Despliegue Vercel: `/` redirige a `/es/`; `/index.html` y `/simulador` abren el simulador con sus recursos locales (sin bucle de redirecciones)
 - [ ] Función "Corregir entregas" (docente)
 
 ---
@@ -104,6 +105,8 @@ test:  scripts de control de calidad
 ├── docs/               # auditoría (auditoria-textos.csv, auditoria-resumen.md)
 ├── tailwind.config.js  # Clases que Tailwind debe incluir en el CSS compilado
 ├── package.json        # npm run build / npm run check
+├── index.html          # simulador: /index.html (y alias /simulador en Vercel)
+├── vercel.json         # raíz -> /es/, alias del simulador y cleanUrls desactivado
 ├── sitemap.xml         # generado por build_landing (Fase 7)
 ├── robots.txt          # generado por build_landing (Fase 7)
 ├── README.md
@@ -122,7 +125,9 @@ npm run build:landing  # solo la landing: es/ en/ pt/ fr/ + sitemap y robots
 
 Después de cambiar clases usadas en `index.html`, diccionarios o `js/i18n.js`, hay que ejecutar `npm run build` antes de probar la copia offline. `npm run check` valida que la copia generada sea autocontenida, conserve los cuatro idiomas y pueda volver a guardarse desde sí misma.
 
-Para la landing, el flujo es el mismo pero aislado: se edita `landing/template.html`, `landing/i18n/*.js` o `src/landing.css`, se ejecuta `npm run build:landing` y se valida con `node tools/test_landing.mjs`. Ese test comprueba las cuatro páginas, las claves de los diccionarios, hreflang/canónica, los metadatos OG, los enlaces al simulador y a la licencia, la ausencia de CDNs y la coherencia de `sitemap.xml` y `robots.txt`. Las páginas generadas (`es/`, `en/`, `pt/`, `fr/`) se versionan junto con `assets/landing.css`: no se editan a mano.
+Para la landing, el flujo es el mismo pero aislado: se edita `landing/template.html`, `landing/i18n/*.js` o `src/landing.css`, se ejecuta `npm run build:landing` y se valida con `node tools/test_landing.mjs`. Ese test comprueba las cuatro páginas, las claves de los diccionarios, hreflang/canónica, los metadatos OG, el bloque de apoyo y licencia, los enlaces al simulador y a la licencia, la ausencia de CDNs, la configuración de `vercel.json` y la coherencia de `sitemap.xml` y `robots.txt`. Las páginas generadas (`es/`, `en/`, `pt/`, `fr/`) se versionan junto con `assets/landing.css`: no se editan a mano.
+
+`SITE_URL` cambia las URL absolutas de las canónicas, `hreflang`, metadatos sociales y sitemap; las rutas relativas de navegación y recursos no cambian. En Vercel, `vercel.json` redirige temporalmente `/` a `/es/` y `/simulador` a `/index.html`, y mantiene `cleanUrls: false` para que `/index.html` no se normalice a `/` (lo que causaría un bucle). En GitHub Pages, XAMPP o `file://` no hay esas redirecciones: `/` sirve `index.html` y cada portada se abre desde `/es/index.html`, `/en/index.html`, `/pt/index.html` o `/fr/index.html` (también por la ruta de carpeta en un servidor web).
 
 ### Qué se traduce y qué no
 

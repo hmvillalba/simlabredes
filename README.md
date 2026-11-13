@@ -4,7 +4,7 @@ Simulador interactivo y pedagógico de redes de computadoras diseñado para la e
 
 Desarrollado como una aplicación web autónoma (Single Page Application) basada en tecnologías web estándar, sin dependencias pesadas de servidor ni requerimientos de instalación compleja.
 
-> 🌐 **Acceso en línea:** Puedes utilizar el simulador directamente desde tu navegador en **[https://simlabredes.vercel.app](https://simlabredes.vercel.app/)**
+> 🌐 **Acceso en línea:** La portada y el simulador están en **[https://simlabredes.vercel.app](https://simlabredes.vercel.app/)** (la raíz abre la portada en español; el simulador también tiene acceso directo en `/index.html` y `/simulador`).
 
 ---
 
@@ -16,8 +16,8 @@ Para regenerar los recursos después de cambiar clases de Tailwind, diccionarios
 
 ```bash
 npm install       # una sola vez: instala Tailwind CLI
-npm run build     # compila assets/tailwind.css y assets/offline-bundle.js
-npm run check     # valida los 4 idiomas y la copia offline
+npm run build     # compila Tailwind, el bundle offline y la landing
+npm run check     # valida los 4 idiomas, la copia offline y la landing
 ```
 
 `npm run build` también actualiza el paquete que usa el botón **«Guardar copia para usar sin internet»**. Esa copia es un único archivo HTML con todos los estilos, fuentes, iconos y diccionarios incrustados: funciona sin conexión desde el primer momento y conserva los cuatro idiomas.
@@ -34,7 +34,8 @@ SITE_URL=https://midominio.com npm run build:landing   # cambia la URL canónica
 
 - Las fuentes están en `landing/`: `template.html`, `i18n/{es,en,pt,fr}.js`, `tailwind.config.js` y la entrada `src/landing.css`.
 - El resultado **se versiona**: `es/index.html`, `en/index.html`, `pt/index.html`, `fr/index.html`, `sitemap.xml`, `robots.txt` y `assets/landing.css`. No hace falta compilar para publicar y los cambios quedan visibles en el diff.
-- Todas las rutas son relativas: funciona en Vercel/GitHub Pages, en un subdirectorio e incluso abriendo el archivo con `file://`. El botón «Abrir simulador» apunta a `../index.html`, que es el simulador de la raíz.
+- En Vercel, `vercel.json` redirige `/` a `/es/` y ofrece `/simulador` como alias de `/index.html`; ambos redireccionamientos son temporales. `cleanUrls` está desactivado para que `/index.html` no se normalice a `/` y no entre en un bucle. El sitemap anuncia las cuatro portadas y la URL directa del simulador, no la raíz (que es una redirección). En GitHub Pages o en un servidor sin esa configuración, la raíz sigue sirviendo `index.html` y las portadas se abren por su ruta.
+- Las rutas de las páginas y sus recursos son relativas: funcionan en Vercel/GitHub Pages, en un subdirectorio e incluso abriendo el archivo con `file://`. El botón «Abrir simulador» apunta a `../index.html`, que es el simulador de la raíz del repositorio.
 - Sin CDNs: la landing usa el mismo CSS compilado y las mismas fuentes e iconos locales que el simulador.
 
 ---
@@ -92,7 +93,7 @@ SITE_URL=https://midominio.com npm run build:landing   # cambia la URL canónica
 Disponible directamente en Vercel:
 👉 **[https://simlabredes.vercel.app](https://simlabredes.vercel.app/)**
 
-La portada multilingüe vive en rutas propias: `/es/`, `/en/`, `/pt/` y `/fr/`. La raíz `/` sigue siendo el simulador, así que un enlace directo a la herramienta es `https://simlabredes.vercel.app/index.html`.
+La portada multilingüe vive en rutas propias: `/es/`, `/en/`, `/pt/` y `/fr/`. En Vercel, la raíz `/` redirige a `/es/`; el simulador conserva su URL directa, `https://simlabredes.vercel.app/index.html`, y el alias `https://simlabredes.vercel.app/simulador`.
 
 ### Opción 2: Abrir localmente en el navegador
 1. Clona el repositorio:
@@ -104,10 +105,12 @@ La portada multilingüe vive en rutas propias: `/es/`, `/en/`, `/pt/` y `/fr/`. 
 ### Opción 3: Servidor local (XAMPP / Apache / Live Server)
 1. Coloca la carpeta en el directorio web (por ejemplo `C:\xampp\htdocs\simulador\redes`).
 2. Inicia el servidor Apache.
-3. Accede desde el navegador a:
+3. Accede a la portada en español o al simulador desde:
    ```text
-   http://localhost/simulador/redes/
+   http://localhost/simulador/redes/es/
+   http://localhost/simulador/redes/index.html
    ```
+   En un servidor local no se aplican las redirecciones de Vercel, así que `/` sirve directamente el simulador (`index.html`).
 
 ---
 
