@@ -44,6 +44,9 @@ Antes de abrir un PR, verificar manualmente que todo lo siguiente sigue funciona
 - [ ] Vista móvil (pantalla < 900px): barra y paneles accesibles
 - [ ] Crear actividad con falla y resolverla como alumno
 - [ ] Función "Entregar" (exportar trabajo con nombre de alumno)
+- [ ] `npm run build` y `npm run check` pasan sin errores
+- [ ] `index.html` no carga recursos de CDNs (Tailwind, iconos y fuentes son locales)
+- [ ] Guardar copia offline y abrirla sin conexión: estilos, iconos y 4 idiomas disponibles
 - [ ] Función "Corregir entregas" (docente)
 
 ---
@@ -68,7 +71,7 @@ test:  scripts de control de calidad
 
 ```
 /
-├── index.html          # Simulador principal (SPA)
+├── assets/             # CSS compilado, iconos, tipografías y bundle offline
 ├── lang/               # Diccionarios por idioma (window.I18N_DICTS, cargados con <script>)
 │   ├── es.js           # español: base y respaldo
 │   ├── en.js           # inglés (Fase 4)
@@ -76,16 +79,33 @@ test:  scripts de control de calidad
 │   └── fr.js           # francés (Fase 8)
 ├── js/
 │   └── i18n.js         # Motor: t(), data-i18n, selector de idioma, log como claves+variables
+├── src/
+│   └── tailwind.css    # Entrada del build de Tailwind (Fase 6)
 ├── tools/
 │   ├── audit_texts.py  # Fase 1: auditoría de textos
+│   ├── build_offline_assets.mjs # Genera assets/offline-bundle.js
 │   ├── check_keys.mjs  # control de claves i18n: node tools/check_keys.mjs [es|en|pt|fr|--all]
 │   ├── check_vars.mjs  # control de variables: node tools/check_vars.mjs
-│   └── test_i18n.mjs   # tests del motor: node tools/test_i18n.mjs
+│   ├── test_i18n.mjs   # tests del motor: node tools/test_i18n.mjs
+│   ├── test_offline.mjs # tests de la copia sin internet: node tools/test_offline.mjs
+│   └── vendor_*.mjs    # descarga única de fuentes e iconos (ya están en assets/)
 ├── docs/               # auditoría (auditoria-textos.csv, auditoria-resumen.md)
+├── tailwind.config.js  # Clases que Tailwind debe incluir en el CSS compilado
+├── package.json        # npm run build / npm run check
 ├── README.md
 ├── CONTRIBUTING.md     # Este archivo
 └── LICENSE
 ```
+
+### Comandos de verificación
+
+```bash
+npm install        # solo la primera vez
+npm run build      # recompila Tailwind y el bundle de la copia offline
+npm run check      # claves i18n, variables, motor y copia offline
+```
+
+Después de cambiar clases usadas en `index.html`, diccionarios o `js/i18n.js`, hay que ejecutar `npm run build` antes de probar la copia offline. `npm run check` valida que la copia generada sea autocontenida, conserve los cuatro idiomas y pueda volver a guardarse desde sí misma.
 
 ### Qué se traduce y qué no
 
@@ -113,7 +133,7 @@ Ver el documento completo del plan. Resumen de fases:
 | 3 | Extracción del español a `lang/es.js` | ✅ Completa (cabecera/menús, paneles, modales y textos dinámicos del JS) |
 | 4 | Traducción al inglés (`lang/en.js`) | ✅ Completa (756 claves, mismas que `es`) |
 | 5 | Script de control de calidad de claves | ✅ Completa (`tools/check_keys.mjs` valida claves y texto fallback) |
-| 6 | Producción: Tailwind compilado, assets locales | ⏳ Pendiente |
+| 6 | Producción: Tailwind compilado, assets locales | ✅ Completa (sin CDNs; `npm run build` genera CSS y bundle de la copia offline; `tools/test_offline.mjs` cubre los 4 idiomas) |
 | 7 | Landing page web propia | ⏳ Pendiente |
 | 8 | Portugués y francés | ✅ Completa (`lang/pt.js` y `lang/fr.js`, 756 claves cada uno, mismas que `es`) |
 

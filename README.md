@@ -8,6 +8,22 @@ Desarrollado como una aplicación web autónoma (Single Page Application) basada
 
 ---
 
+## 🚀 Inicio rápido para desarrollar
+
+El simulador funciona abriendo `index.html` directamente: Tailwind, Font Awesome y las tipografías son archivos locales. No se necesita internet ni un servidor para usarlo.
+
+Para regenerar los recursos después de cambiar clases de Tailwind, diccionarios o `js/i18n.js`:
+
+```bash
+npm install       # una sola vez: instala Tailwind CLI
+npm run build     # compila assets/tailwind.css y assets/offline-bundle.js
+npm run check     # valida los 4 idiomas y la copia offline
+```
+
+`npm run build` también actualiza el paquete que usa el botón **«Guardar copia para usar sin internet»**. Esa copia es un único archivo HTML con todos los estilos, fuentes, iconos y diccionarios incrustados: funciona sin conexión desde el primer momento y conserva los cuatro idiomas.
+
+---
+
 ## 🚀 Características Principales
 
 ### 🖥️ Diseño de Topologías Interactivas
@@ -47,9 +63,10 @@ Desarrollado como una aplicación web autónoma (Single Page Application) basada
 ## 🛠️ Tecnologías Utilizadas
 
 - **HTML5 & SVG:** Motor gráfico de topología vectorial interactiva y animación de paquetes.
-- **Tailwind CSS:** Diseño moderno, responsivo y adaptable (soporta modo oscuro y modo claro).
-- **JavaScript (Vanilla):** Lógica del simulador, gestión de eventos, algoritmos de switching y routing.
-- **FontAwesome:** Iconografía técnica y visualización de dispositivos.
+- **Tailwind CSS:** compilado localmente con `npm run build:css` (sin CDN de pruebas).
+- **Font Awesome y Google Fonts:** archivos locales en `assets/` (Inter y Fira Code).
+- **JavaScript (Vanilla):** lógica del simulador, gestión de eventos, algoritmos de switching y routing.
+- **Copia offline:** un único HTML autocontenido generado con `assets/offline-bundle.js`.
 
 ---
 
