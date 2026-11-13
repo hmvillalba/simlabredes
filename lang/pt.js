@@ -47,7 +47,7 @@ window.I18N_DICTS.pt = {
         imageJpg: 'Imagem JPG',
         docPdf: 'Documento PDF (com lista de equipamentos)',
         offlineCopy: 'Salvar cópia para usar sem internet',
-        offlineCopyTitle: 'Baixe uma versão deste simulador que funciona sem internet (é preciso internet só uma vez)',
+        offlineCopyTitle: 'Baixe uma versão deste simulador que funciona sem internet (não precisa de conexão)',
         forTeacher: 'Para o professor',
         makeActivity: 'Criar atividade com esta rede…',
         gradeDeliveries: 'Corrigir entregas…',
@@ -693,9 +693,9 @@ window.I18N_DICTS.pt = {
         cannotRestore: 'Não foi possível recuperar: {error}'
     },
     offline: {
-        downloading: 'Baixando as bibliotecas… (é preciso internet só esta vez)',
+        downloading: 'Preparando a cópia para usar sem internet…',
         done: 'Cópia baixada: esse arquivo funciona sem conexão. Guarde em uma pasta ou pendrive.',
-        failed: 'Não foi possível montar a cópia ({error}). Tente com internet ou salve a página pelo navegador (Ctrl+S).'
+        failed: 'Não foi possível montar a cópia ({error}). Verifique se assets/offline-bundle.js existe (gerado por "npm run build").'
     },
     demo: {
         twoNetworks: 'Exemplo carregado: duas redes (192.168.1.0/24 e 192.168.2.0/24) unidas por um roteador. Experimente um ping de PC_A1 para PC_B1 no modo avançado.',

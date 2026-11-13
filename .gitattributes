@@ -1,0 +1,7 @@
+# Normalizar los saltos de línea del código fuente a LF en todos los sistemas.
+# Los binarios (fuentes, imágenes) se dejan sin convertir.
+* text=auto eol=lf
+*.woff2 binary
+*.png binary
+*.jpg binary
+*.pdf binary

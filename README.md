@@ -8,6 +8,37 @@ Desarrollado como una aplicación web autónoma (Single Page Application) basada
 
 ---
 
+## 🚀 Inicio rápido para desarrollar
+
+El simulador funciona abriendo `index.html` directamente: Tailwind, Font Awesome y las tipografías son archivos locales. No se necesita internet ni un servidor para usarlo.
+
+Para regenerar los recursos después de cambiar clases de Tailwind, diccionarios o `js/i18n.js`:
+
+```bash
+npm install       # una sola vez: instala Tailwind CLI
+npm run build     # compila assets/tailwind.css y assets/offline-bundle.js
+npm run check     # valida los 4 idiomas y la copia offline
+```
+
+`npm run build` también actualiza el paquete que usa el botón **«Guardar copia para usar sin internet»**. Esa copia es un único archivo HTML con todos los estilos, fuentes, iconos y diccionarios incrustados: funciona sin conexión desde el primer momento y conserva los cuatro idiomas.
+
+### Landing page multilingüe
+
+La portada pública se genera por separado, en cuatro idiomas, a partir de una plantilla y de diccionarios propios:
+
+```bash
+npm run build:landing                      # es/ en/ pt/ fr/ + sitemap.xml + robots.txt
+node tools/test_landing.mjs                # valida las cuatro páginas (también corre con npm run check)
+SITE_URL=https://midominio.com npm run build:landing   # cambia la URL canónica
+```
+
+- Las fuentes están en `landing/`: `template.html`, `i18n/{es,en,pt,fr}.js`, `tailwind.config.js` y la entrada `src/landing.css`.
+- El resultado **se versiona**: `es/index.html`, `en/index.html`, `pt/index.html`, `fr/index.html`, `sitemap.xml`, `robots.txt` y `assets/landing.css`. No hace falta compilar para publicar y los cambios quedan visibles en el diff.
+- Todas las rutas son relativas: funciona en Vercel/GitHub Pages, en un subdirectorio e incluso abriendo el archivo con `file://`. El botón «Abrir simulador» apunta a `../index.html`, que es el simulador de la raíz.
+- Sin CDNs: la landing usa el mismo CSS compilado y las mismas fuentes e iconos locales que el simulador.
+
+---
+
 ## 🚀 Características Principales
 
 ### 🖥️ Diseño de Topologías Interactivas
@@ -47,9 +78,11 @@ Desarrollado como una aplicación web autónoma (Single Page Application) basada
 ## 🛠️ Tecnologías Utilizadas
 
 - **HTML5 & SVG:** Motor gráfico de topología vectorial interactiva y animación de paquetes.
-- **Tailwind CSS:** Diseño moderno, responsivo y adaptable (soporta modo oscuro y modo claro).
-- **JavaScript (Vanilla):** Lógica del simulador, gestión de eventos, algoritmos de switching y routing.
-- **FontAwesome:** Iconografía técnica y visualización de dispositivos.
+- **Tailwind CSS:** compilado localmente con `npm run build:css` (sin CDN de pruebas).
+- **Font Awesome y Google Fonts:** archivos locales en `assets/` (Inter y Fira Code).
+- **JavaScript (Vanilla):** lógica del simulador, gestión de eventos, algoritmos de switching y routing.
+- **Copia offline:** un único HTML autocontenido generado con `assets/offline-bundle.js`.
+- **Landing page multilingüe:** plantilla + diccionarios propios compilados a HTML estático con `npm run build:landing` (sin framework ni CDNs).
 
 ---
 
@@ -58,6 +91,8 @@ Desarrollado como una aplicación web autónoma (Single Page Application) basada
 ### Opción 1: En línea (Recomendada - Sin instalación)
 Disponible directamente en Vercel:
 👉 **[https://simlabredes.vercel.app](https://simlabredes.vercel.app/)**
+
+La portada multilingüe vive en rutas propias: `/es/`, `/en/`, `/pt/` y `/fr/`. La raíz `/` sigue siendo el simulador, así que un enlace directo a la herramienta es `https://simlabredes.vercel.app/index.html`.
 
 ### Opción 2: Abrir localmente en el navegador
 1. Clona el repositorio:

@@ -32,6 +32,10 @@
     }
 
     function detectInitial() {
+        // La copia autocontenida fija su idioma al generarse. Así conserva el
+        // idioma elegido aunque se abra en otro equipo con otra preferencia.
+        const fixed = normalize(window.I18N_INITIAL_LANG);
+        if (fixed) return fixed;
         try {
             const n = normalize(window.localStorage.getItem('sim_lang'));
             if (n) return n;

@@ -1,0 +1,12 @@
+/* src/tailwind.css — punto de entrada del build de Tailwind (Fase 6).
+ *
+ * Este archivo NO se sirve al navegador: se compila a assets/tailwind.css
+ * con `npm run build:css` (Tailwind CLI v3.4.17, la misma versión del CDN).
+ *
+ * Los estilos propios del simulador (modo claro, grid, animaciones) viven en
+ * el bloque <style id="app-style"> de index.html y NO se tocan aquí, para que
+ * el "Guardar copia sin internet" siga funcionando igual.
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

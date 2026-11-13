@@ -1,0 +1,5 @@
+# landing/robots.txt — generado por tools/build_landing.mjs.
+User-agent: *
+Allow: /
+
+Sitemap: https://simlabredes.vercel.app/sitemap.xml

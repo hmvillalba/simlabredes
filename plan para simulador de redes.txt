@@ -1,0 +1,158 @@
+Plan de internacionalización y web – Simulador de Redes Educativo
+Documento para colaboradores · Autor del proyecto: Hugo Martin Villalba · Licencia MIT
+1. Objetivo
+Convertir el simulador (hoy solo en español) en un proyecto multilingüe y con presencia web propia, sin romper nada de lo que ya funciona. El orden de idiomas es: español (base) → inglés → portugués → francés. Más idiomas solo si hay demanda real.
+2. Estado actual
+• Todo vive en un único index.html de unos 310 KB, con HTML, CSS y JavaScript juntos.
+• Los textos están escritos directamente en español, dentro del HTML y del JavaScript. No existe ningún sistema de traducción.
+• Depende de CDN externos: Tailwind (cdn.tailwindcss.com, versión de pruebas, no recomendada para producción), Font Awesome y Google Fonts.
+• Incluye modo claro/oscuro, un tour guiado, un panel de tráfico con log, tablas ARP/MAC/DNS, simulación de DHCP, subredes y VLAN, y exportación/importación de datos.
+• <html lang="es"> está fijo.
+Nota: este plan se basa en una revisión inicial del archivo. La primera tarea (auditoría) confirmará el alcance real.
+3. Principios de trabajo
+1. Una fase, un cambio verificable. Cada fase termina con el simulador funcionando igual que antes.
+2. El español no debe cambiar visualmente tras extraer los textos. Si algo se ve distinto, es un error.
+3. Cambios pequeños y revisables: ramas cortas y Pull Requests por fase.
+4. Una sola fuente de verdad para cada texto: nunca textos duplicados en código y en diccionario.
+5. Terminología técnica estándar (DHCP, ARP, VLAN, gateway, switch…) se mantiene tal cual en todos los idiomas salvo que exista un término establecido.
+4. Fases
+Fase 0 – Preparación
+• Crear repositorio Git (GitHub) con el index.html actual como commit inicial y etiqueta v-base.
+• Añadir README.md, LICENSE (MIT) y CONTRIBUTING.md básico.
+• Acordar rama principal protegida y flujo de ramas/PR.
+• Definir una lista de comprobación manual (smoke test) de lo que debe funcionar: crear dispositivos, conectar cables, asignar IPs, DHCP, ping/tráfico, VLAN, exportar/importar, tour, modo claro/oscuro, vista móvil.
+Resultado: repo listo y checklist de regresión escrita.
+Fase 1 – Auditoría de textos
+Hacer un inventario de todos los textos visibles para el usuario. Categorías a buscar:
+• Texto en el HTML estático (títulos, botones, menús, etiquetas).
+• Atributos: title, placeholder, aria-label, alt.
+• Textos generados en JavaScript: plantillas de cadenas, innerHTML, modales.
+• alert(), confirm(), prompt().
+• Mensajes del log de tráfico y de errores/validaciones.
+• Pasos y textos del tour guiado.
+• Nombres por defecto de dispositivos y de elementos que se guardan en los archivos exportados.
+• Salida de la consola/terminal simulada de los dispositivos.
+• Meta etiquetas (<title>, descripción).
+Entregable: una hoja (CSV o Markdown) con columnas ubicación · texto original · categoría · variables dinámicas · decisión (traducir / no traducir).
+Decisión pendiente clave: la salida de comandos de los dispositivos simulados (CLI). Los equipos reales muestran inglés, así que una opción razonable es no traducirla, y traducir solo la interfaz y las explicaciones. Hay que acordarlo antes de la Fase 2.
+Fase 2 – Sistema de traducciones
+Diseño propuesto:
+• Diccionarios por idioma en archivos separados, por ejemplo lang/es.js y lang/en.js, cargados con <script>. Se prefiere esto a JSON con fetch porque sigue funcionando abriendo el archivo directamente (file://), algo útil para aulas sin servidor.
+• Función t(clave, variables) con interpolación, por ejemplo t('log.packetSent', { from, to }).
+• Atributo data-i18n (y variantes para title/placeholder) para el HTML estático, con una función que aplica las traducciones al cargar y al cambiar de idioma.
+• Convención de claves por área: menu.*, device.*, log.*, tour.*, error.*, modal.*.
+• Soporte de plurales simples cuando haga falta (por ejemplo "1 paquete / 2 paquetes").
+• Selector de idioma en la cabecera.
+• Idioma inicial: el guardado por el usuario; si no hay, el del navegador (navigator.language); si no está disponible, español.
+• Idioma de respaldo: si falta una clave en un idioma, se muestra la de español (y se avisa en consola para detectarlo).
+• Actualizar <html lang> al cambiar de idioma.
+• Los textos que ya se renderizaron (log, modales abiertos) deben poder reconstruirse al cambiar de idioma, o al menos no mezclar idiomas. Hay que decidir si el log existente se guarda como claves + variables (recomendado) o como texto final.
+Entregable: sistema funcionando con solo español, sin cambios visibles.
+Fase 3 – Extracción del español
+• Mover todos los textos de la auditoría a lang/es.js, por zonas (cabecera → menús → paneles → modales → log → tour).
+• Revisar uno a uno los textos construidos con variables o HTML dentro.
+• Pasar el smoke test completo y comparar con la versión v-base (capturas lado a lado).
+Criterio de aceptación: ninguna cadena en español queda fuera de lang/es.js, salvo las decididas como "no traducir". Se puede comprobar con una búsqueda de caracteres típicos (á, é, í, ó, ú, ñ, ¿, ¡) y palabras comunes en el código.
+Fase 4 – Inglés
+• Crear lang/en.js con las mismas claves.
+• Traducción inicial asistida (IA o persona), seguida de revisión humana con conocimientos de redes.
+• Crear un glosario compartido (ver sección 6) antes de traducir.
+• Probar con textos largos: el inglés suele ocupar distinto espacio que el español, así que revisar botones, menús y vista móvil por desbordes o cortes.
+• Comprobar que exportar/importar funciona entre idiomas (un proyecto guardado en español debe abrirse correctamente en inglés y al revés).
+Criterio de aceptación: cambiar de idioma no deja ningún texto en español, y las claves de en.js coinciden exactamente con las de es.js.
+Fase 5 – Herramienta de control de calidad
+Un pequeño script (Node o Python) que:
+• Compare las claves de cada idioma contra español y avise de las que faltan o sobran.
+• Detecte variables mal escritas ({from} presente en español pero ausente en la traducción).
+• Se ejecute antes de cada PR (o automáticamente con GitHub Actions).
+Esto evita que añadir una función nueva rompa idiomas sin que nadie se entere.
+Fase 6 – Preparar para producción
+• Sustituir cdn.tailwindcss.com por CSS compilado (Tailwind CLI), con solo las clases usadas.
+• Valorar alojar localmente Font Awesome y las fuentes, para que funcione sin internet y sin depender de terceros.
+• Mantener el modo claro/oscuro y revisar que los estilos personalizados body.light-mode siguen aplicando tras compilar.
+• Medir el rendimiento antes y después.
+Fase 7 – Página web
+Landing page sencilla, estática, con:
+• Descripción del proyecto, capturas o GIF corto y botón "Abrir simulador".
+• Sección para docentes: ejercicios y guías de uso en clase.
+• Enlace al repositorio, licencia y cómo colaborar o reportar errores.
+• Una versión por idioma con URLs claras (/es/, /en/…) y etiquetas hreflang.
+• Metadatos para buscadores y para compartir en redes (título, descripción, imagen).
+• Alojamiento gratuito: GitHub Pages, Cloudflare Pages o Netlify. Dominio propio opcional.
+Fase 8 – Portugués y francés
+• Mismo proceso que el inglés: glosario, traducción, revisión por hablante nativo con conocimiento técnico, prueba de interfaz.
+• Portugués: valorar variante (Brasil como principal). Francés: sin variante específica al inicio.
+• Publicar cada idioma cuando tenga revisión, no antes.
+5. Reparto sugerido de tareas
+Tarea
+Responsable
+Estado
+Repo, README, checklist (Fase 0)
+por asignar
+Pendiente
+Auditoría de textos (Fase 1)
+por asignar
+Pendiente
+Sistema i18n (Fase 2)
+por asignar
+Pendiente
+Extracción del español (Fase 3)
+por asignar
+Pendiente
+Inglés + revisión (Fase 4)
+por asignar
+Pendiente
+Script de control (Fase 5)
+por asignar
+Pendiente
+Tailwind y recursos locales (Fase 6)
+por asignar
+Pendiente
+Landing page (Fase 7)
+por asignar
+Pendiente
+Portugués y francés (Fase 8)
+por asignar
+Pendiente
+Las fases 0 a 3 son secuenciales. A partir de la 4, las fases 5, 6 y 7 pueden avanzar en paralelo.
+6. Glosario inicial (a completar antes de traducir)
+Términos que hay que fijar una vez y usar siempre igual. Ejemplos de decisiones a tomar:
+• Dispositivos: router, switch, host/PC, servidor, cable, puerto, interfaz.
+• Conceptos: subred, máscara, puerta de enlace (gateway), tabla ARP, tabla MAC, DNS, DHCP, VLAN, concesión (lease).
+• Acciones de la interfaz: conectar, desconectar, exportar, importar, restablecer.
+Regla: el glosario se aprueba primero en español e inglés, y cada idioma nuevo añade su columna.
+7. Riesgos y cómo manejarlos
+Riesgo
+Mitigación
+Dejar textos sin extraer y ver idiomas mezclados
+Auditoría completa y comprobación automática de cadenas en español
+Romper funciones al tocar el código
+Smoke test por fase, cambios pequeños, versión base etiquetada
+Archivos guardados que contienen textos en español
+Guardar identificadores internos, no textos traducibles, y mantener compatibilidad con archivos antiguos
+Traducciones incorrectas en términos técnicos
+Glosario + revisión por persona con conocimientos de redes
+Textos largos que rompen el diseño
+Probar en escritorio y móvil con cada idioma
+Mantenimiento creciente al añadir funciones
+Script de control de claves y regla: toda función nueva entra con sus textos en es y en
+Dependencia de CDN externos
+Fase 6
+8. Decisiones pendientes (para acordar entre ambos)
+1. ¿Se traduce la salida de la consola/CLI simulada o se mantiene en inglés?
+2. ¿Diccionarios como archivos .js separados (recomendado) o dentro del mismo index.html?
+3. ¿El log de tráfico se guarda como claves + variables (cambia de idioma en vivo) o como texto fijo?
+4. ¿Quién revisa cada idioma y con qué criterio de calidad?
+5. ¿Dominio propio o URL de GitHub Pages al inicio?
+6. ¿Se mantiene un único archivo distribuible, o se pasa a una estructura con carpetas?
+9. Definición de "terminado" por fase
+• El smoke test pasa completo en escritorio y móvil.
+• No hay errores en la consola del navegador.
+• El español se ve igual que en la versión base.
+• El PR fue revisado por otra persona.
+• La documentación (README / CONTRIBUTING) refleja el cambio.
+10. Primeros pasos concretos para el colaborador
+1. Clonar o recibir el repositorio y abrir index.html en el navegador.
+2. Recorrer el simulador completo siguiendo el smoke test para conocer las funciones.
+3. Empezar la Fase 1: crear el inventario de textos por categorías y anotar dudas sobre qué traducir.
+4. Proponer el diseño de claves y la estructura de lang/ antes de escribir código (Fase 2), para validarlo juntos.
