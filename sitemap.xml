@@ -2,16 +2,6 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
-        <loc>https://simlabredes.vercel.app/</loc>
-        <lastmod>2026-01-01</lastmod>
-        <changefreq>monthly</changefreq>
-        <priority>0.9</priority>
-        <xhtml:link rel="alternate" hreflang="es" href="https://simlabredes.vercel.app/es/"/>
-        <xhtml:link rel="alternate" hreflang="en" href="https://simlabredes.vercel.app/en/"/>
-        <xhtml:link rel="alternate" hreflang="pt" href="https://simlabredes.vercel.app/pt/"/>
-        <xhtml:link rel="alternate" hreflang="fr" href="https://simlabredes.vercel.app/fr/"/>
-    </url>
-    <url>
         <loc>https://simlabredes.vercel.app/es/</loc>
         <lastmod>2026-01-01</lastmod>
         <changefreq>monthly</changefreq>
@@ -50,5 +40,11 @@
         <xhtml:link rel="alternate" hreflang="en" href="https://simlabredes.vercel.app/en/"/>
         <xhtml:link rel="alternate" hreflang="pt" href="https://simlabredes.vercel.app/pt/"/>
         <xhtml:link rel="alternate" hreflang="fr" href="https://simlabredes.vercel.app/fr/"/>
+    </url>
+    <url>
+        <loc>https://simlabredes.vercel.app/index.html</loc>
+        <lastmod>2026-01-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.9</priority>
     </url>
 </urlset>

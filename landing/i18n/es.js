@@ -24,6 +24,7 @@ window.LANDING_DICTS.es = {
         features: 'Qué incluye',
         teachers: 'Para docentes',
         start: 'Empezar',
+        support: 'Apoyar',
         repo: 'Repositorio',
         simulator: 'Abrir simulador'
     },
@@ -98,6 +99,28 @@ window.LANDING_DICTS.es = {
         issues: 'Reportar un error',
         support: 'Apoyar el proyecto',
         star: 'Dar una estrella en GitHub'
+    },
+
+    support: {
+        title: 'Apoyar el proyecto',
+        lead: 'El simulador es gratuito y sin publicidad. Si te sirve para dar clase, estas son las formas de devolverlo.',
+        mentionTitle: 'Mencioná el proyecto',
+        mentionText: 'Contale a colegas y estudiantes de dónde lo sacaste, o compartí el enlace en tu material de clase.',
+        starTitle: 'Dejá una estrella',
+        starText: 'Una estrella en GitHub ayuda a que otros docentes lo encuentren.',
+        donateTitle: 'Donación (opcional)',
+        donateText: 'Si te gusta el Simulador queda a tu criterio una Mención o Donación para el autor.',
+        cafecito: 'Invitame un Cafecito',
+        kofi: 'Apoyar en Ko-fi',
+        donateNote: 'Cafecito: Argentina y Mercado Pago · Ko-fi: internacional.'
+    },
+
+    rights: {
+        title: 'Licencia y derechos',
+        license: 'Distribuido bajo Licencia MIT',
+        donation: 'Si te gusta el Simulador queda a tu criterio una Mención o Donación para el autor.',
+        mit: 'El código se puede usar, copiar, modificar y redistribuir, incluso en clase, conservando el aviso de copyright. Se entrega tal cual, sin garantías.',
+        read: 'Leer la licencia completa'
     },
 
     footer: {

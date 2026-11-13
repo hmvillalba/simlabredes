@@ -18,6 +18,7 @@ window.LANDING_DICTS.en = {
         features: 'Features',
         teachers: 'For teachers',
         start: 'Get started',
+        support: 'Support',
         repo: 'Repository',
         simulator: 'Open simulator'
     },
@@ -92,6 +93,28 @@ window.LANDING_DICTS.en = {
         issues: 'Report a bug',
         support: 'Support the project',
         star: 'Star it on GitHub'
+    },
+
+    support: {
+        title: 'Support the project',
+        lead: 'The simulator is free and ad-free. If it helps you teach, these are the ways to give back.',
+        mentionTitle: 'Mention the project',
+        mentionText: 'Tell colleagues and students where you got it, or share the link in your class material.',
+        starTitle: 'Leave a star',
+        starText: 'A star on GitHub helps other teachers find it.',
+        donateTitle: 'Donation (optional)',
+        donateText: 'If you like the simulator, a mention or a donation for the author is up to you.',
+        cafecito: 'Buy me a coffee',
+        kofi: 'Support on Ko-fi',
+        donateNote: 'Cafecito: Argentina and Mercado Pago · Ko-fi: international.'
+    },
+
+    rights: {
+        title: 'Licence and rights',
+        license: 'Distributed under the MIT License',
+        donation: 'If you like the simulator, a mention or a donation for the author is up to you.',
+        mit: 'The code may be used, copied, modified and redistributed, including in class, keeping the copyright notice. It is provided as is, without warranty.',
+        read: 'Read the full licence'
     },
 
     footer: {

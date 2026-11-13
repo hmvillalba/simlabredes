@@ -1,0 +1,21 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": false,
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/es/",
+      "permanent": false
+    },
+    {
+      "source": "/simulador",
+      "destination": "/index.html",
+      "permanent": false
+    },
+    {
+      "source": "/simulador/",
+      "destination": "/index.html",
+      "permanent": false
+    }
+  ]
+}

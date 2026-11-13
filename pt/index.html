@@ -89,24 +89,25 @@
 
     <header class="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/90 backdrop-blur">
         <div class="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3">
-            <a href="./" class="flex items-center gap-2 text-slate-100">
+            <a href="./index.html" class="flex items-center gap-2 text-slate-100">
                 <span class="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-400">
                     <i class="fa-solid fa-network-wired" aria-hidden="true"></i>
                 </span>
                 <span class="text-sm font-bold tracking-tight sm:text-base">SimLab Redes</span>
             </a>
-            <nav class="ml-auto hidden items-center gap-1 text-xs text-slate-300 md:flex" aria-label="O que inclui">
+            <nav class="ml-auto hidden items-center gap-1 text-xs text-slate-300 lg:flex" aria-label="O que inclui">
                 <a href="#incluye" class="rounded-lg px-3 py-2 hover:bg-slate-800 hover:text-white">O que inclui</a>
                 <a href="#docentes" class="rounded-lg px-3 py-2 hover:bg-slate-800 hover:text-white">Para professores</a>
                 <a href="#empezar" class="rounded-lg px-3 py-2 hover:bg-slate-800 hover:text-white">Começar</a>
+                <a href="#apoyar" class="rounded-lg px-3 py-2 hover:bg-slate-800 hover:text-white">Apoiar</a>
                 <a href="https://github.com/hmvillalba/simlabredes" target="_blank" rel="noopener noreferrer"
                     class="rounded-lg px-3 py-2 hover:bg-slate-800 hover:text-white"><i class="fa-brands fa-github mr-1.5" aria-hidden="true"></i>Repositório</a>
             </nav>
             <nav class="lang-nav" aria-label="Outros idiomas">
-                <a href="../es/" hreflang="es" lang="es" title="Español">ES</a>
-                <a href="../en/" hreflang="en" lang="en" title="English">EN</a>
+                <a href="../es/index.html" hreflang="es" lang="es" title="Español">ES</a>
+                <a href="../en/index.html" hreflang="en" lang="en" title="English">EN</a>
                 <span aria-current="page">PT</span>
-                <a href="../fr/" hreflang="fr" lang="fr" title="Français">FR</a>
+                <a href="../fr/index.html" hreflang="fr" lang="fr" title="Français">FR</a>
             </nav>
             <a href="../index.html"
                 class="ml-1 inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-3 py-2 text-xs font-semibold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400">
@@ -273,8 +274,64 @@
             </div>
         </section>
 
+        <!-- Apoyar el proyecto: licencia, donación y derechos -->
+        <section id="apoyar" class="border-t border-slate-800/80 bg-slate-950 py-14 sm:py-16">
+            <div class="mx-auto max-w-6xl px-4">
+                <h2 class="text-2xl font-bold text-white sm:text-3xl">Apoiar o projeto</h2>
+                <p class="mt-2 max-w-2xl text-sm text-slate-400">O simulador é gratuito e sem publicidade. Se ele ajuda nas suas aulas, estas são as formas de retribuir.</p>
+
+                <div class="mt-8 grid gap-4 sm:grid-cols-3">
+                    <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+                        <i class="fa-solid fa-share-nodes text-lg text-sky-400" aria-hidden="true"></i>
+                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Mencione o projeto</h3>
+                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Conte a colegas e estudantes de onde você tirou, ou compartilhe o link no seu material de aula.</p>
+                    </div>
+                    <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+                        <i class="fa-solid fa-star text-lg text-amber-400" aria-hidden="true"></i>
+                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Deixe uma estrela</h3>
+                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Uma estrela no GitHub ajuda outros professores a encontrá-lo.</p>
+                        <a href="https://github.com/hmvillalba/simlabredes" target="_blank" rel="noopener noreferrer"
+                            class="mt-3 inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-slate-600 hover:text-white">
+                            <i class="fa-brands fa-github" aria-hidden="true"></i>Dar uma estrela no GitHub
+                        </a>
+                    </div>
+                    <div class="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-5">
+                        <i class="fa-solid fa-mug-hot text-lg text-emerald-400" aria-hidden="true"></i>
+                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Doação (opcional)</h3>
+                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Se você gostar do simulador, fica a seu critério uma Menção ou uma Doação para o autor.</p>
+                        <div class="mt-3 flex flex-col gap-2">
+                            <a href="https://cafecito.app/hmvillalba" target="_blank" rel="noopener noreferrer"
+                                class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-sky-500 px-3 py-2 text-xs font-semibold text-white shadow-md shadow-sky-500/20 transition hover:-translate-y-0.5 hover:bg-sky-400">
+                                <i class="fa-solid fa-mug-hot" aria-hidden="true"></i>Me pague um Cafecito
+                            </a>
+                            <a href="https://ko-fi.com/hugomartinvillalba" target="_blank" rel="noopener noreferrer"
+                                class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#ff5e5b] px-3 py-2 text-xs font-semibold text-white shadow-md shadow-rose-500/20 transition hover:-translate-y-0.5 hover:bg-[#ff423e]">
+                                <i class="fa-solid fa-heart" aria-hidden="true"></i>Apoiar no Ko-fi
+                            </a>
+                        </div>
+                        <p class="mt-2 text-[10px] text-slate-500">Cafecito: Argentina e Mercado Pago · Ko-fi: internacional.</p>
+                    </div>
+                </div>
+
+                <!-- Derechos de autor: las mismas frases del "Acerca de" del simulador -->
+                <div class="mt-6 rounded-2xl border border-slate-800 bg-slate-900/40 p-6">
+                    <h3 class="text-sm font-semibold text-slate-100">
+                        <i class="fa-solid fa-scale-balanced mr-1.5 text-slate-500" aria-hidden="true"></i>Licença e direitos
+                    </h3>
+                    <p class="mt-3 text-sm font-semibold text-slate-100">© 2026 Hugo Martín Villalba</p>
+                    <p class="mt-1 text-[11px] text-slate-400">Distribuído sob a Licença MIT</p>
+                    <p class="mt-3 max-w-3xl text-[11px] leading-relaxed text-slate-500">Se você gostar do simulador, fica a seu critério uma Menção ou uma Doação para o autor.</p>
+                    <p class="mt-2 max-w-3xl text-[11px] leading-relaxed text-slate-500">O código pode ser usado, copiado, modificado e redistribuído, inclusive em aula, mantendo o aviso de copyright. É fornecido como está, sem garantias.</p>
+                    <a href="../LICENSE"
+                        class="mt-4 inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-slate-600 hover:text-white">
+                        <i class="fa-solid fa-file-lines" aria-hidden="true"></i>Ler a licença completa
+                    </a>
+                </div>
+            </div>
+        </section>
+
         <!-- Código abierto / licencia -->
-        <section id="codigo" class="border-t border-slate-800/80 bg-slate-950 py-14 sm:py-16">
+        <section id="codigo" class="border-t border-slate-800/80 bg-slate-900/40 py-14 sm:py-16">
             <div class="mx-auto max-w-6xl px-4">
                 <h2 class="text-2xl font-bold text-white sm:text-3xl">Código aberto</h2>
                 <p class="mt-2 max-w-2xl text-sm text-slate-400">O projeto é MIT: use na aula, modifique e compartilhe.</p>
@@ -293,10 +350,11 @@
                         <i class="fa-solid fa-bug text-lg text-rose-400" aria-hidden="true"></i>
                         <h3 class="mt-3 text-sm font-semibold text-slate-100">Relatar um erro</h3>
                     </a>
-                    <a href="https://ko-fi.com/hugomartinvillalba" target="_blank" rel="noopener noreferrer"
+                    <a href="https://github.com/hmvillalba/simlabredes" target="_blank" rel="noopener noreferrer"
                         class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 transition hover:border-slate-700 hover:bg-slate-900">
-                        <i class="fa-solid fa-heart text-lg text-amber-400" aria-hidden="true"></i>
-                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Apoiar o projeto</h3>
+                        <i class="fa-solid fa-star text-lg text-amber-400" aria-hidden="true"></i>
+                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Dar uma estrela no GitHub</h3>
+                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Uma estrela no GitHub ajuda outros professores a encontrá-lo.</p>
                     </a>
                 </div>
             </div>
