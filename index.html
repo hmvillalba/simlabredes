@@ -7,8 +7,10 @@
     <title data-i18n="app.title">Simulador de Redes Educativo</title>
     <meta name="author" content="Hugo Martin Villalba">
     <meta name="copyright" content="© Hugo Martin Villalba. Licencia MIT.">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fase 6 (producción): hojas de estilo locales, sin CDNs. Se regeneran con `npm run build`. -->
+    <link rel="stylesheet" href="assets/tailwind.css">
+    <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
+    <link rel="stylesheet" href="assets/fonts/fonts.css">
     <!-- i18n (Fase 2): diccionario base + motor. Archivos locales: funcionan también con file:// -->
     <script src="lang/es.js"></script>
     <script src="lang/en.js"></script>
@@ -16,7 +18,7 @@
     <script src="lang/fr.js"></script>
     <script src="js/i18n.js"></script>
     <style id="app-style">
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+        /* Las tipografías (Inter y Fira Code) las carga assets/fonts/fonts.css. */
 
         body {
             font-family: 'Inter', sans-serif;
@@ -369,7 +371,7 @@
                     <div class="my-1 border-t border-slate-800"></div>
                     <button onclick="closeMenus();saveOfflineCopy()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
-                        title="Descarga una versión de este simulador que funciona sin internet (hace falta conexión una sola vez)" data-i18n-title="menu.offlineCopyTitle"><i
+                        title="Descarga una versión de este simulador que funciona sin internet (no necesita conexión)" data-i18n-title="menu.offlineCopyTitle"><i
                             class="fa-solid fa-plane w-4 text-sky-400"></i><span data-i18n="menu.offlineCopy">Guardar copia para usar sin internet</span></button>
                     <div class="my-1 border-t border-slate-800"></div>
                     <div class="px-3 pt-1 pb-0.5 text-[10px] uppercase tracking-wider text-slate-500" data-i18n="menu.forTeacher">Para el profesor
@@ -3474,27 +3476,42 @@
         document.addEventListener('visibilitychange', () => { if (document.hidden) saveAutosave(); });
         window.addEventListener('pagehide', saveAutosave);
 
-        // ===== COPIA PARA USAR SIN INTERNET =====
-        function bufToBase64(buf) {
-            const bytes = new Uint8Array(buf); let bin = '';
-            for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
-            return btoa(bin);
+        // ===== COPIA PARA USAR SIN INTERNET (Fase 6) =====
+        // El paquete assets/offline-bundle.js lo genera `npm run build` y ya trae
+        // todo incrustado: el CSS compilado (Tailwind + Font Awesome + tipografías
+        // como data URI) y los diccionarios + motor i18n. Se carga solo cuando se
+        // pide la copia, así que no pesa en la carga normal de la página.
+        function loadOfflineBundle() {
+            if (window.OFFLINE_BUNDLE) return Promise.resolve(window.OFFLINE_BUNDLE);
+            return new Promise((resolve, reject) => {
+                const s = document.createElement('script');
+                s.src = 'assets/offline-bundle.js';
+                s.onload = () => window.OFFLINE_BUNDLE ? resolve(window.OFFLINE_BUNDLE) : reject(new Error('assets/offline-bundle.js'));
+                s.onerror = () => reject(new Error('assets/offline-bundle.js'));
+                document.head.appendChild(s);
+            });
         }
         async function saveOfflineCopy() {
-            const TW = 'https://cdn.tailwindcss.com', FA = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css';
             showToast(I18N.t('offline.downloading'), 'info');
             try {
-                const get = async (u, kind) => { const r = await fetch(u); if (!r.ok) throw new Error(kind); return r; };
-                const [tw, faCss] = await Promise.all([get(TW, 'Tailwind').then(r => r.text()), get(FA, 'Font Awesome').then(r => r.text())]);
-                const base = new URL(FA);
-                const urls = [...new Set([...faCss.matchAll(/url\(([^)]*\.woff2[^)]*)\)/g)].map(m => m[1].replace(/["']/g, '')))];
-                const fonts = {};
-                await Promise.all(urls.map(async u => { fonts[u] = 'data:font/woff2;base64,' + bufToBase64(await (await get(new URL(u, base).href, 'fuentes')).arrayBuffer()); }));
-                let css = faCss; Object.keys(fonts).forEach(u => { css = css.split(u).join(fonts[u]); });
-                css = css.replace(/,\s*url\([^)]*\.ttf[^)]*\)\s*format\(["']truetype["']\)/g, '');
+                const bundle = await loadOfflineBundle();
                 const SC_OPEN = '<scr' + 'ipt>', SC_CLOSE = '</scr' + 'ipt>';
+                // Defensivo: si un diccionario trajera la secuencia "</script", cerraría
+                // el bloque antes de tiempo. La sustitución es válida dentro de strings.
+                const esc = code => code.replace(/<\/(script)/gi, '<\\/$1');
+                const keys = Object.keys(bundle.scripts);
+                const scripts = keys.map(name =>
+                    `${SC_OPEN.replace('>', ' data-offline-src="' + name + '">')}${esc(bundle.scripts[name])}${SC_CLOSE}`
+                ).join('\n');
+                // La copia debe abrirse en el idioma con el que se generó, incluso si
+                // en ese equipo hay otra preferencia guardada o el navegador está en
+                // otro idioma. I18N.init() lee este valor antes de los demás.
+                const initialLang = `${SC_OPEN}window.I18N_INITIAL_LANG = ${JSON.stringify(I18N.lang)};${SC_CLOSE}`;
+                // Permite volver a generar la copia desde dentro de la propia copia:
+                // reconstruye el paquete a partir de lo que ya está en el documento.
+                const restore = `${SC_OPEN}window.OFFLINE_BUNDLE = { version: 1, css: document.getElementById('offline-css').textContent, scripts: {} }; document.querySelectorAll('script[data-offline-src]').forEach(function (el) { window.OFFLINE_BUNDLE.scripts[el.getAttribute('data-offline-src')] = el.textContent; });${SC_CLOSE}`;
                 const style = PRISTINE_STYLE.replace(/@import url\([^)]*\);?/g, '');
-                const html = `<!DOCTYPE html>\n<html lang="es" class="${PRISTINE_HTML_CLASS}">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>Simulador de Redes Educativo</title>\n<meta name="author" content="Hugo Martin Villalba">\n<meta name="copyright" content="© ${new Date().getFullYear()} Hugo Martin Villalba. Licencia MIT.">\n${SC_OPEN}${tw.replace(/<\/script/gi, '<\\/script')}${SC_CLOSE}\n<style>${css}</style>\n<style id="app-style">${style}</style>\n</head>\n<body class="${PRISTINE_BODY_CLASS}">${PRISTINE_BODY}</body>\n</html>`;
+                const html = `<!DOCTYPE html>\n<html lang="${I18N.lang}" class="${PRISTINE_HTML_CLASS}">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>${I18N.t('app.title')}</title>\n<meta name="author" content="Hugo Martin Villalba">\n<meta name="copyright" content="© ${new Date().getFullYear()} Hugo Martin Villalba. Licencia MIT.">\n<style id="offline-css">${bundle.css}</style>\n<style id="app-style">${style}</style>\n${initialLang}\n${scripts}\n${restore}\n</head>\n<body class="${PRISTINE_BODY_CLASS}">${PRISTINE_BODY}</body>\n</html>`;
                 downloadBlob(new Blob([html], { type: 'text/html' }), 'Simulador-de-Redes-sin-internet.html');
                 showToast(I18N.t('offline.done'), 'success');
             } catch (e) {
