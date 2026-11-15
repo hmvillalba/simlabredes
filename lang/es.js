@@ -1,13 +1,18 @@
-// lang/es.js — Diccionario base en ESPAÑOL (idioma fuente y respaldo).
+// lang/es.js — Diccionario base en ESPAÑOL NEUTRO (idioma fuente y respaldo).
 //
-// Fase 2 del plan i18n: solo contiene las claves de arranque, con el texto
-// idéntico al que ya muestra index.html (así no hay ningún cambio visible).
+// Fase 2 del plan i18n: contiene las claves de arranque, con el texto idéntico
+// al que ya muestra index.html (así no hay ningún cambio visible).
 // Fase 3: se completa con todas las claves extraídas de la auditoría
 // (docs/auditoria-textos.csv), organizadas por área: menu.*, device.*, log.*,
 // tour.*, error.*, modal.*
 //
+// Este archivo es el español neutro (tuteo, sin regionalismos) y es el que usa
+// el motor como respaldo. La variante rioplatense vive en ar.js, con las mismas
+// claves; si se agrega o cambia una clave, hay que actualizar los cinco
+// diccionarios (tools/check_keys.mjs --all).
+//
 // Reglas:
-//  - Una sola fuente de verdad por texto: si está acá, no debe estar suelto en el código.
+//  - Una sola fuente de verdad por texto: si está aquí, no debe estar suelto en el código.
 //  - Las claves usan puntos para anidar: 'log.packetSent'.
 //  - Interpolación con {variable}: 'Paquete de {from} a {to}'.
 //  - Plurales con count: 'log.packets_one' / 'log.packets_other'.
@@ -15,7 +20,7 @@
 //  - La salida de la consola/CLI de los dispositivos NO se traduce (va en inglés, como equipos reales).
 window.I18N_DICTS = window.I18N_DICTS || {};
 window.I18N_DICTS.es = {
-    _meta: { name: 'Español', dir: 'ltr' },
+    _meta: { name: 'Español neutro', dir: 'ltr' },
 
     app: {
         title: 'Simulador de Redes Educativo',
@@ -35,8 +40,8 @@ window.I18N_DICTS.es = {
         undo: 'Deshacer (Ctrl+Z)',
         redo: 'Rehacer (Ctrl+Y)',
         deliver: 'Entregar',
-        deliverTitle: 'Guardar tu trabajo con tu nombre para entregárselo al profe',
-        studentDefault: 'Alumno',
+        deliverTitle: 'Guardar tu trabajo con tu nombre para entregárselo al profesor',
+        studentDefault: 'Estudiante',
         studentTitle: 'Tu nombre: queda guardado en las redes y actividades que guardes',
         activities: 'Actividades',
         activitiesTitle: 'Redes con fallas para resolver',
@@ -88,8 +93,8 @@ window.I18N_DICTS.es = {
         type: {
             router: 'Router WiFi', routerDesc: 'Gateway + DHCP + WiFi',
             lrouter: 'Router (varias redes)', lrouterDesc: 'Interfaces + tabla de rutas',
-            notebook: 'Notebook', notebookDesc: 'Cable o WiFi',
-            netbook: 'Netbook', netbookDesc: 'Portátil pequeña, cable o WiFi',
+            notebook: 'Portátil', notebookDesc: 'Cable o WiFi',
+            netbook: 'Netbook', netbookDesc: 'Mini portátil, cable o WiFi',
             tv: 'Smart TV', tvDesc: 'WiFi o cable · navegador',
             vpncloud: 'VPN en la nube (VPS)', vpncloudDesc: 'Tipo Tailscale / ZeroTier',
             vpnlocal: 'Servidor VPN local', vpnlocalDesc: 'Tipo WireGuard / OpenVPN',
@@ -102,7 +107,7 @@ window.I18N_DICTS.es = {
         // Nombres por defecto de los equipos en el lienzo ({id} = número).
         // Se generan en el idioma activo; al exportar/importar se conservan tal cual.
         defaultName: {
-            notebook: 'Notebook_{id}',
+            notebook: 'Portátil_{id}',
             netbook: 'Netbook_{id}',
             tv: 'SmartTV_{id}',
             router: 'Router_WiFi_{id}',
@@ -111,7 +116,7 @@ window.I18N_DICTS.es = {
             vpnCloud: 'VPN_Nube_{id}',
             vpnLocal: 'VPN_Local_{id}',
             switch: 'Switch_LAN_{id}',
-            pc: 'PC_Alumno_{id}',
+            pc: 'PC_Estudiante_{id}',
             phone: 'Smartphone_{id}',
             cloud: 'Internet_ISP',
             other: 'Dispositivo_{id}'
@@ -159,20 +164,20 @@ window.I18N_DICTS.es = {
         dnsIpOk: 'DNS IP'
     },
     studentUi: {
-        default: 'Alumno',
-        title: 'Alumno: {name} (clic para cambiar)',
-        titleEmpty: 'Escribí tu nombre: queda guardado en lo que entregues',
-        needName: 'Escribí tu nombre para poder entregar.',
+        default: 'Estudiante',
+        title: 'Estudiante: {name} (clic para cambiar)',
+        titleEmpty: 'Escribe tu nombre: queda guardado en lo que entregues',
+        needName: 'Escribe tu nombre para poder entregar.',
         hello: 'Hola, {name}. Tu nombre quedará en lo que guardes.'
     },
     teacher: {
-        needNetwork: 'Armá primero una red con al menos dos equipos.',
-        needTitle: 'Poné un título a la actividad.',
-        needGoals: 'Elegí al menos un objetivo: dos equipos distintos que deban comunicarse.',
-        alreadySolved: 'Con la red tal como está, los objetivos YA se cumplen: el alumno no tendría nada para arreglar. ¿Guardar igual?',
-        goalPlaceholder: 'sitio web, o escribí VPN',
+        needNetwork: 'Crea primero una red con al menos dos equipos.',
+        needTitle: 'Pon un título a la actividad.',
+        needGoals: 'Elige al menos un objetivo: dos equipos distintos que deban comunicarse.',
+        alreadySolved: 'Con la red tal como está, los objetivos YA se cumplen: el estudiante no tendría nada para arreglar. ¿Guardar igual?',
+        goalPlaceholder: 'sitio web, o escribe VPN',
         activityName: 'Actividad - {title}',
-        saved: 'Actividad «{title}» guardada. Pasale el archivo a tus alumnos: la abren con Archivo → Abrir red.'
+        saved: 'Actividad «{title}» guardada. Pásales el archivo a tus estudiantes: lo abren con Archivo → Abrir red.'
     },
     grade: {
         noFiles: 'Todavía no elegiste archivos.',
@@ -185,14 +190,14 @@ window.I18N_DICTS.es = {
         notSolved: '❌ No resuelta',
         viewNetwork: 'Ver red',
         summary: '{count} archivo(s) · {done} de {graded} actividades resueltas',
-        headStudent: 'Alumno',
+        headStudent: 'Estudiante',
         headActivity: 'Actividad / Red',
         headResult: 'Resultado (verificado ahora)',
         headSaved: 'Guardado',
         cannotOpen: 'No se pudo abrir: {error}',
-        needFiles: 'Elegí primero los archivos de tus alumnos.',
+        needFiles: 'Elige primero los archivos de tus estudiantes.',
         csvHead: {
-            student: 'Alumno',
+            student: 'Estudiante',
             activity: 'Actividad / Red',
             result: 'Resultado',
             detail: 'Detalle',
@@ -206,35 +211,35 @@ window.I18N_DICTS.es = {
         prev: 'Anterior',
         next: 'Siguiente',
         closeTitle: 'Cerrar recorrido',
-        needDemo: 'Cargá primero el ejemplo para ver un ping.',
-        done: '¡Listo! Podés volver a ver el recorrido desde el menú «Ver».',
+        needDemo: 'Carga primero el ejemplo para ver un ping.',
+        done: '¡Listo! Puedes volver a ver el recorrido desde el menú «Ver».',
         step: 'Paso {step} de {total}',
         finish: 'Terminar',
         steps: {
             1: {
                 title: '¡Bienvenido a NetSim Lab!',
-                text: 'Acá vas a armar redes, hacer que se comuniquen y ver cómo viajan los datos. Este recorrido dura un minuto.'
+                text: 'Aquí vas a crear redes, hacer que se comuniquen y ver cómo viajan los datos. Este recorrido dura un minuto.'
             },
             2: {
-                title: '1 · Agregá equipos',
-                text: 'En el panel de la izquierda hacé clic en un equipo para sumarlo: PC, notebook, celular, router, switch, servidor DNS…'
+                title: '1 · Agrega equipos',
+                text: 'En el panel de la izquierda haz clic en un equipo para sumarlo: PC, portátil, celular, router, switch, servidor DNS…'
             },
             3: {
-                title: '2 · Movelos y configuralos',
-                text: 'Arrastrá un equipo para moverlo y el fondo para recorrer el esquema. La rueda del mouse acerca y aleja; el botón de la izquierda encuadra toda la red. Doble clic abre las propiedades; Supr elimina; Ctrl+Z deshace.'
+                title: '2 · Muévelos y configúralos',
+                text: 'Arrastra un equipo para moverlo y el fondo para recorrer el esquema. La rueda del mouse acerca y aleja; el botón de la izquierda encuadra toda la red. Doble clic abre las propiedades; Supr elimina; Ctrl+Z deshace.'
             },
             4: {
-                title: '3 · Conectá con cables',
-                text: 'Elegí «Conectar Cable» y hacé clic en dos equipos. Celulares, notebooks y Smart TV también se conectan por WiFi desde sus propiedades.'
+                title: '3 · Conecta con cables',
+                text: 'Elige «Conectar Cable» y haz clic en dos equipos. Celulares, portátiles y Smart TV también se conectan por WiFi desde sus propiedades.'
             },
             5: {
-                title: '4 · Probalo con un ejemplo',
-                text: 'Cargamos una red de ejemplo para que veas todo funcionando. Después podés armar la tuya.',
+                title: '4 · Pruébalo con un ejemplo',
+                text: 'Cargamos una red de ejemplo para que veas todo funcionando. Después puedes crear la tuya.',
                 action: 'Cargar ejemplo'
             },
             6: {
-                title: '5 · Simulá una comunicación',
-                text: 'Elegí origen, destino y tipo (ping, web, DNS…) y presioná ▶ Iniciar. Podés pausar, frenar y cambiar la velocidad.',
+                title: '5 · Simula una comunicación',
+                text: 'Elige origen, destino y tipo (ping, web, DNS…) y presiona ▶ Iniciar. Puedes pausar, detener y cambiar la velocidad.',
                 action: 'Mostrame un ping'
             },
             7: {
@@ -247,18 +252,18 @@ window.I18N_DICTS.es = {
             },
             9: {
                 title: '8 · Tu nombre y las actividades',
-                text: 'Escribí tu nombre en este botón: quedará dentro de lo que guardes. En «Actividades» hay redes con fallas para arreglar; al terminar, guardá la red y entregá el archivo a tu profe.'
+                text: 'Escribe tu nombre en este botón: quedará dentro de lo que guardes. En «Actividades» hay redes con fallas para arreglar; al terminar, guarda la red y entrega el archivo a tu profesor.'
             }
         }
     },
     deliver: {
         freeNetwork: 'Red libre',
-        empty: 'No hay nada para entregar: armá primero tu red.',
+        empty: 'No hay nada para entregar: crea primero tu red.',
         solved: '✅ Resuelta: la red funciona',
         notSolved: '❌ Todavía sin resolver',
-        notSolvedHint: 'Podés entregarla igual, o seguir intentando y entregar después.',
+        notSolvedHint: 'Puedes entregarla igual, o seguir intentando y entregar después.',
         freeNetworkState: 'Red libre (sin actividad)',
-        student: 'Alumno:',
+        student: 'Estudiante:',
         activity: 'Actividad',
         work: 'Trabajo',
         status: 'Estado:',
@@ -267,37 +272,37 @@ window.I18N_DICTS.es = {
         keepWorking: 'Seguir trabajando',
         download: 'Descargar mi entrega',
         doneTitle: '✔ ¡Listo! Se descargó tu entrega.',
-        doneHint: 'Buscá el archivo {file} en tu carpeta de Descargas y enviáselo a tu profe (por mail, WhatsApp o el aula virtual).',
+        doneHint: 'Busca el archivo {file} en tu carpeta de Descargas y envíaselo a tu profesor (por mail, WhatsApp o el aula virtual).',
         close: 'Cerrar',
-        downloaded: '📤 Entrega descargada. Enviá el archivo a tu profe.'
+        downloaded: '📤 Entrega descargada. Envía el archivo a tu profesor.'
     },
     autosave: {
         network: '«{name}» · ',
         deviceCount: '{count} equipos',
         activity: ' · actividad: {title}',
         savedAt: ' · guardado {when}.',
-        restored: 'Listo: seguís donde habías dejado tu trabajo.',
+        restored: 'Listo: continúas donde habías dejado tu trabajo.',
         cannotRestore: 'No se pudo recuperar: {error}'
     },
     offline: {
         downloading: 'Preparando la copia para usar sin internet…',
-        done: 'Copia descargada: ese archivo funciona sin conexión. Guardalo en una carpeta o pendrive.',
-        failed: 'No se pudo armar la copia ({error}). Verificá que exista assets/offline-bundle.js (se genera con «npm run build»).'
+        done: 'Copia descargada: ese archivo funciona sin conexión. Guárdalo en una carpeta o memoria USB.',
+        failed: 'No se pudo crear la copia ({error}). Verifica que exista assets/offline-bundle.js (se genera con «npm run build»).'
     },
     demo: {
-        twoNetworks: 'Ejemplo cargado: dos redes (192.168.1.0/24 y 192.168.2.0/24) unidas por un router. Probá un ping de PC_A1 a PC_B1 en modo avanzado.',
-        vpnLocal: 'Ejemplo: la VPN está dentro de la red de la Oficina (WireGuard). PC_Oficina1 se conecta, pero PC_Casa1 no llega: falta abrir el puerto UDP 51820 en Router_Oficina. Abrí las propiedades del servidor VPN o del router.',
-        vpnCloud: 'Ejemplo: Casa y Oficina tienen redes distintas, cada una con Internet. PC_Casa1 y PC_Oficina1 están unidas por la VPN (100.64.0.x). Probá un ping entre sus IP VPN.'
+        twoNetworks: 'Ejemplo cargado: dos redes (192.168.1.0/24 y 192.168.2.0/24) unidas por un router. Prueba un ping de PC_A1 a PC_B1 en modo avanzado.',
+        vpnLocal: 'Ejemplo: la VPN está dentro de la red de la Oficina (WireGuard). PC_Oficina1 se conecta, pero PC_Casa1 no llega: falta abrir el puerto UDP 51820 en Router_Oficina. Abre las propiedades del servidor VPN o del router.',
+        vpnCloud: 'Ejemplo: Casa y Oficina tienen redes distintas, cada una con Internet. PC_Casa1 y PC_Oficina1 están unidas por la VPN (100.64.0.x). Prueba un ping entre sus IP VPN.'
     },
     export: {
-        empty: 'No hay nada para exportar: agregá dispositivos primero.',
+        empty: 'No hay nada para exportar: agrega dispositivos primero.',
         pdfDone: 'Documento PDF generado.',
         imageDone: 'Imagen {format} exportada.',
         type: {
             vpn: 'VPN',
             vpnCloud: 'VPN nube',
             vpnLocal: 'VPN local',
-            laptop: 'Notebook',
+            laptop: 'Portátil',
             netbook: 'Netbook',
             tv: 'Smart TV',
             dns: 'DNS',
@@ -323,8 +328,8 @@ window.I18N_DICTS.es = {
         stop: 'Detener el tráfico general',
         start: 'Todos navegando a la vez',
         stats: '🌐 Tráfico en vivo · ✔ {ok} correctos · ✖ {fail} fallidos',
-        needClients: 'Agregá PC, notebooks, celulares o Smart TV (y algo con quien comunicarse) para generar tráfico.',
-        hint: 'Tráfico general: cada equipo navega por su cuenta. ✔ llega y responde, ✖ no logra comunicarse. Presioná ■ cuando quieras detenerlo.'
+        needClients: 'Agrega PC, portátiles, celulares o Smart TV (y algo con quien comunicarse) para generar tráfico.',
+        hint: 'Tráfico general: cada equipo navega por su cuenta. ✔ llega y responde, ✖ no logra comunicarse. Presiona ■ cuando quieras detenerlo.'
     },
     // Fase 3 · zona 4 — modal de dispositivo (pestañas y campos):
     dev: {
@@ -406,38 +411,38 @@ window.I18N_DICTS.es = {
             connectNew: 'Conectar Nuevo Cable'
         },
         dnsTab: {
-            online: 'Servidor encendido (si lo apagás, nadie recibe respuesta)',
+            online: 'Servidor encendido (si lo apagas, nadie recibe respuesta)',
             records: 'Registros (nombre → IP)',
-            recordsHint: 'Una línea por registro: {format}. Ejemplo: {example}. Si un nombre no está acá, el servidor responde «no existe».',
+            recordsHint: 'Una línea por registro: {format}. Ejemplo: {example}. Si un nombre no está aquí, el servidor responde «no existe».',
             apply: 'Aplicar',
-            invalidRecord: 'Registro inválido: «{line}». Usá: www.ejemplo.com 192.168.2.10',
+            invalidRecord: 'Registro inválido: «{line}». Usa: www.ejemplo.com 192.168.2.10',
             recordsApplied: '{name}: registros aplicados ({count}).'
         },
         routesTab: {
             toward: 'Hacia {name}',
-            noNeighbors: 'Conectá este router con cables a otros equipos (por ejemplo a un switch): cada cable crea una interfaz.',
+            noNeighbors: 'Conecta este router con cables a otros equipos (por ejemplo a un switch): cada cable crea una interfaz.',
             interfaces: 'Interfaces (una por cable)',
             interfacesHint: 'Cada interfaz tiene su propia IP y pertenece a una red distinta.',
             staticRoutes: 'Rutas estáticas',
             staticRoutesHint: 'Una por línea: {format}. Ruta predeterminada: {default}. Las redes de sus interfaces ya son conocidas.',
             apply: 'Aplicar',
             invalidIface: 'IP o máscara inválida en la interfaz hacia {name}.',
-            invalidRoute: 'Ruta inválida: «{line}». Usá: 10.0.0.0/24 via 192.168.2.2',
+            invalidRoute: 'Ruta inválida: «{line}». Usa: 10.0.0.0/24 via 192.168.2.2',
             applied: '{name}: interfaces y rutas aplicadas.'
         },
         browser: {
             go: 'Ir',
-            hint: 'Introduce una URL como {example} o la IP del Router para navegar.',
+            hint: 'Ingresa una URL como {example} o la IP del Router para navegar.',
             noIp: 'El equipo no posee una IP válida asignada (Dirección APIPA o sin red).',
             emptyUrl: 'URL vacía',
-            emptyUrlMsg: 'Escribí una dirección, por ejemplo www.ejemplo.com o una IP.',
+            emptyUrlMsg: 'Escribe una dirección, por ejemplo www.ejemplo.com o una IP.',
             dnsUnreachable: 'No se pudo consultar al servidor DNS ({dns}): está apagado o no es alcanzable.',
             dnsUnknownHost: 'El servidor DNS ({dns}) no conoce el nombre «{host}».',
             pageLoaded: 'Página cargada exitosamente',
             pageLoadedCloud: 'Conexión a Internet establecida a través de la nube ISP.',
             noDnsNoInternet: 'No hay servidor DNS ni salida a Internet alcanzable desde esta red.',
             nameNotResolved: 'No se pudo resolver el nombre.',
-            timeout: 'El equipo {ip} no responde. Revisá cables, IP, máscara, puerta de enlace y rutas.',
+            timeout: 'El equipo {ip} no responde. Revisa cables, IP, máscara, puerta de enlace y rutas.',
             mgmtPanel: 'Panel de gestión ({name})',
             connectedTo: 'Conexión establecida con {name} ({ip}).',
             statusOnline: 'Estado: EN LÍNEA',
@@ -450,19 +455,19 @@ window.I18N_DICTS.es = {
             statusOk: '● Conectado',
             statusOff: '○ Sin VPN',
             statusError: '✖ Sin conexión',
-            serverCloud: 'Servidor VPN {cloud} (como el coordinador de Tailscale o ZeroTier): conectalo al acceso a Internet. Los equipos se encuentran a través de él; si pueden verse entre sí hablan directo, y si no, el tráfico pasa por este servidor.',
-            serverLocal: 'Servidor VPN {local} (como WireGuard u OpenVPN): conectalo a la red de la escuela o la oficina. Todos los equipos se conectan a él y el tráfico de la VPN pasa por él.',
+            serverCloud: 'Servidor VPN {cloud} (como el coordinador de Tailscale o ZeroTier): conéctalo al acceso a Internet. Los equipos se encuentran a través de él; si pueden verse entre sí hablan directo, y si no, el tráfico pasa por este servidor.',
+            serverLocal: 'Servidor VPN {local} (como WireGuard u OpenVPN): conéctalo a la red de la escuela o la oficina. Todos los equipos se conectan a él y el tráfico de la VPN pasa por él.',
             inCloud: 'en la nube',
             local: 'local',
             service: 'Servicio',
             network: 'Red VPN',
             serverOn: 'Servidor encendido',
             members: 'Equipos en esta VPN ({count})',
-            noMembers: 'Todavía no hay equipos. Abrí las propiedades de una PC, notebook o celular y elegí esta VPN en su pestaña «VPN».',
+            noMembers: 'Todavía no hay equipos. Abre las propiedades de una PC, portátil o celular y elige esta VPN en su pestaña «VPN».',
             clientIntro: 'Una VPN le da a este equipo una segunda IP, la de la VPN, además de la de su red local. Con ella puede comunicarse con otros equipos de la VPN como si estuvieran en su misma red, estén donde estén.',
             connectTo: 'Conectarse a la VPN',
             noVpn: 'Sin VPN',
-            noServers: 'No hay servidores VPN en la red. Agregá uno desde la barra lateral («VPN en la nube» o «Servidor VPN local») y conectalo con un cable.',
+            noServers: 'No hay servidores VPN en la red. Agrega uno desde la barra lateral («VPN en la nube» o «Servidor VPN local») y conéctalo con un cable.',
             localIp: 'IP de la red local:',
             vpnIp: 'IP de la VPN:',
             status: 'Estado:',
@@ -482,7 +487,7 @@ window.I18N_DICTS.es = {
             dhcpRangeInvalid: 'Rango DHCP inválido: debe estar dentro de la subred y no incluir la IP del gateway.',
             dhcpRangeApplied: 'Rango DHCP aplicado.',
             portsInvalid: 'Los puertos tienen que ser números entre 1 y 65535.',
-            portTargetMissing: 'Elegí a qué equipo de la red querés redirigir el puerto.',
+            portTargetMissing: 'Elige a qué equipo de la red quieres redirigir el puerto.',
             portRuleExists: 'Ya hay una regla para {proto} {port}.',
             portRuleAdded: 'Regla agregada: {proto} {ext} → {ip}:{port}.',
             wifiNameEmpty: 'El nombre de la red no puede quedar vacío.',
@@ -492,7 +497,7 @@ window.I18N_DICTS.es = {
             wifiPassUpdated: 'Contraseña WiFi actualizada. Los equipos deben reconectarse.',
             wifiWrongPass: 'Contraseña incorrecta. No se estableció la conexión WiFi.',
             wifiConnected: 'Conectado a la red WiFi {ssid}',
-            deviceDeleted: '«{name}» eliminado. Podés deshacerlo con Ctrl+Z.',
+            deviceDeleted: '«{name}» eliminado. Puedes deshacerlo con Ctrl+Z.',
             vpnTwoIps: '{name} ahora tiene dos IP: {local} (local) y {vpn} (VPN).',
             vpnLeft: '{name} salió de la VPN.',
             portOpened: 'Puerto UDP {port} abierto en {router} → {ip}.'
@@ -543,7 +548,7 @@ window.I18N_DICTS.es = {
         noRoute: '{name} no tiene ninguna ruta hacia {ip}.',
         noGateway: '{name} no tiene puerta de enlace: no sabe salir de su red.',
         gatewayMissing: 'La puerta de enlace de {name} ({gateway}) no existe en la red.',
-        gatewayWrongNetwork: 'La puerta de enlace {gateway} no está en la misma red que {name} ({ip}): revisá su IP y su máscara.',
+        gatewayWrongNetwork: 'La puerta de enlace {gateway} no está en la misma red que {name} ({ip}): revisa su IP y su máscara.',
         pathNotViaGateway: 'El camino de {name} no pasa por su puerta de enlace {gateway}.',
         routeWrongNextHop: 'La ruta de {name} apunta a {via}, que no es el siguiente equipo.'
     },
@@ -551,7 +556,7 @@ window.I18N_DICTS.es = {
         cableMode: 'Modo Cable: Haz clic en dos dispositivos para conectarlos',
         deleteCableMode: 'Modo Eliminar Cable: Haz clic sobre cualquier cable en la pantalla para cortarlo',
         emptyTitle: 'Tu área de trabajo está vacía',
-        emptyHintA: 'Agregá equipos desde el panel de la izquierda, o abrí un ejemplo desde',
+        emptyHintA: 'Agrega equipos desde el panel de la izquierda, o abre un ejemplo desde',
         zoomIn: 'Acercar (tecla +)',
         zoomReset: 'Volver al 100%',
         zoomOut: 'Alejar (tecla -)',
@@ -600,7 +605,7 @@ window.I18N_DICTS.es = {
         modeSimpleHint: 'Modo simple: solo el recorrido del paquete.',
         paused: 'En pausa. Presiona ▶ para continuar.',
         stepOf: 'Paso {step} de {total}',
-        stepHint: 'Paso a paso: leé el cartel y presioná ▶ (o la barra espaciadora) para continuar.',
+        stepHint: 'Paso a paso: lee el cartel y presiona ▶ (o la barra espaciadora) para continuar.',
         tablesCleared: 'Tablas ARP y MAC borradas. La próxima comunicación vuelve a empezar desde cero.',
         gatewayHint: ' (su puerta de enlace)',
         legNatRedirect: '{ip} → {public}:{port} (el router lo redirige a {target})',
@@ -637,7 +642,7 @@ window.I18N_DICTS.es = {
             icmp: {
                 req: '{s} envía un ping a {d}: «¿estás ahí?»',
                 dest: '{d} recibe el ping y prepara la respuesta',
-                rep: '{d} responde «¡sí, acá estoy!» (echo reply)'
+                rep: '{d} responde «¡sí, aquí estoy!» (echo reply)'
             },
             arp: {
                 req: '{s} pregunta: «¿Quién tiene la IP {ip}? ¿Cuál es su MAC?»',
@@ -658,7 +663,7 @@ window.I18N_DICTS.es = {
             syn: {
                 req: '1/3 SYN: {s} dice «quiero abrir una conexión TCP con {d}»',
                 dest: '{d} acepta abrir la conexión y prepara su respuesta',
-                rep: '2/3 SYN-ACK: {d} responde «de acuerdo, ¿me confirmás?»'
+                rep: '2/3 SYN-ACK: {d} responde «de acuerdo, ¿me confirmas?»'
             },
             discover: {
                 req: '1/4 Discover: {s} no tiene IP y le grita a toda la red: «¿Hay algún servidor DHCP?»',
@@ -721,13 +726,13 @@ window.I18N_DICTS.es = {
             switchKnown: 'El switch ya conoce la MAC destino: la envía solo por un puerto',
             switchUnknown: 'El switch todavía no conoce la MAC destino: la envía por todos los puertos (inundación)',
             routerArp: 'Ojo: ARP normalmente no cruza un router; solo sirve dentro de la misma red',
-            routerNewFrame: 'El router lee la IP, descarta la trama vieja y arma otra con nuevas MAC',
-            routerRoute: 'El router lee la IP, elige la interfaz de salida y arma una trama nueva con otras MAC',
+            routerNewFrame: 'El router lee la IP, descarta la trama vieja y crea otra con nuevas MAC',
+            routerRoute: 'El router lee la IP, elige la interfaz de salida y crea una trama nueva con otras MAC',
             travels: 'Viaja el paquete completo, con todas sus capas juntas'
         },
         route: {
             notFound: '{name} busca {ip} en su tabla de rutas y no encuentra ninguna: descarta el paquete. Falta agregar una ruta.',
-            wrongNext: 'La ruta de {name} apunta a {via}, pero el siguiente equipo conectado es {next}. Revisá la ruta o los cables.'
+            wrongNext: 'La ruta de {name} apunta a {via}, pero el siguiente equipo conectado es {next}. Revisa la ruta o los cables.'
         },
         done: {
             syn: '¡Listo! La conexión TCP entre {s} y {d} está abierta. Ahora {s} confirma (ACK) y pide la página.',
@@ -743,9 +748,9 @@ window.I18N_DICTS.es = {
             logNoGateway: '{s} no tiene puerta de enlace configurada.',
             gatewayMissing: 'La puerta de enlace de {s} ({gw}) no existe en esta red: el paquete no sabe por dónde salir.',
             logGatewayMissing: 'La puerta de enlace {gw} no existe.',
-            gatewayOtherNet: 'La puerta de enlace {gw} no está en la misma red que {s} ({ip}): revisá su IP y su máscara.',
+            gatewayOtherNet: 'La puerta de enlace {gw} no está en la misma red que {s} ({ip}): revisa su IP y su máscara.',
             logGatewayOtherNet: 'Puerta de enlace fuera de la red de {s}.',
-            pathNotViaGw: 'El camino hacia {d} no pasa por la puerta de enlace {gw}. Revisá los cables.',
+            pathNotViaGw: 'El camino hacia {d} no pasa por la puerta de enlace {gw}. Revisa los cables.',
             logPathNotViaGw: 'El camino físico no pasa por {gw}.',
             destNoGateway: '{d} recibiría el paquete pero no sabe cómo responder: {reason}.',
             logDestNoGateway: '{d} no puede responder (puerta de enlace).',
@@ -759,13 +764,13 @@ window.I18N_DICTS.es = {
             logNoIpOwner: 'Ningún equipo tiene la IP {ip}.',
             noPathToReal: '{name} apunta a {real} ({ip}), pero no hay camino hasta ese equipo.',
             logNoPathToReal: 'Sin camino hasta {real}.',
-            dnsNameMissing: '{d} no conoce el nombre {site} y responde «no existe». Agregalo en los registros del servidor DNS.',
+            dnsNameMissing: '{d} no conoce el nombre {site} y responde «no existe». Agrégalo en los registros del servidor DNS.',
             logDnsNameMissing: '{d}: el nombre {site} no existe.',
-            dhcpStaticIp: '{s} tiene IP fija: no usa DHCP. Cambiá su modo a DHCP en la configuración IP.',
+            dhcpStaticIp: '{s} tiene IP fija: no usa DHCP. Cambia su modo a DHCP en la configuración IP.',
             logDhcpStaticIp: '{s} usa IP fija, no pide IP por DHCP.',
             dhcpNotServer: '{s} no es un servidor DHCP (o lo tiene apagado): nadie responde al Discover.',
             logDhcpNotServer: '{s} no responde DHCP.',
-            dhcpNoIp: '{s} no pudo ofrecer una IP a {target}: revisá el rango DHCP del servidor (o que el cable llegue hasta él).',
+            dhcpNoIp: '{s} no pudo ofrecer una IP a {target}: revisa el rango DHCP del servidor (o que el cable llegue hasta él).',
             logDhcpNoIp: '{s} no tiene IP para ofrecer a {target}.'
         },
         status: {
@@ -793,8 +798,8 @@ window.I18N_DICTS.es = {
         hint: 'Pista',
         deliverTitle: 'Guardar y entregar',
         defaultTitle: 'Actividad',
-        defaultHint: 'Probá la simulación en modo avanzado para ver dónde se corta.',
-        tip: 'Tip: usá la simulación en modo avanzado para ver dónde se corta.',
+        defaultHint: 'Prueba la simulación en modo avanzado para ver dónde se corta.',
+        tip: 'Tip: usa la simulación en modo avanzado para ver dónde se corta.',
         level: {
             easy: 'Fácil',
             medium: 'Medio',
@@ -808,18 +813,18 @@ window.I18N_DICTS.es = {
             and: ' y '
         },
         student: {
-            label: '👤 Alumno: {name}',
-            prompt: '👤 Escribí tu nombre con el botón de arriba para que quede en tu entrega.'
+            label: '👤 Estudiante: {name}',
+            prompt: '👤 Escribe tu nombre con el botón de arriba para que quede en tu entrega.'
         },
         submission: {
-            label: '📥 Entrega de {student} · guardada {date} · el alumno la marcó como {state}. Usá «Verificar» para comprobarlo ahora.',
+            label: '📥 Entrega de {student} · guardada {date} · el estudiante la marcó como {state}. Usa «Verificar» para comprobarlo ahora.',
             solved: 'resuelta ✅',
             unsolved: 'sin resolver ❌'
         },
         msg: {
-            solved: '✅ ¡Resuelto{student}! La red funciona. Guardá la red para entregarla.',
+            solved: '✅ ¡Resuelto{student}! La red funciona. Guarda la red para entregarla.',
             notYetLabel: 'Todavía no:',
-            notYet: '{a} y {b} no logran comunicarse. Usá «Pista» si te trabás.',
+            notYet: '{a} y {b} no logran comunicarse. Usa «Pista» si no sabes cómo seguir.',
             diagnosticLabel: 'Diagnóstico:',
             noProblems: '✅ No queda ningún problema: ¡ya está resuelta!',
             deviceRemoved: 'Alguno de los equipos de la actividad fue eliminado.'
@@ -828,52 +833,52 @@ window.I18N_DICTS.es = {
             1: {
                 title: 'La PC que no sale',
                 story: 'PC_A1 puede hablar con PC_A2, pero no logra comunicarse con PC_B1, que está en otra red.',
-                hint: 'Para salir de su red, una PC necesita saber a quién entregarle los paquetes. Revisá su configuración IP.'
+                hint: 'Para salir de su red, una PC necesita saber a quién entregarle los paquetes. Revisa su configuración IP.'
             },
             2: {
                 title: 'El cable suelto',
                 story: 'PC_B1 dejó de responder. Todo parece estar bien configurado.',
-                hint: 'Mirá los cables con atención: ¿está cada equipo conectado a su switch? Usá «Conectar Cable» para arreglarlo.'
+                hint: 'Mira los cables con atención: ¿está cada equipo conectado a su switch? Usa «Conectar Cable» para arreglarlo.'
             },
             3: {
                 title: 'Dos con la misma IP',
                 story: 'PC_A1 y PC_A2 están en la misma red pero la comunicación es un desastre.',
-                hint: 'Cada equipo necesita una dirección IP única. Compará las IP de los dos.'
+                hint: 'Cada equipo necesita una dirección IP única. Compara las IP de los dos.'
             },
             4: {
                 title: 'La máscara que no coincide',
                 story: 'PC_A1 cree que PC_A2 está en su misma red, pero PC_A2 opina otra cosa.',
-                hint: 'Mirá la máscara de subred de PC_A2 y compará a qué red pertenece cada IP.'
+                hint: 'Mira la máscara de subred de PC_A2 y compara a qué red pertenece cada IP.'
             },
             5: {
                 title: 'Llega pero no vuelve',
                 story: 'Los paquetes de PC_A1 llegan a PC_B1, pero la respuesta nunca regresa.',
-                hint: 'Una respuesta también tiene que salir de la red de PC_B1. Revisá su puerta de enlace.'
+                hint: 'Una respuesta también tiene que salir de la red de PC_B1. Revisa su puerta de enlace.'
             },
             6: {
                 title: 'Falta una ruta',
                 story: 'Dos routers unen las redes 192.168.1.0/24 y 192.168.2.0/24. La ida funciona, pero PC_A1 no recibe respuesta de PC_B1.',
-                hint: 'Mirá la tabla de rutas de los dos routers: ¿el segundo sabe cómo volver a la red 192.168.1.0/24? Las rutas se agregan en la pestaña «Interfaces y rutas».'
+                hint: 'Mira la tabla de rutas de los dos routers: ¿el segundo sabe cómo volver a la red 192.168.1.0/24? Las rutas se agregan en la pestaña «Interfaces y rutas».'
             },
             7: {
                 title: 'El nombre no existe',
                 story: 'PC_A1 puede hacer ping a Servidor_Web por su IP, pero al escribir www.ejemplo.com la página no abre.',
-                hint: 'El ping por IP funciona, así que la red está bien. Mirá qué sabe el servidor DNS: ¿tiene un registro para ese nombre?'
+                hint: 'El ping por IP funciona, así que la red está bien. Mira qué sabe el servidor DNS: ¿tiene un registro para ese nombre?'
             },
             8: {
                 title: 'El DNS que no contesta',
                 story: 'Ayer la página abría perfecto. Hoy nadie puede entrar a www.ejemplo.com.',
-                hint: 'Revisá el estado del servidor DNS: ¿está encendido?'
+                hint: 'Revisa el estado del servidor DNS: ¿está encendido?'
             },
             9: {
                 title: 'La página equivocada',
                 story: 'Al escribir www.ejemplo.com se abre una página, pero no es la del Servidor_Web. Alguien tocó el DNS.',
-                hint: 'Compará la IP del registro DNS con la IP real de Servidor_Web.'
+                hint: 'Compara la IP del registro DNS con la IP real de Servidor_Web.'
             },
             10: {
                 title: 'La PC sin IP',
                 story: 'Dos PC de la red del aula no logran comunicarse. Sus IP empiezan con 169.254.',
-                hint: 'Esas direcciones aparecen cuando nadie les da una IP. Revisá el servidor DHCP del router.'
+                hint: 'Esas direcciones aparecen cuando nadie les da una IP. Revisa el servidor DHCP del router.'
             },
             11: {
                 title: 'La salida a Internet',
@@ -883,37 +888,37 @@ window.I18N_DICTS.es = {
             12: {
                 title: 'Dos fallas juntas',
                 story: 'La red de dos routers sigue sin comunicar PC_A1 con PC_B1. Esta vez hay más de un problema.',
-                hint: 'Arreglá un problema y verificá de nuevo: puede quedar otro. Revisá la puerta de enlace de PC_B1 y las rutas de los dos routers.'
+                hint: 'Arregla un problema y verifica de nuevo: puede quedar otro. Revisa la puerta de enlace de PC_B1 y las rutas de los dos routers.'
             },
             13: {
                 title: 'La VPN de la oficina no conecta',
                 story: 'La oficina tiene un servidor VPN (WireGuard) adentro de su red. Desde la casa quieren entrar a la VPN, pero PC_Casa1 no logra conectarse.',
-                hint: 'El servidor está dentro de la red privada de la oficina: desde Internet no se llega a él. Mirá el panel del servidor VPN y el Port Forwarding del router de la oficina.'
+                hint: 'El servidor está dentro de la red privada de la oficina: desde Internet no se llega a él. Mira el panel del servidor VPN y el Port Forwarding del router de la oficina.'
             },
             14: {
                 title: 'El puerto está mal abierto',
                 story: 'Alguien abrió un puerto en el router de la oficina para la VPN, pero PC_Casa1 sigue sin poder conectarse.',
-                hint: 'La regla existe, pero tiene un error. Revisá el protocolo (¿UDP o TCP?), los dos puertos y a qué equipo redirige.'
+                hint: 'La regla existe, pero tiene un error. Revisa el protocolo (¿UDP o TCP?), los dos puertos y a qué equipo redirige.'
             },
             15: {
                 title: 'El servidor VPN está apagado',
                 story: 'Ayer la casa y la oficina se veían por la VPN. Hoy ninguna PC logra comunicarse con la otra.',
-                hint: 'Abrí las propiedades del servidor VPN en la nube y revisá su estado.'
+                hint: 'Abre las propiedades del servidor VPN en la nube y revisa su estado.'
             },
             16: {
                 title: 'Falta unir un equipo a la VPN',
                 story: 'PC_Casa1 ya está en la VPN, pero no logra comunicarse con PC_Oficina1.',
-                hint: 'Mirá las dos PC: una de ellas no tiene la segunda IP (la de la VPN). Abrí sus propiedades y buscá la pestaña VPN.'
+                hint: 'Mira las dos PC: una de ellas no tiene la segunda IP (la de la VPN). Abre sus propiedades y busca la pestaña VPN.'
             },
             17: {
                 title: 'Unir dos redes con una VPN',
-                story: 'La casa y la oficina tienen cada una su router y su Internet, pero sus PC no se ven entre sí. Armá una VPN para que PC_Casa1 y PC_Oficina1 se comuniquen como si estuvieran en la misma red.',
-                hint: 'Dos redes privadas no se ven por Internet. Agregá un «VPN en la nube», conectalo con un cable a Internet y unile las dos PC desde la pestaña VPN de cada una.'
+                story: 'La casa y la oficina tienen cada una su router y su Internet, pero sus PC no se ven entre sí. Crea una VPN para que PC_Casa1 y PC_Oficina1 se comuniquen como si estuvieran en la misma red.',
+                hint: 'Dos redes privadas no se ven por Internet. Agrega un «VPN en la nube», conéctalo con un cable a Internet y une las dos PC desde la pestaña VPN de cada una.'
             },
             18: {
                 title: 'La VPN con dos problemas',
                 story: 'La oficina tiene un servidor VPN local. PC_Casa1 y PC_Oficina1 deberían comunicarse por la VPN, pero no lo logran. Esta vez hay más de un problema.',
-                hint: 'Arreglá un problema y verificá otra vez: puede quedar otro. Pensá en cómo se llega desde afuera al servidor y en si las dos PC están en la VPN.'
+                hint: 'Arregla un problema y verifica otra vez: puede quedar otro. Piensa en cómo se llega desde afuera al servidor y en si las dos PC están en la VPN.'
             }
         }
     },
@@ -936,20 +941,20 @@ window.I18N_DICTS.es = {
         },
         restore: {
             title: 'Encontramos tu trabajo anterior',
-            hint: 'El simulador guarda tu red automáticamente en este navegador. Para entregarla o compartirla, usá Archivo → Guardar red.',
+            hint: 'El simulador guarda tu red automáticamente en este navegador. Para entregarla o compartirla, usa Archivo → Guardar red.',
             startOver: 'Empezar de cero',
             continue: 'Continuar donde estaba'
         },
         student: {
-            title: '¿Cómo te llamás?',
-            hint: 'Tu nombre se guarda dentro de las redes y actividades que guardes, así tu profe sabe de quién es cada entrega.',
+            title: '¿Cómo te llamas?',
+            hint: 'Tu nombre se guarda dentro de las redes y actividades que guardes, así tu profesor sabe de quién es cada entrega.',
             placeholder: 'Ej: Ana Pérez',
             notNow: 'Ahora no',
             save: 'Guardar nombre'
         },
         mkact: {
             title: 'Crear actividad con esta red',
-            hint: 'Armá la red, rompé algo a propósito (una IP, un cable, una ruta…) y definí qué tiene que lograr el alumno. Se guarda como un archivo que el alumno abre con «Abrir red».',
+            hint: 'Crea la red, rompe algo a propósito (una IP, un cable, una ruta…) y define qué tiene que lograr el estudiante. Se guarda como un archivo que el estudiante abre con «Abrir red».',
             labelTitle: 'Título',
             placeholderTitle: 'Ej: La PC de Secretaría no sale a Internet',
             labelLevel: 'Dificultad',
@@ -961,23 +966,23 @@ window.I18N_DICTS.es = {
             labelStory: 'Consigna (qué le pasa a la red)',
             placeholderStory: 'Ej: Desde ayer, nadie del laboratorio puede abrir la página del colegio.',
             labelHint: 'Pista (opcional)',
-            placeholderHint: 'Ej: Revisá la puerta de enlace de las PC.',
+            placeholderHint: 'Ej: Revisa la puerta de enlace de las PC.',
             goals: 'Objetivos: ¿quiénes tienen que poder comunicarse?',
             save: 'Guardar actividad'
         },
         grade: {
             title: 'Corregir entregas',
-            hint: 'Elegí uno o varios archivos que guardaron tus alumnos. El simulador vuelve a verificar cada red y te muestra quién la resolvió. Con «Ver» abrís la red del alumno para revisarla.',
+            hint: 'Elige uno o varios archivos que guardaron tus estudiantes. El simulador vuelve a verificar cada red y te muestra quién la resolvió. Con «Ver» abres la red del estudiante para revisarla.',
             chooseFiles: 'Elegir archivos…',
             downloadCsv: 'Descargar resumen (Excel)'
         },
         activities: {
-            title: 'Actividades: ¡arreglá la red!',
-            hint: 'Cada actividad carga una red con una falla escondida. Encontrala, arreglala y verificá.'
+            title: 'Actividades: ¡arregla la red!',
+            hint: 'Cada actividad carga una red con una falla escondida. Encuéntrala, arréglala y verifica.'
         },
         save: {
             title: 'Guardar red',
-            hint: 'Elegí un nombre para identificar tu red.',
+            hint: 'Elige un nombre para identificar tu red.',
             placeholder: 'Ej: Red del aula',
             save: 'Guardar'
         },

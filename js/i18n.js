@@ -3,6 +3,9 @@
  *
  * - Diccionarios en window.I18N_DICTS, cargados desde lang/*.js con <script>
  *   (así funciona también abriendo el archivo directo con file://).
+ * - Idiomas: es (español neutro, respaldo), ar (español rioplatense), en, pt, fr.
+ *   Un navegador en es-AR arranca en ar; el resto de las variantes de español
+ *   (es-ES, es-MX, es-419…) arranca en es.
  * - t(clave, vars): resuelve en el idioma actual; si falta la clave, cae al
  *   español; si falta ahí, devuelve la clave y avisa en consola.
  * - Interpolación {variable} y plurales con vars.count (clave_one / clave_other).
@@ -18,7 +21,7 @@
     'use strict';
 
     const FALLBACK = 'es';
-    const SUPPORTED = ['es', 'en', 'pt', 'fr'];
+    const SUPPORTED = ['es', 'ar', 'en', 'pt', 'fr'];
     const LOG_MAX = 20;
 
     let current = FALLBACK;
@@ -27,8 +30,12 @@
 
     function normalize(code) {
         if (!code) return null;
-        const c = String(code).toLowerCase().split('-')[0].trim();
-        return SUPPORTED.includes(c) ? c : null;
+        const parts = String(code).toLowerCase().replace(/_/g, '-').split('-');
+        const base = parts[0].trim();
+        // Español: la variante argentina tiene su propio diccionario (voseo);
+        // cualquier otra región usa el español neutro.
+        if (base === 'es') return parts[1] === 'ar' ? 'ar' : 'es';
+        return SUPPORTED.includes(base) ? base : null;
     }
 
     function detectInitial() {

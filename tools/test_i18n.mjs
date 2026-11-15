@@ -119,6 +119,10 @@ console.log('\n[4] setLang: normaliza, guarda, actualiza <html lang>, ignora no 
     ok(I18N.lang === 'pt', 'idioma no soportado se ignora');
     I18N.setLang('fr');
     ok(b.document.documentElement.getAttribute('lang') === 'fr', 'cambio a fr funciona');
+    I18N.setLang('es-AR');
+    ok(I18N.lang === 'ar', 'es-AR -> ar (español rioplatense)');
+    I18N.setLang('es-MX');
+    ok(I18N.lang === 'es', 'es-MX -> es (español neutro)');
 }
 
 console.log('\n[5] prioridad: localStorage > navegador > es');
@@ -203,6 +207,35 @@ console.log('\n[9] diccionario en francés: se carga y tiene las mismas claves q
     ok(soloEs.length === 0, 'no hay claves que falten en fr' + (soloEs.length ? ': ' + soloEs.slice(0, 5).join(', ') : ''));
     ok(soloFr.length === 0, 'no hay claves sobrantes en fr' + (soloFr.length ? ': ' + soloFr.slice(0, 5).join(', ') : ''));
     ok(es.size === fr.size && es.size > 500, `ambos diccionarios tienen ${es.size} claves`);
+}
+
+console.log('\n[10] español rioplatense (ar): voseo, claves iguales a es y respaldo');
+{
+    const b = makeBrowser({ lang: 'es-AR' });
+    const I18N = loadEngine(b, ['lang/es.js', 'lang/ar.js', 'js/i18n.js']);
+    ok(I18N.lang === 'ar', 'navigator es-AR -> ar con el diccionario ar cargado');
+    ok(I18N.t('menu.file') === 'Archivo', "t('menu.file') resuelve en rioplatense");
+    ok(I18N.t('tour.step', { step: 2, total: 9 }).includes('2'), 'interpolación de varios {vars} en ar');
+    const flat = (o, p = '') => Object.entries(o).flatMap(([k, v]) =>
+        typeof v === 'string' ? [[p + k, v]] : (v && typeof v === 'object' ? flat(v, p + k + '.') : []));
+    const es = new Set(flat(window.I18N_DICTS.es).map(x => x[0]));
+    const ar = new Set(flat(window.I18N_DICTS.ar).map(x => x[0]));
+    const soloEs = [...es].filter(k => !ar.has(k));
+    const soloAr = [...ar].filter(k => !es.has(k));
+    ok(soloEs.length === 0, 'no hay claves que falten en ar' + (soloEs.length ? ': ' + soloEs.slice(0, 5).join(', ') : ''));
+    ok(soloAr.length === 0, 'no hay claves sobrantes en ar' + (soloAr.length ? ': ' + soloAr.slice(0, 5).join(', ') : ''));
+    ok(es.size === ar.size && es.size > 500, `ambos diccionarios tienen ${es.size} claves`);
+
+    // La diferencia entre las dos variantes es real: es neutro (tuteo) y ar rioplatense (voseo).
+    const voseo = /(?<![\p{L}])(Revisá|Elegí|Escribí|Agregá|Mirá|Abrí|Verificá|Armá|Probá|Conectá|Buscá|Guardá|hacé|Podés|tenés|querés)(?![\p{L}])/u;
+    const rioplatense = flat(window.I18N_DICTS.ar).filter(([, v]) => voseo.test(v));
+    const neutro = flat(window.I18N_DICTS.es).filter(([, v]) => voseo.test(v));
+    ok(rioplatense.length > 0, `ar conserva el voseo (${rioplatense.length} textos)`);
+    ok(neutro.length === 0, 'es no tiene voseo: es español neutro' +
+        (neutro.length ? ': ' + neutro.slice(0, 3).map(x => x[0]).join(', ') : ''));
+    ok(window.I18N_DICTS.ar._meta.name === 'Español (Argentina)', 'ar se identifica como Español (Argentina)');
+    ok(window.I18N_DICTS.es._meta.name === 'Español neutro', 'es se identifica como Español neutro');
+    ok(I18N.supported.join(',') === 'es,ar,en,pt,fr', 'el motor anuncia los cinco idiomas');
 }
 
 console.log(`\nResultado: ${passed} ok, ${failed} fallidos`);

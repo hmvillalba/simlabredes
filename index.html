@@ -11,8 +11,9 @@
     <link rel="stylesheet" href="assets/tailwind.css">
     <link rel="stylesheet" href="assets/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="assets/fonts/fonts.css">
-    <!-- i18n (Fase 2): diccionario base + motor. Archivos locales: funcionan también con file:// -->
+    <!-- i18n (Fase 2): diccionarios + motor. Archivos locales: funcionan también con file:// -->
     <script src="lang/es.js"></script>
+    <script src="lang/ar.js"></script>
     <script src="lang/en.js"></script>
     <script src="lang/pt.js"></script>
     <script src="lang/fr.js"></script>
@@ -351,13 +352,13 @@
         <div class="flex items-center gap-2 shrink-0">
             <button id="deliver-btn" onclick="deliverWork()"
                 class="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-600 border border-emerald-600 text-xs font-bold rounded-md text-white flex items-center gap-1.5 transition whitespace-nowrap"
-                title="Guardar tu trabajo con tu nombre para entregárselo al profe" data-i18n-title="header.deliverTitle"><i
+                title="Guardar tu trabajo con tu nombre para entregárselo al profesor" data-i18n-title="header.deliverTitle"><i
                     class="fa-solid fa-paper-plane"></i><span class="hidden md:inline" data-i18n="header.deliver">Entregar</span></button>
             <button id="student-btn" onclick="openStudentDialog()"
                 class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium rounded-md text-slate-200 flex items-center gap-1.5 transition whitespace-nowrap"
                 title="Tu nombre: queda guardado en las redes y actividades que guardes" data-i18n-title="header.studentTitle"><i
                     class="fa-solid fa-user"></i><span id="student-label" class="hidden md:inline truncate"
-                    style="max-width:120px" data-i18n="header.studentDefault">Alumno</span></button>
+                    style="max-width:120px" data-i18n="header.studentDefault">Estudiante</span></button>
             <button onclick="openActivities()"
                 class="px-3 py-1.5 bg-amber-700 hover:bg-amber-600 border border-amber-600 text-xs font-bold rounded-md text-white flex items-center gap-1.5 transition whitespace-nowrap"
                 title="Redes con fallas para resolver" data-i18n-title="header.activitiesTitle"><i class="fa-solid fa-graduation-cap"></i><span
@@ -380,8 +381,7 @@
                     <button onclick="closeMenus();document.getElementById('topology-file-input').click()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
                             class="fa-solid fa-upload w-4"></i><span data-i18n="menu.openNetwork">Abrir red…</span></button>
-                    <div class="px-3 pt-1 pb-0.5 text-[10px] uppercase tracking-wider text-slate-500" data-i18n="menu.exportAs">Exportar la red
-                        como…</div>
+                    <div class="px-3 pt-1 pb-0.5 text-[10px] uppercase tracking-wider text-slate-500" data-i18n="menu.exportAs">Exportar la red como…</div>
                     <button onclick="closeMenus();exportNetwork('png')"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
                             class="fa-solid fa-image w-4 text-sky-400"></i><span data-i18n="menu.imagePng">Imagen PNG</span></button>
@@ -390,20 +390,17 @@
                             class="fa-solid fa-file-image w-4 text-sky-400"></i><span data-i18n="menu.imageJpg">Imagen JPG</span></button>
                     <button onclick="closeMenus();exportNetwork('pdf')"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
-                            class="fa-solid fa-file-pdf w-4 text-rose-400"></i><span data-i18n="menu.docPdf">Documento PDF (con lista de
-                            equipos)</span></button>
+                            class="fa-solid fa-file-pdf w-4 text-rose-400"></i><span data-i18n="menu.docPdf">Documento PDF (con lista de equipos)</span></button>
                     <div class="my-1 border-t border-slate-800"></div>
                     <button onclick="closeMenus();saveOfflineCopy()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
                         title="Descarga una versión de este simulador que funciona sin internet (no necesita conexión)" data-i18n-title="menu.offlineCopyTitle"><i
                             class="fa-solid fa-plane w-4 text-sky-400"></i><span data-i18n="menu.offlineCopy">Guardar copia para usar sin internet</span></button>
                     <div class="my-1 border-t border-slate-800"></div>
-                    <div class="px-3 pt-1 pb-0.5 text-[10px] uppercase tracking-wider text-slate-500" data-i18n="menu.forTeacher">Para el profesor
-                    </div>
+                    <div class="px-3 pt-1 pb-0.5 text-[10px] uppercase tracking-wider text-slate-500" data-i18n="menu.forTeacher">Para el profesor</div>
                     <button onclick="closeMenus();openMakeActivity()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
-                            class="fa-solid fa-wand-magic-sparkles w-4 text-amber-400"></i><span data-i18n="menu.makeActivity">Crear actividad con esta
-                        red…</span></button>
+                            class="fa-solid fa-wand-magic-sparkles w-4 text-amber-400"></i><span data-i18n="menu.makeActivity">Crear actividad con esta red…</span></button>
                     <button onclick="closeMenus();openGrader()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
                             class="fa-solid fa-clipboard-check w-4 text-emerald-400"></i><span data-i18n="menu.gradeDeliveries">Corregir entregas…</span></button>
@@ -414,13 +411,11 @@
                     <button onclick="closeMenus();loadDemoVpn('local')"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
                         title="VPN dentro de la red de la oficina: para llegar desde afuera hay que abrir un puerto en el router" data-i18n-title="menu.demoVpnLocalTitle"><i
-                            class="fa-solid fa-door-open w-4 text-indigo-400"></i><span data-i18n="menu.demoVpnLocal">Ejemplo: VPN local (abrir
-                        puertos)</span></button>
+                            class="fa-solid fa-door-open w-4 text-indigo-400"></i><span data-i18n="menu.demoVpnLocal">Ejemplo: VPN local (abrir puertos)</span></button>
                     <button onclick="closeMenus();loadDemoVpn()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
                         title="Casa y oficina, cada una con su router e Internet, unidas por una VPN en la nube" data-i18n-title="menu.demoVpnCloudTitle"><i
-                            class="fa-solid fa-shield-halved w-4 text-violet-400"></i><span data-i18n="menu.demoVpnCloud">Ejemplo: 2 redes unidas por
-                        VPN</span></button>
+                            class="fa-solid fa-shield-halved w-4 text-violet-400"></i><span data-i18n="menu.demoVpnCloud">Ejemplo: 2 redes unidas por VPN</span></button>
                     <button onclick="closeMenus();loadDemoTwoNetworks()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"
                         title="Dos redes unidas por un router con varias interfaces" data-i18n-title="menu.demoTwoNetworksTitle"><i
@@ -470,6 +465,7 @@
                 <select id="lang-select" onchange="I18N.setLang(this.value)"
                     class="px-2 py-1.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs font-medium rounded-md text-slate-200 transition cursor-pointer">
                     <option value="es">ES</option>
+                    <option value="ar">AR</option>
                     <option value="en">EN</option>
                     <option value="pt">PT</option>
                     <option value="fr">FR</option>
@@ -486,8 +482,7 @@
             class="w-64 bg-slate-900/95 border-r border-slate-800 p-4 flex flex-col justify-between shrink-0 z-10 backdrop-blur-sm">
             <div>
                 <h2 class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3" data-i18n="device.paletteTitle">Agregar Dispositivos</h2>
-                <p class="text-[11px] text-slate-500 mb-4" data-i18n="device.paletteHint">Haz clic en un equipo para añadirlo. Doble clic sobre un
-                    equipo de la red abre sus propiedades; la tecla Supr lo elimina.</p>
+                <p class="text-[11px] text-slate-500 mb-4" data-i18n="device.paletteHint">Haz clic en un equipo para añadirlo. Doble clic sobre un equipo de la red abre sus propiedades; la tecla Supr lo elimina.</p>
 
                 <div class="space-y-2.5">
                     <!-- Router WiFi -->
@@ -518,7 +513,7 @@
                         <div
                             class="w-10 h-10 rounded-lg bg-fuchsia-500/10 border border-fuchsia-500/20 text-fuchsia-400 flex items-center justify-center text-lg group-hover:scale-105 transition">
                             <i class="fa-solid fa-laptop"></i></div>
-                        <div><span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.notebook">Notebook</span><span
+                        <div><span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.notebook">Portátil</span><span
                                 class="text-[10px] text-slate-400" data-i18n="device.type.notebookDesc">Cable o WiFi</span></div>
                     </div>
                     <div onclick="createDevice('netbook')"
@@ -527,7 +522,7 @@
                             class="w-10 h-10 rounded-lg bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center text-lg group-hover:scale-105 transition">
                             <i class="fa-solid fa-laptop-file"></i></div>
                         <div><span class="text-xs font-semibold text-slate-200 block" data-i18n="device.type.netbook">Netbook</span><span
-                                class="text-[10px] text-slate-400" data-i18n="device.type.netbookDesc">Portátil pequeña, cable o WiFi</span></div>
+                                class="text-[10px] text-slate-400" data-i18n="device.type.netbookDesc">Mini portátil, cable o WiFi</span></div>
                     </div>
                     <div onclick="createDevice('tv')"
                         class="device-drag-item group p-3 bg-slate-800/80 hover:bg-slate-800 border border-slate-700 hover:border-rose-500/50 rounded-xl cursor-pointer transition shadow-sm hover:shadow-md flex items-center space-x-3">
@@ -676,8 +671,7 @@
                     class="text-center max-w-sm px-6 py-5 rounded-2xl border border-dashed border-slate-600 bg-slate-900/70">
                     <i class="fa-solid fa-network-wired text-3xl text-emerald-400 mb-2"></i>
                     <p class="text-sm font-semibold text-slate-100" data-i18n="canvas.emptyTitle">Tu área de trabajo está vacía</p>
-                    <p class="text-xs text-slate-400 mt-1"><span data-i18n="canvas.emptyHintA">Agregá equipos desde el panel de la izquierda, o abrí un
-                        ejemplo desde</span> <b><span data-i18n="menu.file">Archivo</span> → <span data-i18n="menu.loadDemo">Cargar ejemplo</span></b>.</p>
+                    <p class="text-xs text-slate-400 mt-1"><span data-i18n="canvas.emptyHintA">Agrega equipos desde el panel de la izquierda, o abre un ejemplo desde</span> <b><span data-i18n="menu.file">Archivo</span> → <span data-i18n="menu.loadDemo">Cargar ejemplo</span></b>.</p>
                 </div>
             </div>
 
@@ -828,8 +822,7 @@
                         </label>
                         <label
                             class="col-span-2 flex items-center gap-1.5 text-[10px] traffic-muted text-slate-400 cursor-pointer"><input
-                                id="traffic-tcp" type="checkbox" checked> <span data-i18n="sim.tcpHandshake">Mostrar el saludo TCP (SYN, SYN-ACK, ACK)
-                            antes de HTTP</span></label>
+                                id="traffic-tcp" type="checkbox" checked> <span data-i18n="sim.tcpHandshake">Mostrar el saludo TCP (SYN, SYN-ACK, ACK) antes de HTTP</span></label>
                     </div>
                     <div class="flex items-center gap-2 mt-2">
                         <span class="text-[10px] traffic-muted text-slate-400" data-i18n="sim.speed">Velocidad</span>
@@ -855,8 +848,7 @@
                         class="adv-only mt-2 w-full px-2 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[10px] text-slate-200"
                         title="Vacía las tablas ARP de los equipos y las tablas MAC de los switches" data-i18n-title="sim.clearTablesTitle"><i
                             class="fa-solid fa-eraser mr-1"></i><span data-i18n="sim.clearTables">Borrar tablas (ARP, MAC, DNS)</span></button>
-                    <p id="traffic-status" class="text-[10px] traffic-muted text-slate-400 mt-2" data-i18n="sim.statusIdle">Selecciona origen,
-                        destino y protocolo para visualizar el recorrido.</p>
+                    <p id="traffic-status" class="text-[10px] traffic-muted text-slate-400 mt-2" data-i18n="sim.statusIdle">Selecciona origen, destino y protocolo para visualizar el recorrido.</p>
                     <ol id="traffic-log"
                         class="traffic-log mt-2 space-y-1 text-[10px] font-mono border-t border-slate-700 pt-2"></ol>
                 </div>
@@ -899,8 +891,7 @@
                         class="js-year">2026</span> Hugo Martin Villalba</p>
                 <p class="text-[11px] text-slate-400 mt-1" data-i18n="modal.about.license">Distribuido bajo Licencia MIT</p>
             </div>
-            <p class="text-[11px] text-slate-500 mt-3" data-i18n="modal.about.donation">Si te gusta el Simulador queda a tu criterio una Mención o
-                Donación para el autor.</p>
+            <p class="text-[11px] text-slate-500 mt-3" data-i18n="modal.about.donation">Si te gusta el Simulador queda a tu criterio una Mención o Donación para el autor.</p>
             <div class="mt-4 flex flex-col sm:flex-row items-center justify-center gap-2.5">
                 <a href="https://cafecito.app/hmvillalba" target="_blank" rel="noopener noreferrer"
                     class="w-full sm:w-auto px-4 py-2 bg-sky-500 hover:bg-sky-400 text-white font-semibold rounded-lg text-xs shadow-md shadow-sky-500/20 inline-flex items-center justify-center gap-2 transition transform hover:-translate-y-0.5">
@@ -924,12 +915,10 @@
             <h3 class="text-sm font-bold text-slate-100 mb-1"><i
                     class="fa-solid fa-clock-rotate-left text-emerald-400 mr-2"></i><span data-i18n="modal.restore.title">Encontramos tu trabajo anterior</span></h3>
             <p id="restore-info" class="text-xs text-slate-300 mb-3"></p>
-            <p class="text-[11px] text-slate-500 mb-4" data-i18n="modal.restore.hint">El simulador guarda tu red automáticamente en este navegador.
-                Para entregarla o compartirla, usá Archivo → Guardar red.</p>
+            <p class="text-[11px] text-slate-500 mb-4" data-i18n="modal.restore.hint">El simulador guarda tu red automáticamente en este navegador. Para entregarla o compartirla, usa Archivo → Guardar red.</p>
             <div class="flex justify-end gap-2">
                 <button onclick="discardAutosave()"
-                    class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200"><span data-i18n="modal.restore.startOver">Empezar
-                    de cero</span></button>
+                    class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200"><span data-i18n="modal.restore.startOver">Empezar de cero</span></button>
                 <button onclick="restoreAutosave()"
                     class="px-3 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-600 text-xs font-bold text-white"><i
                         class="fa-solid fa-rotate-left mr-1"></i><span data-i18n="modal.restore.continue">Continuar donde estaba</span></button>
@@ -941,20 +930,16 @@
     <div id="student-modal"
         class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-5">
-            <h3 class="text-sm font-bold text-slate-100 mb-1"><i class="fa-solid fa-user text-sky-400 mr-2"></i><span data-i18n="modal.student.title">¿Cómo te
-                llamás?</span></h3>
-            <p class="text-[11px] text-slate-400 mb-3" data-i18n="modal.student.hint">Tu nombre se guarda dentro de las redes y actividades que
-                guardes, así tu profe sabe de quién es cada entrega.</p>
+            <h3 class="text-sm font-bold text-slate-100 mb-1"><i class="fa-solid fa-user text-sky-400 mr-2"></i><span data-i18n="modal.student.title">¿Cómo te llamas?</span></h3>
+            <p class="text-[11px] text-slate-400 mb-3" data-i18n="modal.student.hint">Tu nombre se guarda dentro de las redes y actividades que guardes, así tu profesor sabe de quién es cada entrega.</p>
             <input id="student-name" type="text" maxlength="60" placeholder="Ej: Ana Pérez" data-i18n-placeholder="modal.student.placeholder"
                 class="w-full rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-sm p-2.5 select-text"
                 onkeydown="if(event.key==='Enter')confirmStudent();if(event.key==='Escape')closeStudentDialog();">
             <div class="flex justify-end gap-2 mt-4">
                 <button onclick="closeStudentDialog()"
-                    class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200"><span data-i18n="modal.student.notNow">Ahora
-                    no</span></button>
+                    class="px-3 py-1.5 rounded-md bg-slate-800 hover:bg-slate-700 border border-slate-700 text-xs text-slate-200"><span data-i18n="modal.student.notNow">Ahora no</span></button>
                 <button onclick="confirmStudent()"
-                    class="px-3 py-1.5 rounded-md bg-sky-700 hover:bg-sky-600 text-xs font-bold text-white"><span data-i18n="modal.student.save">Guardar
-                    nombre</span></button>
+                    class="px-3 py-1.5 rounded-md bg-sky-700 hover:bg-sky-600 text-xs font-bold text-white"><span data-i18n="modal.student.save">Guardar nombre</span></button>
             </div>
         </div>
     </div>
@@ -971,9 +956,7 @@
                     class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center"><i
                         class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-[11px] text-slate-400 mb-3" style="flex-shrink:0" data-i18n="modal.mkact.hint">Armá la red, rompé algo a propósito (una
-                IP, un cable, una ruta…) y definí qué tiene que lograr el alumno. Se guarda como un archivo que el
-                alumno abre con «Abrir red».</p>
+            <p class="text-[11px] text-slate-400 mb-3" style="flex-shrink:0" data-i18n="modal.mkact.hint">Crea la red, rompe algo a propósito (una IP, un cable, una ruta…) y define qué tiene que lograr el estudiante. Se guarda como un archivo que el estudiante abre con «Abrir red».</p>
             <div style="overflow-y:auto;min-height:0;flex:1 1 auto;padding-right:4px"
                 class="space-y-2.5 text-xs text-slate-300">
                 <label class="block"><span data-i18n="modal.mkact.labelTitle">Título</span><input id="mk-title" type="text" maxlength="60"
@@ -990,7 +973,7 @@
                         placeholder="Ej: Desde ayer, nadie del laboratorio puede abrir la página del colegio." data-i18n-placeholder="modal.mkact.placeholderStory"></textarea></label>
                 <label class="block"><span data-i18n="modal.mkact.labelHint">Pista (opcional)</span><textarea id="mk-hint" rows="2"
                         class="mt-1 w-full rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-2 select-text"
-                        placeholder="Ej: Revisá la puerta de enlace de las PC." data-i18n-placeholder="modal.mkact.placeholderHint"></textarea></label>
+                        placeholder="Ej: Revisa la puerta de enlace de las PC." data-i18n-placeholder="modal.mkact.placeholderHint"></textarea></label>
                 <div><span class="block mb-1" data-i18n="modal.mkact.goals">Objetivos: ¿quiénes tienen que poder comunicarse?</span>
                     <div id="mk-goals" class="space-y-1.5"></div>
                 </div>
@@ -1018,9 +1001,7 @@
                     class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center"
                     title="Cerrar (Esc)" data-i18n-title="modal.closeTitle"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-[11px] text-slate-400 mb-3" style="flex-shrink:0" data-i18n="modal.grade.hint">Elegí uno o varios archivos que guardaron
-                tus alumnos. El simulador vuelve a verificar cada red y te muestra quién la resolvió. Con «Ver» abrís la
-                red del alumno para revisarla.</p>
+            <p class="text-[11px] text-slate-400 mb-3" style="flex-shrink:0" data-i18n="modal.grade.hint">Elige uno o varios archivos que guardaron tus estudiantes. El simulador vuelve a verificar cada red y te muestra quién la resolvió. Con «Ver» abres la red del estudiante para revisarla.</p>
             <div class="flex flex-wrap gap-2 mb-3" style="flex-shrink:0">
                 <label
                     class="px-3 py-1.5 rounded-md bg-emerald-700 hover:bg-emerald-600 text-xs font-bold text-white cursor-pointer"><i
@@ -1063,13 +1044,12 @@
             style="max-height:calc(100vh - 2rem);display:flex;flex-direction:column;">
             <div class="flex items-center justify-between mb-1" style="flex-shrink:0">
                 <h3 class="text-sm font-bold text-slate-100"><i
-                        class="fa-solid fa-graduation-cap text-amber-400 mr-2"></i><span data-i18n="modal.activities.title">Actividades: ¡arreglá la red!</span></h3>
+                        class="fa-solid fa-graduation-cap text-amber-400 mr-2"></i><span data-i18n="modal.activities.title">Actividades: ¡arregla la red!</span></h3>
                 <button onclick="closeActivitiesModal()"
                     class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center"
                     title="Cerrar (Esc)" data-i18n-title="modal.closeTitle"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-[11px] text-slate-400 mb-3" style="flex-shrink:0" data-i18n="modal.activities.hint">Cada actividad carga una red con una falla
-                escondida. Encontrala, arreglala y verificá.</p>
+            <p class="text-[11px] text-slate-400 mb-3" style="flex-shrink:0" data-i18n="modal.activities.hint">Cada actividad carga una red con una falla escondida. Encuéntrala, arréglala y verifica.</p>
             <div id="act-list" class="space-y-2" style="overflow-y:auto;min-height:0;flex:1 1 auto;padding-right:4px;">
             </div>
         </div>
@@ -1081,7 +1061,7 @@
         <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-sm p-5">
             <h3 class="text-sm font-bold text-slate-100 mb-1"><i
                     class="fa-solid fa-floppy-disk text-emerald-400 mr-2"></i><span data-i18n="modal.save.title">Guardar red</span></h3>
-            <p class="text-[11px] text-slate-400 mb-3" data-i18n="modal.save.hint">Elegí un nombre para identificar tu red.</p>
+            <p class="text-[11px] text-slate-400 mb-3" data-i18n="modal.save.hint">Elige un nombre para identificar tu red.</p>
             <input id="save-name" type="text" maxlength="60" placeholder="Ej: Red del aula" data-i18n-placeholder="modal.save.placeholder"
                 class="w-full rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-sm p-2.5 select-text"
                 onkeydown="if(event.key==='Enter')confirmSave();if(event.key==='Escape')closeSaveDialog();">
@@ -1848,7 +1828,7 @@
         function actTitle(c) { const k = c && c.titleKey; return k ? I18N.t(k) : ((c && c.title) || ''); }
         function actStory(c) { const k = c && c.storyKey; return k ? I18N.t(k) : ((c && c.story) || ''); }
         function actHint(c) { const k = c && c.hintKey; return k ? I18N.t(k) : ((c && c.hintText) || ''); }
-        function localeTag() { return ({ es: 'es-AR', en: 'en-US', pt: 'pt-BR', fr: 'fr-FR' })[I18N.lang] || 'es-AR'; }
+        function localeTag() { return ({ es: 'es-419', ar: 'es-AR', en: 'en-US', pt: 'pt-BR', fr: 'fr-FR' })[I18N.lang] || 'es-419'; }
         function openActivities() {
             const order = { 'Fácil': 0, 'Medio': 1, 'Difícil': 2 };
             document.getElementById('act-list').innerHTML = ACTIVITIES.map((a, i) => ({ a, i })).sort((x, y) => order[x.a.lvl] - order[y.a.lvl] || x.i - y.i).map(({ a, i }) => {
@@ -1898,7 +1878,7 @@
             showToast(I18N.t('toast.activityLoaded', { title: I18N.t(a.title) }), 'info');
             if (!currentStudent) openStudentDialog();
         }
-        // Reanuda una actividad guardada en un archivo (del profesor o la entrega de un alumno).
+        // Reanuda una actividad guardada en un archivo (del profesor o la entrega de un estudiante).
         function resumeActivity(def, data) {
             const sub = (data.student && data.student !== currentStudent) ? { student: data.student, savedAt: data.savedAt, solved: !!def.solved } : null;
             const tKey = actKeyOf(def.title), sKey = actKeyOf(def.story), hKey = actKeyOf(def.hint);
@@ -2583,7 +2563,7 @@
                 if (parts[1] !== '-a') { print(`Uso correcto: arp -a   (muestra la tabla ARP de este equipo)`, 'text-rose-400'); return; }
                 const t = netTables.arp[dev.id] || {}, ips = Object.keys(t);
                 print(`Interfaz: ${dev.ip}`);
-                if (!ips.length) { print(`No se encontraron entradas ARP. (Hacé un ping para que el equipo aprenda direcciones MAC.)`, 'text-slate-400'); return; }
+                if (!ips.length) { print(`No se encontraron entradas ARP. (Haz un ping para que el equipo aprenda direcciones MAC.)`, 'text-slate-400'); return; }
                 print(`  Dirección de Internet    Dirección física      Tipo`);
                 ips.forEach(ip => print(`  ${ip.padEnd(24)} ${String(t[ip]).toLowerCase().replace(/:/g, '-').padEnd(21)} dinámico`));
             } else if (mainCmd === 'nslookup') {
@@ -3293,7 +3273,7 @@
         // ===== PROFESOR: crear una actividad con la red actual =====
         function goalRowHtml(i) {
             const opts = '<option value="">—</option>' + state.devices.map(d => `<option value="${d.id}">${escapeHtml(d.name)}</option>`).join('');
-            return `<div class="grid grid-cols-7 gap-1.5 items-center"><select id="mk-a${i}" class="col-span-2 rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-1.5">${opts}</select><span class="text-center text-slate-500">→</span><select id="mk-b${i}" class="col-span-2 rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-1.5">${opts}</select><input id="mk-s${i}" type="text" placeholder="sitio web, o escribí VPN" data-i18n-placeholder="teacher.goalPlaceholder" class="col-span-2 rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-1.5 select-text"></div>`;
+            return `<div class="grid grid-cols-7 gap-1.5 items-center"><select id="mk-a${i}" class="col-span-2 rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-1.5">${opts}</select><span class="text-center text-slate-500">→</span><select id="mk-b${i}" class="col-span-2 rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-1.5">${opts}</select><input id="mk-s${i}" type="text" placeholder="sitio web, o escribe VPN" data-i18n-placeholder="teacher.goalPlaceholder" class="col-span-2 rounded-md border border-slate-700 bg-slate-950 text-slate-100 text-xs p-1.5 select-text"></div>`;
         }
         function openMakeActivity() {
             if (state.devices.length < 2) { showToast(I18N.t('teacher.needNetwork'), 'warning'); return; }

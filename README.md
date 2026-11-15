@@ -10,17 +10,17 @@ Desarrollado como una aplicación web autónoma (Single Page Application) basada
 
 ## 🚀 Inicio rápido para desarrollar
 
-El proyecto tiene **dos páginas estáticas independientes**: la portada multilingüe y el simulador. Ambos usan recursos locales (sin CDNs), así que no hace falta internet para abrirlos. En Vercel, `/` lleva a la portada en español neutro; localmente, abre `es/index.html` para esa variante, `ar/index.html` para español rioplatense o `index.html` para el simulador. Desde la portada puedes cambiar entre español neutro, español rioplatense, inglés, portugués y francés y abrir el simulador.
+El proyecto tiene **dos páginas estáticas independientes**: la portada multilingüe y el simulador. Ambos usan recursos locales (sin CDNs), así que no hace falta internet para abrirlos. En Vercel, `/` lleva a la portada en español neutro; localmente, abre `es/index.html` para esa variante, `ar/index.html` para español rioplatense o `index.html` para el simulador. Desde la portada puedes cambiar entre español neutro, español rioplatense, inglés, portugués y francés y abrir el simulador; dentro del simulador, el selector de idioma ofrece las mismas cinco variantes (ES neutro, AR rioplatense, EN, PT y FR).
 
 Para regenerar los recursos después de cambiar clases de Tailwind, diccionarios o `js/i18n.js`:
 
 ```bash
 npm install       # una sola vez: instala Tailwind CLI
 npm run build     # compila Tailwind, genera la landing y prepara public/ para Vercel
-npm run check     # valida los 4 idiomas del simulador, la copia offline y los 5 idiomas de la landing
+npm run check     # valida los 5 idiomas del simulador, la copia offline y los 5 idiomas de la landing
 ```
 
-`npm run build` también actualiza el paquete que usa el botón **«Guardar copia para usar sin internet»**. Esa copia es un único archivo HTML con todos los estilos, fuentes, iconos y diccionarios incrustados: funciona sin conexión desde el primer momento y conserva los cuatro idiomas del simulador.
+`npm run build` también actualiza el paquete que usa el botón **«Guardar copia para usar sin internet»**. Esa copia es un único archivo HTML con todos los estilos, fuentes, iconos y diccionarios incrustados: funciona sin conexión desde el primer momento y conserva los cinco idiomas del simulador.
 
 ### Landing page multilingüe
 
