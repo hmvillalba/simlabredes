@@ -1,5 +1,6 @@
 # Dependencias y archivos temporales
 node_modules/
+/public/
 .atl/
 .kilo/
 .vscode/
