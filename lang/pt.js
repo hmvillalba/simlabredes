@@ -14,7 +14,7 @@ window.I18N_DICTS.pt = {
 
     app: {
         title: 'Simulador de Redes Educativo',
-        tagline: 'Simulador de Redes Interativo para Estudantes'
+        tagline: 'Simulador de redes para estudantes'
     },
 
     ui: {

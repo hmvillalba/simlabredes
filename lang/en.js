@@ -14,7 +14,7 @@ window.I18N_DICTS.en = {
 
     app: {
         title: 'Educational Network Simulator',
-        tagline: 'Interactive Network Simulator for Students'
+        tagline: 'Network Simulator for Students'
     },
 
     ui: {
