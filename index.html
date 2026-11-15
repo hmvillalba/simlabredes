@@ -197,7 +197,7 @@
             filter: drop-shadow(0 0 5px rgba(255, 255, 255, .75));
         }
 
-        @media (max-width:900px) {
+        @media (max-width:1280px) {
             header {
                 height: auto !important;
                 min-height: 3.5rem;
@@ -208,6 +208,30 @@
 
             header>div {
                 flex-wrap: wrap;
+                min-width: 0;
+            }
+
+            header>div:last-child {
+                flex: 1 1 100%;
+                justify-content: flex-start;
+                gap: .5rem;
+            }
+        }
+
+        @media (max-width:640px) {
+            header>div:nth-child(2) {
+                flex: 1 1 100%;
+                justify-content: space-between;
+            }
+
+            header>div:nth-child(2) button,
+            header>div:last-child>button {
+                padding-left: .5rem !important;
+                padding-right: .5rem !important;
+            }
+
+            header>div:last-child {
+                gap: .35rem;
             }
         }
 

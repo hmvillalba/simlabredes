@@ -25,6 +25,10 @@ const linked = [...html.matchAll(/<(?:link|script)[^>]*(?:href|src)="([^"]+)"/g)
 check('index.html no referencia CDNs', !linked.some(u => /^(?:https?:)?\/\//.test(u)), linked.filter(u => /^(?:https?:)?\/\//.test(u)).join(', '));
 check('index.html carga Tailwind, Font Awesome y tipografías locales',
     ['assets/tailwind.css', 'assets/fontawesome/css/all.min.css', 'assets/fonts/fonts.css'].every(u => linked.includes(u)));
+check('la barra superior se reorganiza antes de desbordarse en pantallas medianas',
+    html.includes('@media (max-width:1280px)') && html.includes('header>div:last-child {\n                flex: 1 1 100%;'));
+check('los controles de modo y acciones se compactan en pantallas estrechas',
+    html.includes('@media (max-width:640px)') && html.includes('header>div:nth-child(2) button,\n            header>div:last-child>button'));
 
 // --- 2. Generar la copia con saveOfflineCopy() ----------------------------
 const pristineStyle = (html.match(/<style id="app-style">([\s\S]*?)<\/style>/) || [, ''])[1];
