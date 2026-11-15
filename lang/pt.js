@@ -302,6 +302,7 @@ window.I18N_DICTS.pt = {
             reply: 'Pronto! {s} recebeu a resposta de {d}. A comunicação funciona.'
         },
         fail: {
+            statusPrefix: 'FALHA: ',
             noGateway: '{s} quer chegar em outra rede ({ip}) mas não tem gateway: não sabe por onde sair.',
             logNoGateway: '{s} não tem gateway configurado.',
             gatewayMissing: 'O gateway de {s} ({gw}) não existe nesta rede: o pacote não sabe por onde sair.',

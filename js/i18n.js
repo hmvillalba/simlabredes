@@ -97,19 +97,20 @@
         for (const e of logEntries) {
             const li = document.createElement('li');
             li.className = e.color;
-            const msg = e.i18n ? t(e.i18n.key, e.i18n.vars) : e.text;
+            const msg = e.fn ? e.fn() : e.i18n ? t(e.i18n.key, e.i18n.vars) : e.text;
             li.textContent = e.time.toLocaleTimeString() + '  ' + msg;
             el.appendChild(li);
         }
         el.scrollTop = el.scrollHeight;
     }
 
-    // entry: { text?, i18n?: {key, vars}, color? }
+    // entry: { text?, i18n?: {key, vars}, fn?: () => string, color? }  (fn se vuelve a evaluar al cambiar de idioma)
     function logEntry(entry) {
         logEntries.push({
             time: new Date(),
             color: entry.color || 'text-slate-300',
             i18n: entry.i18n || null,
+            fn: typeof entry.fn === 'function' ? entry.fn : null,
             text: entry.text || ''
         });
         while (logEntries.length > LOG_MAX) logEntries.shift();

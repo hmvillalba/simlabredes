@@ -2895,12 +2895,12 @@
         function addTrafficLog(message, color = 'text-slate-300', i18n = null) {
             // i18n (Fase 2): el log se registra como entrada (clave+variables o texto fijo)
             // para poder re-renderizarlo al cambiar de idioma. Sin I18N, comportamiento original.
-            if (window.I18N) { window.I18N.logEntry({ text: message, i18n: i18n, color: color }); return; }
+            if (window.I18N) { window.I18N.logEntry(typeof message === 'function' ? { fn: message, color: color } : { text: message, i18n: i18n, color: color }); return; }
             const log = document.getElementById('traffic-log');
             if (!log) return;
             const li = document.createElement('li');
             li.className = color;
-            li.textContent = `${new Date().toLocaleTimeString()}  ${message}`;
+            li.textContent = `${new Date().toLocaleTimeString()}  ${typeof message === 'function' ? message() : message}`;
             log.appendChild(li);
             while (log.children.length > 20) log.firstElementChild.remove();
             log.scrollTop = log.scrollHeight;
@@ -3819,7 +3819,7 @@
         }
         function simFail(source, msg, logMsg, token) {
             addTrafficLog(logMsg, 'text-rose-400');
-            const st = document.getElementById('traffic-status'); if (st) st.textContent = 'FALLO: ' + logMsg;
+            const st = document.getElementById('traffic-status'); if (st) st.textContent = I18N.t('sim.fail.statusPrefix') + (typeof logMsg === 'function' ? logMsg() : logMsg);
             showTrafficCaption(msg, 0, 0, 'fail');
             pulseDevice(source, '#f43f5e', 3200, token).then(ok => { if (ok) hideTrafficCaption(); });
         }
@@ -4065,7 +4065,7 @@
             const askIp = isGw ? source.gateway : target.ip;
             if ((netTables.arp[source.id] || {})[askIp]) {
                 showTrafficCaption(I18N.t('sim.cap.arpKnown', { s: source.name, hop: hop.name, ip: hop.ip }), 0, 0, 'node');
-                addTrafficLog(I18N.t('sim.log.arpKnown', { s: source.name, hop: hop.name }), 'text-emerald-500');
+                addTrafficLog(() => I18N.t('sim.log.arpKnown', { s: source.name, hop: hop.name }), 'text-emerald-500');
                 showArpTable(source, null);
                 if (!(await waitTraffic(3600 * k(), token))) return false;
                 hideTableCard();
@@ -4074,7 +4074,7 @@
             const p = findConnectionPath(source.id, hop.id);
             if (!p) return true;
             showTrafficCaption(I18N.t('sim.cap.arpUnknown', { s: source.name, hop: hop.name, gw: isGw ? I18N.t('sim.gatewayHint') : '' }), 0, 0, 'node');
-            addTrafficLog(I18N.t('sim.log.arpUnknown', { s: source.name, hop: hop.name }), 'text-amber-500');
+            addTrafficLog(() => I18N.t('sim.log.arpUnknown', { s: source.name, hop: hop.name }), 'text-amber-500');
             showArpTable(source, null);
             if (!(await waitTraffic(3600 * k(), token))) return false;
             arpTargetIp = askIp;
@@ -4100,7 +4100,7 @@
             if (!path) {
                 const msg = I18N.t('sim.cap.noPath', { s: source.name, d: destination.name });
                 if (status) status.textContent = I18N.t('sim.status.noPath');
-                addTrafficLog(I18N.t('sim.log.noPath', { s: source.name, d: destination.name }), 'text-rose-400');
+                addTrafficLog(() => I18N.t('sim.log.noPath', { s: source.name, d: destination.name }), 'text-rose-400');
                 showTrafficCaption(msg, 0, 0, 'fail');
                 pulseDevice(source, '#f43f5e', 2400, token).then(ok => { if (ok) hideTrafficCaption(); });
                 showToast(I18N.t('sim.toast.noPath'), 'warning');
@@ -4110,9 +4110,9 @@
             tcpOpened = false;
             if (protocol === 'DHCP') {
                 const server = destination, isSrv = server.type === 'router' || (server.type === 'switch' && server.switchLayer === 'L3');
-                if (source.ipMode !== 'dhcp') return simFail(source, I18N.t('sim.fail.dhcpStaticIp', { s: source.name }), I18N.t('sim.fail.logDhcpStaticIp', { s: source.name }), token);
-                if (!isSrv || !server.dhcpEnabled) return simFail(source, I18N.t('sim.fail.dhcpNotServer', { s: server.name }), I18N.t('sim.fail.logDhcpNotServer', { s: server.name }), token);
-                if (!source.ip || source.ip.startsWith('169.254')) return simFail(source, I18N.t('sim.fail.dhcpNoIp', { s: server.name, target: source.name }), I18N.t('sim.fail.logDhcpNoIp', { s: server.name, target: source.name }), token);
+                if (source.ipMode !== 'dhcp') return simFail(source, I18N.t('sim.fail.dhcpStaticIp', { s: source.name }), () => I18N.t('sim.fail.logDhcpStaticIp', { s: source.name }), token);
+                if (!isSrv || !server.dhcpEnabled) return simFail(source, I18N.t('sim.fail.dhcpNotServer', { s: server.name }), () => I18N.t('sim.fail.logDhcpNotServer', { s: server.name }), token);
+                if (!source.ip || source.ip.startsWith('169.254')) return simFail(source, I18N.t('sim.fail.dhcpNoIp', { s: server.name, target: source.name }), () => I18N.t('sim.fail.logDhcpNoIp', { s: server.name, target: source.name }), token);
                 dhcpInfo = { ip: source.ip, mask: source.mask, gw: source.gateway, srv: server.ip };
                 if (!(await runExchange({ protocol: 'DISCOVER', source, destination: server, path, token, pre: 'REQUEST' }))) return;
                 if (!(await runExchange({ protocol: 'REQUEST', source, destination: server, path, token, pre: null }))) return;
@@ -4137,20 +4137,20 @@
                 if (protocol !== 'ARP' && !sameSubnet(source.ip, destination.ip, source.mask)) {
                     const gwSet = source.gateway && source.gateway !== '0.0.0.0';
                     const gwDev = gwSet ? state.devices.find(d => d.id !== source.id && ownsIp(d, source.gateway)) : null;
-                    if (!gwSet) return simFail(source, I18N.t('sim.fail.noGateway', { s: source.name, ip: destination.ip }), I18N.t('sim.fail.logNoGateway', { s: source.name }), token);
-                    if (!gwDev) return simFail(source, I18N.t('sim.fail.gatewayMissing', { s: source.name, gw: source.gateway }), I18N.t('sim.fail.logGatewayMissing', { gw: source.gateway }), token);
-                    if (!sameSubnet(source.ip, source.gateway, source.mask)) return simFail(source, I18N.t('sim.fail.gatewayOtherNet', { gw: source.gateway, s: source.name, ip: source.ip }), I18N.t('sim.fail.logGatewayOtherNet', { s: source.name }), token);
-                    if (!path.includes(gwDev.id)) return simFail(source, I18N.t('sim.fail.pathNotViaGw', { d: destination.name, gw: gwDev.name }), I18N.t('sim.fail.logPathNotViaGw', { gw: gwDev.name }), token);
+                    if (!gwSet) return simFail(source, I18N.t('sim.fail.noGateway', { s: source.name, ip: destination.ip }), () => I18N.t('sim.fail.logNoGateway', { s: source.name }), token);
+                    if (!gwDev) return simFail(source, I18N.t('sim.fail.gatewayMissing', { s: source.name, gw: source.gateway }), () => I18N.t('sim.fail.logGatewayMissing', { gw: source.gateway }), token);
+                    if (!sameSubnet(source.ip, source.gateway, source.mask)) return simFail(source, I18N.t('sim.fail.gatewayOtherNet', { gw: source.gateway, s: source.name, ip: source.ip }), () => I18N.t('sim.fail.logGatewayOtherNet', { s: source.name }), token);
+                    if (!path.includes(gwDev.id)) return simFail(source, I18N.t('sim.fail.pathNotViaGw', { d: destination.name, gw: gwDev.name }), () => I18N.t('sim.fail.logPathNotViaGw', { gw: gwDev.name }), token);
                     if ((destination.type === 'pc' || isWifiClient(destination)) && !sameSubnet(destination.ip, source.ip, destination.mask)) {
                         const dg = destination.gateway && destination.gateway !== '0.0.0.0';
-                        if (!dg || !state.devices.some(d => d.id !== destination.id && ownsIp(d, destination.gateway))) return simFail(source, I18N.t('sim.fail.destNoGateway', { d: destination.name, reason: dg ? I18N.t('sim.fail.reasonGwMissing', { gw: destination.gateway }) : I18N.t('sim.fail.reasonNoGw') }), I18N.t('sim.fail.logDestNoGateway', { d: destination.name }), token);
+                        if (!dg || !state.devices.some(d => d.id !== destination.id && ownsIp(d, destination.gateway))) return simFail(source, I18N.t('sim.fail.destNoGateway', { d: destination.name, reason: dg ? I18N.t('sim.fail.reasonGwMissing', { gw: destination.gateway }) : I18N.t('sim.fail.reasonNoGw') }), () => I18N.t('sim.fail.logDestNoGateway', { d: destination.name }), token);
                     }
                 }
                 const name = (document.getElementById('traffic-site')?.value || '').trim().toLowerCase() || 'www.ejemplo.com';
                 const recordOf = (dnsDev, host) => (dnsDev.records || []).find(r => r.name === host)?.ip || null;
                 const dnsOff = dnsDev => dnsDev.type === 'dns' && dnsDev.dnsOnline === false;
                 if (protocol === 'DNS') {
-                    if (dnsOff(destination)) return simFail(source, I18N.t('sim.fail.dnsOff', { d: destination.name }), I18N.t('sim.fail.logDnsOff', { d: destination.name }), token);
+                    if (dnsOff(destination)) return simFail(source, I18N.t('sim.fail.dnsOff', { d: destination.name }), () => I18N.t('sim.fail.logDnsOff', { d: destination.name }), token);
                     trafficSite = { name, ip: destination.type === 'dns' ? recordOf(destination, name) : (dnsRecords[name] || '93.184.216.34') };
                 } else trafficSite = { name, ip: destination.ip };
                 let target = destination, tpath = path;
@@ -4166,13 +4166,13 @@
                         let dnsDev = state.devices.find(d => d.id === sel) || state.devices.find(d => d.type === 'dns' && d.id !== source.id) || state.devices.find(d => d.type === 'cloud' && d.id !== source.id) || destination;
                         if (dnsDev.id === source.id) dnsDev = destination;
                         const dp = findConnectionPath(source.id, dnsDev.id);
-                        if (!dp) return simFail(source, I18N.t('sim.fail.noDnsPath', { s: source.name, dns: dnsDev.name }), I18N.t('sim.fail.logNoDnsPath', { dns: dnsDev.name }), token);
-                        if (dnsOff(dnsDev)) return simFail(source, I18N.t('sim.fail.dnsOff', { d: dnsDev.name }), I18N.t('sim.fail.logDnsOff', { d: dnsDev.name }), token);
+                        if (!dp) return simFail(source, I18N.t('sim.fail.noDnsPath', { s: source.name, dns: dnsDev.name }), () => I18N.t('sim.fail.logNoDnsPath', { dns: dnsDev.name }), token);
+                        if (dnsOff(dnsDev)) return simFail(source, I18N.t('sim.fail.dnsOff', { d: dnsDev.name }), () => I18N.t('sim.fail.logDnsOff', { d: dnsDev.name }), token);
                         resolved = dnsDev.type === 'dns' ? recordOf(dnsDev, name) : destination.ip;
                         if (dnsDev.type !== 'dns') dnsRecords[name] = destination.ip;
                         trafficSite = { name, ip: resolved };
                         showTrafficCaption(I18N.t('sim.cap.dnsAsk', { s: source.name, name: name, dns: dnsDev.name }), 0, 0, 'node');
-                        addTrafficLog(I18N.t('sim.log.dnsNeed', { s: source.name, name: name }), 'text-amber-500');
+                        addTrafficLog(() => I18N.t('sim.log.dnsNeed', { s: source.name, name: name }), 'text-amber-500');
                         showDnsTable(source, null);
                         if (!(await waitTraffic(3600 * k(), token))) return;
                         if (!(await ensureArp(source, dnsDev, 'DNS', token))) return;
@@ -4181,12 +4181,12 @@
                     trafficSite = { name, ip: resolved };
                     // El destino real es el equipo dueño de la IP a la que apunta el nombre.
                     const real = state.devices.find(d => ownsIp(d, resolved));
-                    if (!real) return simFail(source, I18N.t('sim.fail.noIpOwner', { name: name, ip: resolved }), I18N.t('sim.fail.logNoIpOwner', { ip: resolved }), token);
+                    if (!real) return simFail(source, I18N.t('sim.fail.noIpOwner', { name: name, ip: resolved }), () => I18N.t('sim.fail.logNoIpOwner', { ip: resolved }), token);
                     if (real.id !== destination.id) {
                         const rp = findConnectionPath(source.id, real.id);
-                        if (!rp) return simFail(source, I18N.t('sim.fail.noPathToReal', { name: name, real: real.name, ip: resolved }), I18N.t('sim.fail.logNoPathToReal', { real: real.name }), token);
+                        if (!rp) return simFail(source, I18N.t('sim.fail.noPathToReal', { name: name, real: real.name, ip: resolved }), () => I18N.t('sim.fail.logNoPathToReal', { real: real.name }), token);
                         showTrafficCaption(I18N.t('sim.cap.dnsWrongHost', { name: name, real: real.name, ip: resolved, dest: destination.name }), 0, 0, 'node');
-                        addTrafficLog(I18N.t('sim.log.dnsWrongHost', { name: name, ip: resolved, real: real.name }), 'text-amber-500');
+                        addTrafficLog(() => I18N.t('sim.log.dnsWrongHost', { name: name, ip: resolved, real: real.name }), 'text-amber-500');
                         if (!(await waitTraffic(3600 * k(), token))) return;
                         target = real; tpath = rp;
                     }
@@ -4215,10 +4215,11 @@
             const label = { SYN: 'TCP SYN/SYN-ACK', DISCOVER: 'DHCP Discover/Offer', REQUEST: 'DHCP Request/Ack' }[protocol] || protocol;
             const kp = () => k() * (adv ? 1 : 0.55);
             if (status) status.textContent = I18N.t('sim.status.running', { label: label, s: source.name, d: destination.name, hops: hops });
-            addTrafficLog(I18N.t('sim.log.route', { label: label, path: seqF.map(d => d.name).join(' → ') }));
+            addTrafficLog(() => I18N.t('sim.log.route', { label: label, path: seqF.map(d => d.name).join(' → ') }));
 
             const reqLabel = (protocol === 'HTTP' && tcpOpened) ? 'ACK + GET /' : info.req;
-            const reqText = (vpnCtx && protocol !== 'ARP') ? I18N.t('sim.req.vpn', { s: source.name, d: destination.name, srcIp: vpnCtx.srcIp, dstIp: vpnCtx.dstIp, preset: vpnCtx.preset, mode: vpnCtx.mode === 'relevo' ? I18N.t('sim.req.vpnRelay') : I18N.t('sim.req.vpnDirect') }) : (protocol === 'HTTP' && tcpOpened) ? I18N.t('sim.req.ackGet', { s: source.name, d: destination.name }) : info.reqTxt(source, destination);
+            const reqFn = () => (vpnCtx && protocol !== 'ARP') ? I18N.t('sim.req.vpn', { s: source.name, d: destination.name, srcIp: vpnCtx.srcIp, dstIp: vpnCtx.dstIp, preset: vpnCtx.preset, mode: vpnCtx.mode === 'relevo' ? I18N.t('sim.req.vpnRelay') : I18N.t('sim.req.vpnDirect') }) : (protocol === 'HTTP' && tcpOpened) ? I18N.t('sim.req.ackGet', { s: source.name, d: destination.name }) : info.reqTxt(source, destination);
+            const reqText = reqFn();
             const ORDER_IN = ['app', 'tr', 'inet', 'vpn', 'net', 'link'];
             // Con VPN, el IP de afuera (el tramo del túnel) depende de en qué parte del recorrido estemos.
             const setLeg = (sq, j) => { vpnLegTxt = ''; if (!vpnCtx) return; const si = vpnCtx.mode === 'relevo' ? sq.findIndex(x => x.id === vpnCtx.serverId) : -1; let a = sq[0], b = sq[sq.length - 1]; if (si > 0 && si < sq.length - 1) { if (j < si) b = sq[si]; else a = sq[si]; } vpnLegTxt = `${a.ip} → ${b.ip}`; if (b.type === 'vpn' && vpnCtx.natFor && vpnCtx.natFor[a.id]) vpnLegTxt = I18N.t('sim.legNatRedirect', { ip: a.ip, public: routerPublicIp(vpnCtx.natFor[a.id]), port: vpnCtx.port, target: b.ip }); };
@@ -4250,7 +4251,7 @@
                     const rows = state.devices.filter(x => x.vpn && x.vpn.server === node.id).map(x => ({ a: x.vpn.ip, b: x.name }));
                     renderTableCard(I18N.t('sim.table.vpnMembersTitle', { name: node.name, preset: vpnCtx.preset }), I18N.t('sim.table.headVpnIp'), I18N.t('sim.table.headDevice'), rows, -1);
                     renderLayerCard(I18N.t('sim.layer.vpnDecrypt'), layerData(protocol, s, d, pr.from, pr.to, isReply), ORDER_IN, new Set(['vpn', 'inet']));
-                    addTrafficLog(I18N.t('sim.log.vpnForward', { name: node.name, ip: isReply ? vpnCtx.srcIp : vpnCtx.dstIp }), 'text-violet-400');
+                    addTrafficLog(() => I18N.t('sim.log.vpnForward', { name: node.name, ip: isReply ? vpnCtx.srcIp : vpnCtx.dstIp }), 'text-violet-400');
                     return pulseDevice(node, '#a855f7', 2800 * kp(), token);
                 }
                 if (node.type === 'switch') {
@@ -4266,9 +4267,9 @@
                             : I18N.t('sim.layer.switchUnknown');
                     renderLayerCard(title, layerData(protocol, s, d, pair.from, pair.to, isReply), ORDER_IN, new Set(['link']));
                     showMacTable(node, isNew ? srcMac : null);
-                    addTrafficLog(known
+                    addTrafficLog(() => (known
                         ? (isNew ? I18N.t('sim.log.switchLearnedOne', { name: node.name, mac: pair.from.name }) : I18N.t('sim.log.switchKnewOne', { name: node.name, mac: pair.from.name }))
-                        : (isNew ? I18N.t('sim.log.switchLearned', { name: node.name, mac: pair.from.name }) : I18N.t('sim.log.switchKnew', { name: node.name, mac: pair.from.name })), isNew ? 'text-emerald-500' : '');
+                        : (isNew ? I18N.t('sim.log.switchLearned', { name: node.name, mac: pair.from.name }) : I18N.t('sim.log.switchKnew', { name: node.name, mac: pair.from.name }))), isNew ? 'text-emerald-500' : '');
                     const tasks = [pulseDevice(node, '#94a3b8', 2800 * kp(), token)];
                     if (!known) tasks.push(floodGhosts(node, [seq[j - 1].id, seq[j + 1].id], '#94a3b8', 2800 * kp(), token));
                     return Promise.all(tasks).then(r => r.every(Boolean));
@@ -4279,14 +4280,14 @@
                     renderTableCard(I18N.t('sim.table.routesTitle', { name: node.name }), I18N.t('sim.table.headDest'), I18N.t('sim.table.headOut'), rows, hit ? rows.findIndex(x => x.ref === hit.ref) : -1);
                     const drop = (msg, lg) => {
                         hideLayerCard(); showTrafficCaption(msg, 0, 0, 'fail'); addTrafficLog(lg, 'text-rose-400');
-                        if (status) status.textContent = 'FALLO: ' + lg;
+                        if (status) status.textContent = I18N.t('sim.fail.statusPrefix') + (typeof lg === 'function' ? lg() : lg);
                         return pulseDevice(node, '#f43f5e', 3600 * kp(), token).then(() => false);
                     };
-                    if (!hit) return drop(I18N.t('sim.route.notFound', { name: node.name, ip: d.ip }), I18N.t('sim.log.routeNotFound', { name: node.name, ip: d.ip }));
-                    if (hit.kind === 'static' && !ownsIp(pair.to, hit.ref.via)) return drop(I18N.t('sim.route.wrongNext', { name: node.name, via: hit.ref.via, next: pair.to.name }), I18N.t('sim.log.routeWrongNext', { name: node.name }));
-                    addTrafficLog(hit.kind === 'connected'
+                    if (!hit) return drop(I18N.t('sim.route.notFound', { name: node.name, ip: d.ip }), () => I18N.t('sim.log.routeNotFound', { name: node.name, ip: d.ip }));
+                    if (hit.kind === 'static' && !ownsIp(pair.to, hit.ref.via)) return drop(I18N.t('sim.route.wrongNext', { name: node.name, via: hit.ref.via, next: pair.to.name }), () => I18N.t('sim.log.routeWrongNext', { name: node.name }));
+                    addTrafficLog(() => (hit.kind === 'connected'
                         ? I18N.t('sim.log.routeConnected', { name: node.name, ip: d.ip })
-                        : I18N.t('sim.log.routeStatic', { name: node.name, ip: d.ip, net: hit.ref.net, prefix: hit.ref.prefix, via: hit.ref.via }));
+                        : I18N.t('sim.log.routeStatic', { name: node.name, ip: d.ip, net: hit.ref.net, prefix: hit.ref.prefix, via: hit.ref.via })));
                     renderLayerCard(I18N.t('sim.layer.routerRoute'), layerData(protocol, s, d, pair.from, pair.to, isReply), ORDER_IN, new Set(['net', 'link']));
                     return pulseDevice(node, '#94a3b8', 2800 * kp(), token);
                 }
@@ -4296,7 +4297,7 @@
                     renderTableCard(I18N.t('sim.table.routesTitle', { name: node.name }), I18N.t('sim.table.headDest'), I18N.t('sim.table.headOut'), [
                         { a: `${intToIp(net >>> 0)}/${pre}`, b: I18N.t('sim.table.routeLocal') },
                         { a: '0.0.0.0/0', b: I18N.t('sim.table.routeDefault', { name: seq[j + 1].name }) }], local ? 0 : 1);
-                    addTrafficLog(local ? I18N.t('sim.log.routeLocal', { name: node.name, ip: d.ip }) : I18N.t('sim.log.routeDefault', { name: node.name, ip: d.ip }));
+                    addTrafficLog(() => (local ? I18N.t('sim.log.routeLocal', { name: node.name, ip: d.ip }) : I18N.t('sim.log.routeDefault', { name: node.name, ip: d.ip })));
                 }
                 const title = protocol === 'ARP' ? I18N.t('sim.layer.routerArp')
                     : I18N.t('sim.layer.routerNewFrame');
@@ -4335,7 +4336,7 @@
             // Paso 1: el origen genera el paquete
             setLeg(seqF, 0);
             showTrafficCaption(reqText, ++step, total, 'go');
-            addTrafficLog(reqText, 'text-cyan-500');
+            addTrafficLog(reqFn, 'text-cyan-500');
             if (!(await Promise.all([pulseDevice(source, info.color, 2400 * kp(), token), encap(source, destination, macPair(seqF, 0), false, 2400 * kp())])).every(Boolean)) return false;
 
             // IDA
@@ -4352,11 +4353,11 @@
 
             // Destino procesa
             showTrafficCaption(info.destTxt(destination), ++step, total, 'node');
-            addTrafficLog(info.destTxt(destination), 'text-amber-500');
+            addTrafficLog(() => info.destTxt(destination), 'text-amber-500');
             if (protocol === 'ARP' && adv) {
                 (netTables.arp[destination.id] || (netTables.arp[destination.id] = {}))[source.ip] = macOf(source);
                 showArpTable(destination, source.ip);
-                addTrafficLog(I18N.t('sim.log.arpSave', { name: destination.name, ip: source.ip, mac: macOf(source) }), 'text-emerald-500');
+                addTrafficLog(() => I18N.t('sim.log.arpSave', { name: destination.name, ip: source.ip, mac: macOf(source) }), 'text-emerald-500');
             }
             setLeg(seqF, hops - 1);
             if (!(await Promise.all([pulseDevice(destination, info.color, 2600 * kp(), token), decap(source, destination, macPair(seqF, hops - 1), false, destination, 2600 * kp())])).every(Boolean)) return false;
@@ -4364,7 +4365,7 @@
 
             // VUELTA
             showTrafficCaption(info.repTxt(source, destination), ++step, total, 'back');
-            addTrafficLog(info.repTxt(source, destination), 'text-emerald-500');
+            addTrafficLog(() => info.repTxt(source, destination), 'text-emerald-500');
             setLeg(seqB, 0);
             if (!(await encap(destination, source, macPair(seqB, 0), true, 2200 * kp()))) return false;
             for (let i = 0; i < hops; i++) {
@@ -4383,16 +4384,16 @@
                 const askedIp = arpTargetIp || destination.ip;
                 (netTables.arp[source.id] || (netTables.arp[source.id] = {}))[askedIp] = macOf(destination);
                 showArpTable(source, askedIp);
-                addTrafficLog(I18N.t('sim.log.arpSave', { name: source.name, ip: askedIp, mac: macOf(destination) }), 'text-emerald-500');
+                addTrafficLog(() => I18N.t('sim.log.arpSave', { name: source.name, ip: askedIp, mac: macOf(destination) }), 'text-emerald-500');
             }
             if (protocol === 'DNS' && adv && !trafficSite.ip) {
-                simFail(source, I18N.t('sim.fail.dnsNameMissing', { d: destination.name, site: trafficSite.name }), I18N.t('sim.fail.logDnsNameMissing', { d: destination.name, site: trafficSite.name }), token);
+                simFail(source, I18N.t('sim.fail.dnsNameMissing', { d: destination.name, site: trafficSite.name }), () => I18N.t('sim.fail.logDnsNameMissing', { d: destination.name, site: trafficSite.name }), token);
                 return false;
             }
             if (protocol === 'DNS' && adv) {
                 (netTables.dns[source.id] || (netTables.dns[source.id] = {}))[trafficSite.name] = trafficSite.ip;
                 showDnsTable(source, trafficSite.name);
-                addTrafficLog(I18N.t('sim.log.dnsSave', { name: source.name, site: trafficSite.name, ip: trafficSite.ip }), 'text-emerald-500');
+                addTrafficLog(() => I18N.t('sim.log.dnsSave', { name: source.name, site: trafficSite.name, ip: trafficSite.ip }), 'text-emerald-500');
             }
             setLeg(seqB, hops - 1);
             if (!(await decap(destination, source, macPair(seqB, hops - 1), true, source, 2600 * kp()))) return false;
@@ -4405,7 +4406,7 @@
                 return token === trafficRunToken;
             }
             showTrafficCaption(protocol === 'REQUEST' ? I18N.t('sim.done.request', { s: source.name, ip: dhcpInfo.ip, gw: dhcpInfo.gw }) : I18N.t('sim.done.reply', { s: source.name, d: destination.name }), total, total, 'ok');
-            addTrafficLog(I18N.t('sim.log.end', { label: label }), 'text-emerald-500');
+            addTrafficLog(() => I18N.t('sim.log.end', { label: label }), 'text-emerald-500');
             if (status) status.textContent = I18N.t('sim.status.completed', { label: label, s: source.name, d: destination.name });
             showToast(I18N.t('sim.toast.completed', { label: label }), 'success');
             await pulseDevice(source, '#22c55e', 2200 * kp(), token);

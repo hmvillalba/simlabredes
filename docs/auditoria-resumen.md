@@ -1,129 +1,137 @@
 # Fase 1 - Auditoria de textos (inventario inicial)
 
-- Fuente: `index.html` (312,589 bytes, 4,380 lineas)
-- Entradas unicas (categoria + texto): **757**
-- Ocurrencias totales: **844**
-- Textos con tildes/caracteres del español: **295**
-- Textos con variables dinamicas (`${...}` o `{var}`): **295**
+- Fuente: `index.html` (318,777 bytes, 4,496 lineas)
+- Entradas unicas (categoria + texto): **454**
+- Ocurrencias totales: **505**
+- Textos con tildes/caracteres del español: **67**
+- Textos con variables dinamicas (`${...}` o `{var}`): **138**
 
 ## Conteo por categoria
 | Categoria | Entradas unicas |
 |-----------|----------------:|
-| `js-string` | 583 |
-| `html-texto` | 133 |
-| `html-attr:title` | 33 |
-| `html-attr:placeholder` | 5 |
-| `html-attr:aria-label` | 3 |
+| `js-string` | 234 |
+| `html-texto` | 136 |
+| `html-attr:title` | 68 |
+| `html-attr:placeholder` | 10 |
+| `html-attr:aria-label` | 6 |
 
 ## Ejemplos por categoria (primeros 15)
 
 ### `js-string`
 
-- L1144: Modo Cable: Haz clic en dos dispositivos para conectarlos
-- L1152: Modo Eliminar Cable: Haz clic sobre cualquier cable en la pantalla para cortarlo
-- L1215: Internet (ISP)
-- L1225: Dispositivo agregado: ${device.name}
-- L1255: ${dev.y}px
-- L1273: <div class="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-900 border-2 ${getStatusBorderCl...
-- L1296: Haz clic directamente en la línea del cable para eliminarlo
-- L1377: Dispositivo origen seleccionado. Elige el destino.
-- L1380: No puedes conectar un dispositivo a sí mismo
-- L1392: Ya existe un enlace entre estos equipos
-- L1399: Conexión física realizada con éxito
-- L1424: Cable/Conexión eliminada correctamente
-- L1447: cable-group cursor-pointer
-- L1628: IP o máscara inválida. Usa una dirección de host y una máscara contigua.
-- L1630: Esa dirección IP ya está asignada a otro dispositivo.
+- L1293: ${dev.y}px
+- L1311: <div class="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-900 border-2 ${getStatusBorderCl...
+- L1485: cable-group cursor-pointer
+- L1743: Fácil
+- L1763: Difícil
+- L1851: es-AR
+- L1851: en-US
+- L1856: <button onclick="startActivity(${i})" class="w-full text-left p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 borde...
+- L1864: ${lvlLabel(c.lvl)} · ${actTitle(c)}
+- L1938: <span style="color:#10b981;font-weight:700">${escapeHtml(I18N.t('act.msg.solved', { student: currentStudent ? ', ' + ...
+- L1939: <span style="color:#f43f5e;font-weight:700">❌ ${escapeHtml(I18N.t('act.msg.notYetLabel'))}</span> ${escapeHtml(I18N.t...
+- L1944: 💡 ${escapeHtml(actHint(currentActivity))}
+- L1946: 🔎 <b>${escapeHtml(I18N.t('act.msg.diagnosticLabel'))}</b> ${escapeHtml(fail.m)}
+- L1954: <div class="space-y-3"> <label class="flex items-center gap-2 text-xs text-slate-200 cursor-pointer"><input id="dns-o...
+- L1983: <div class="grid grid-cols-6 gap-2 items-center text-xs"><span class="col-span-2 text-slate-300">${I18N.t('dev.routes...
 
 ### `html-texto`
 
 - L7: Simulador de Redes Educativo
-- L284: NetSim Lab
-- L288: Simulador de Redes Interactivo para Estudiantes
-- L298: Mover / Seleccionar
-- L303: Conectar Cable
-- L308: Eliminar Cable
-- L324: Entregar
-- L329: Alumno
-- L333: Actividades
-- L337: Apoyar
-- L342: Archivo
-- L348: Guardar red…
-- L351: Abrir red…
-- L352: Exportar la red como…
-- L356: Imagen PNG
+- L316: NetSim Lab
+- L320: Simulador de Redes Interactivo para Estudiantes
+- L329: Mover / Seleccionar
+- L334: Conectar Cable
+- L339: Eliminar Cable
+- L355: Entregar
+- L360: Alumno
+- L364: Actividades
+- L368: Apoyar
+- L373: Archivo
+- L379: Guardar red…
+- L382: Abrir red…
+- L383: Exportar la red como…
+- L387: Imagen PNG
 
 ### `html-attr:title`
 
-- L295: Mover / Seleccionar
-- L300: Conectar Cable
-- L305: Eliminar Cable
-- L311: Deshacer (Ctrl+Z)
-- L314: Rehacer (Ctrl+Y)
-- L323: Guardar tu trabajo con tu nombre para entregárselo al profe
-- L327: Tu nombre: queda guardado en las redes y actividades que guardes
-- L332: Redes con fallas para resolver
-- L336: Acerca del simulador y apoyar al autor
-- L367: Descarga una versión de este simulador que funciona sin internet (hace falta conexión una sola vez)
-- L385: VPN dentro de la red de la oficina: para llegar desde afuera hay que abrir un puerto en el router
-- L390: Casa y oficina, cada una con su router e Internet, unidas por una VPN en la nube
-- L395: Dos redes unidas por un router con varias interfaces
-- L432: Pantalla completa con textos grandes (Esc para salir)
-- L598: Acerca de este simulador
+- L326: Mover / Seleccionar
+- L326: header.toolSelect
+- L331: Conectar Cable
+- L331: header.toolCable
+- L336: Eliminar Cable
+- L336: header.toolDeleteCable
+- L342: Deshacer (Ctrl+Z)
+- L342: header.undo
+- L345: Rehacer (Ctrl+Y)
+- L345: header.redo
+- L354: Guardar tu trabajo con tu nombre para entregárselo al profe
+- L354: header.deliverTitle
+- L358: Tu nombre: queda guardado en las redes y actividades que guardes
+- L358: header.studentTitle
+- L363: Redes con fallas para resolver
 
 ### `html-attr:placeholder`
 
-- L906: Ej: Ana Pérez
-- L938: Ej: La PC de Secretaría no sale a Internet
-- L948: Ej: Desde ayer, nadie del laboratorio puede abrir la página del colegio.
-- L951: Ej: Revisá la puerta de enlace de las PC.
-- L1043: Ej: Red del aula
+- L948: Ej: Ana Pérez
+- L948: modal.student.placeholder
+- L980: Ej: La PC de Secretaría no sale a Internet
+- L980: modal.mkact.placeholderTitle
+- L990: Ej: Desde ayer, nadie del laboratorio puede abrir la página del colegio.
+- L990: modal.mkact.placeholderStory
+- L993: Ej: Revisá la puerta de enlace de las PC.
+- L993: modal.mkact.placeholderHint
+- L1085: Ej: Red del aula
+- L1085: modal.save.placeholder
 
 ### `html-attr:aria-label`
 
-- L754: Modo de simulación
-- L771: Tipo de comunicación
-- L796: Velocidad de la simulación
+- L796: Modo de simulación
+- L796: sim.modeLabel
+- L813: Tipo de comunicación
+- L813: sim.protocolLabel
+- L838: Velocidad de la simulación
+- L838: sim.speedLabel
 
 ## Textos con variables dinamicas (ejemplos)
 
-- L1225 [js-string]: Dispositivo agregado: ${device.name}
-- L1255 [js-string]: ${dev.y}px
-- L1273 [js-string]: <div class="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-900 border-2 ${getStatusBorderClass(statusColor)} sh...
-- L1650 [js-string]: ${src.name} no llega al servidor DNS (${dnsDev.name}): ${m}
-- L1651 [js-string]: El servidor DNS ${dnsDev.name} está apagado.
-- L1653 [js-string]: El servidor DNS ${dnsDev.name} no conoce el nombre ${site}.
-- L1655 [js-string]: El nombre ${site} apunta a ${ip}, que no pertenece a ningún equipo.
-- L1656 [js-string]: El nombre ${site} apunta a ${owner.name} (${ip}), pero la página está en ${dst.name}.
-- L1660 [js-string]: ${d.name} no obtuvo IP: ningún servidor DHCP le respondió (quedó con una dirección automática 169.254.x.x).
-- L1663 [js-string]: No hay camino físico entre ${src.name} y ${dst.name}: falta un cable.
-- L1666 [js-string]: ${d.name} y ${o.name} tienen la misma IP (${d.ip}).
-- L1670 [js-string]: La dirección ${dst.ip} es privada: desde otra red, Internet no sabe llegar a ella. Para comunicar redes distintas hace falta una VPN (o u...
-- L1672 [js-string]: ${src.name} y ${dst.name} no coinciden en si están en la misma red: las máscaras de subred son distintas.
-- L1676 [js-string]: ${a.name} no tiene ninguna ruta hacia ${b.ip}.
-- L1678 [js-string]: ${a.name} no tiene puerta de enlace: no sabe salir de su red.
-- L1680 [js-string]: La puerta de enlace de ${a.name} (${a.gateway}) no existe en la red.
-- L1681 [js-string]: La puerta de enlace ${a.gateway} no está en la misma red que ${a.name} (${a.ip}): revisá su IP y su máscara.
-- L1682 [js-string]: El camino de ${a.name} no pasa por su puerta de enlace ${gw.name}.
-- L1687 [js-string]: ${n.name} no tiene ninguna ruta hacia ${b.ip}.
-- L1688 [js-string]: La ruta de ${n.name} apunta a ${hit.ref.via}, que no es el siguiente equipo.
-- L1808 [js-string]: <button onclick="startActivity(${i})" class="w-full text-left p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 h...
-- L1818 [js-string]: 🎯 Objetivo: ${c.goals.map(([x, y, site]) => { const A = dv(x), B = dv(y); return site === '@vpn' ?
-- L1819 [js-string]: 👤 Alumno: ${currentStudent}
-- L1821 [js-string]: 📥 Entrega de ${c.submission.student} · guardada ${c.submission.savedAt ? new Date(c.submission.savedAt).toLocaleString('es-AR') : ''} · e...
-- L1836 [js-string]: Actividad cargada: ${a.title}
+- L1293 [js-string]: ${dev.y}px
+- L1311 [js-string]: <div class="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-900 border-2 ${getStatusBorderClass(statusColor)} sh...
+- L1856 [js-string]: <button onclick="startActivity(${i})" class="w-full text-left p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 h...
+- L1864 [js-string]: ${lvlLabel(c.lvl)} · ${actTitle(c)}
+- L1938 [js-string]: <span style="color:#10b981;font-weight:700">${escapeHtml(I18N.t('act.msg.solved', { student: currentStudent ? ', ' + currentStudent : '' ...
+- L1939 [js-string]: <span style="color:#f43f5e;font-weight:700">❌ ${escapeHtml(I18N.t('act.msg.notYetLabel'))}</span> ${escapeHtml(I18N.t('act.msg.notYet', {...
+- L1944 [js-string]: 💡 ${escapeHtml(actHint(currentActivity))}
+- L1946 [js-string]: 🔎 <b>${escapeHtml(I18N.t('act.msg.diagnosticLabel'))}</b> ${escapeHtml(fail.m)}
+- L1954 [js-string]: <div class="space-y-3"> <label class="flex items-center gap-2 text-xs text-slate-200 cursor-pointer"><input id="dns-online" type="checkbo...
+- L1983 [js-string]: <div class="grid grid-cols-6 gap-2 items-center text-xs"><span class="col-span-2 text-slate-300">${I18N.t('dev.routesTab.toward', { name:
+- L1983 [js-string]: })}</span><input id="if-ip-${id}" value="${escapeHtml(f.ip)}" placeholder="IP (ej: 192.168.1.1)" class="col-span-2 INP"><input id="if-mas...
+- L1984 [js-string]: <p class="text-xs text-amber-400">${I18N.t('dev.routesTab.noNeighbors')}</p>
+- L1986 [js-string]: <div class="space-y-4"> <div><h4 class="text-xs font-bold text-orange-400 mb-1">${I18N.t('dev.routesTab.interfaces')}</h4><p class="text-...
+- L2027 [js-string]: ${netOf(f.ip, f.mask)}/${prefixFromMask(f.mask)}
+- L2063 [js-string]: w-9 h-9 rounded-lg border flex items-center justify-center text-lg ${getDeviceIconColor(dev)} bg-slate-900 border-slate-700
+- L2064 [js-string]: <i class="${getDeviceIconClass(dev)}"></i>
+- L2147 [js-string]: <div class="space-y-4"> <p class="text-xs text-slate-400">${I18N.t('dev.layerTab.intro')}</p> <div class="grid grid-cols-2 gap-4"> <div o...
+- L2178 [js-string]: <div class="space-y-4 text-xs"> <div class="flex items-center space-x-4 bg-slate-950 p-3 rounded-xl border border-slate-800"> <span class...
+- L2215 [js-string]: <div class="space-y-4 text-xs"> <div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl border border-slate-800"> <span...
+- L2237 [js-string]: setWifiField(${dev.id}, 'wifiSsid', this.value)
+- L2241 [js-string]: setWifiField(${dev.id}, 'wifiPass', this.value)
+- L2254 [js-string]: dhcp-start-${dev.id}
+- L2255 [js-string]: dhcp-end-${dev.id}
+- L2274 [js-string]: <option value="${escapeHtml(d.ip)}">${escapeHtml(d.name)} (${escapeHtml(d.ip)})</option>
+- L2276 [js-string]: <div class="space-y-3 text-xs"> <div class="rounded-lg bg-slate-950 border border-slate-800 p-3"><span class="text-slate-500">${I18N.t('d...
 
 ## Propuestos como NO traducir (CLI simulada de dispositivos)
 
-- L2548: ipconfig - Muestra la dirección IP actual y puerta de enlace.
-- L2549: ping [IP o nombre] - Diagnostica conectividad enviando paquetes ICMP.
-- L2550: tracert [IP o nombre] - Muestra el camino salto por salto y dónde se corta.
-- L2551: nslookup [nombre] - Consulta al servidor DNS qué IP tiene un nombre.
-- L2553: clear - Limpia la pantalla de la consola.
+- L2624: ipconfig - Muestra la dirección IP actual y puerta de enlace.
+- L2625: ping [IP o nombre] - Diagnostica conectividad enviando paquetes ICMP.
+- L2626: tracert [IP o nombre] - Muestra el camino salto por salto y dónde se corta.
+- L2627: nslookup [nombre] - Consulta al servidor DNS qué IP tiene un nombre.
+- L2629: clear - Limpia la pantalla de la consola.
 
 ## Terminos tecnicos detectados (mantener igual en todos los idiomas)
 
-ARP, DHCP, DNS, MAC, Router, Switch
+ARP, DHCP, DNS
 
 ## Decisiones pendientes (acordar antes de la Fase 2)
 

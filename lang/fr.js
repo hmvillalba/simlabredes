@@ -732,6 +732,7 @@ window.I18N_DICTS.fr = {
             reply: 'Terminé ! {s} a reçu la réponse de {d}. La communication fonctionne.'
         },
         fail: {
+            statusPrefix: 'ÉCHEC : ',
             noGateway: '{s} veut atteindre un autre réseau ({ip}) mais n’a pas de passerelle : il ne sait pas par où sortir.',
             logNoGateway: '{s} n’a pas de passerelle configurée.',
             gatewayMissing: 'La passerelle de {s} ({gw}) n’existe pas dans ce réseau : le paquet ne sait pas par où sortir.',

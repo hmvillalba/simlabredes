@@ -738,6 +738,7 @@ window.I18N_DICTS.es = {
             reply: '¡Listo! {s} recibió la respuesta de {d}. La comunicación funciona.'
         },
         fail: {
+            statusPrefix: 'FALLO: ',
             noGateway: '{s} quiere llegar a otra red ({ip}) pero no tiene puerta de enlace: no sabe por dónde salir.',
             logNoGateway: '{s} no tiene puerta de enlace configurada.',
             gatewayMissing: 'La puerta de enlace de {s} ({gw}) no existe en esta red: el paquete no sabe por dónde salir.',
