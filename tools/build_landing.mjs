@@ -5,14 +5,15 @@
 // Lee landing/template.html y los diccionarios landing/i18n/*.js y escribe un
 // index.html por idioma EN LA RAÍZ del repositorio:
 //
-//   es/index.html
+//   es/index.html (español neutro)
+//   ar/index.html (español rioplatense)
 //   en/index.html
 //   pt/index.html
 //   fr/index.html
 //   sitemap.xml
 //   robots.txt
 //
-// Las URLs quedan limpias (/es/, /en/…). El simulador NO se mueve de
+// Las URLs quedan limpias (/es/, /ar/, /en/…). El simulador NO se mueve de
 // /index.html: vercel.json redirige la raíz (/) a /es/ y ofrece el alias
 // /simulador, así que el visitante que entra al dominio ve la portada y el que
 // necesita la herramienta la abre directo. La landing enlaza al simulador con
@@ -43,8 +44,9 @@ const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const L = (...p) => path.join(ROOT, 'landing', ...p);
 
 /** Idiomas publicados y el locale que se anuncia en og:locale. */
-export const LANGS = ['es', 'en', 'pt', 'fr'];
-const OG_LOCALE = { es: 'es_ES', en: 'en_US', pt: 'pt_BR', fr: 'fr_FR' };
+export const LANGS = ['es', 'ar', 'en', 'pt', 'fr'];
+const LANG_TAG = { es: 'es', ar: 'es-AR', en: 'en', pt: 'pt', fr: 'fr' };
+const OG_LOCALE = { es: 'es_ES', ar: 'es_AR', en: 'en_US', pt: 'pt_BR', fr: 'fr_FR' };
 
 /** URL base del sitio. Se puede cambiar con SITE_URL al compilar. */
 const SITE = (process.env.SITE_URL || 'https://simlabredes.vercel.app').replace(/\/+$/, '');
@@ -78,20 +80,22 @@ const esc = s => String(s)
 
 /** Enlaces de idioma del encabezado (el idioma actual queda marcado). */
 function altLinks(dicts, lang) {
-    const label = esc(dicts[lang].footer.otherLanguages);
+    const label = esc(dicts[lang].nav.langLabel);
     const items = LANGS.map(l => {
         const name = esc(dicts[l]._meta.name);
         const current = l === lang;
+        const code = l.toUpperCase();
+        const tag = LANG_TAG[l];
         return current
-            ? `<span aria-current="page">${l.toUpperCase()}</span>`
-            : `<a href="../${l}/index.html" hreflang="${l}" lang="${l}" title="${name}">${l.toUpperCase()}</a>`;
+            ? `<span lang="${tag}" aria-current="page">${code}</span>`
+            : `<a href="../${l}/index.html" hreflang="${tag}" lang="${tag}" title="${name}">${code}</a>`;
     }).join('\n                ');
     return `<nav class="lang-nav" aria-label="${label}">\n                ${items}\n            </nav>`;
 }
 
-/** <link rel="alternate" hreflang> de los cuatro idiomas + x-default. */
+/** <link rel="alternate" hreflang> de los cinco idiomas + x-default. */
 function hreflang() {
-    const lines = LANGS.map(l => `    <link rel="alternate" hreflang="${l}" href="${SITE}/${l}/">`);
+    const lines = LANGS.map(l => `    <link rel="alternate" hreflang="${LANG_TAG[l]}" href="${SITE}/${l}/">`);
     lines.push(`    <link rel="alternate" hreflang="x-default" href="${SITE}/es/">`);
     return lines.join('\n');
 }
@@ -100,7 +104,8 @@ function hreflang() {
 function renderPage(template, dicts, lang, year) {
     const values = flat(dicts[lang]);
     const special = {
-        _lang: lang,
+        _lang: LANG_TAG[lang],
+        _route: lang,
         _dir: dicts[lang]._meta.dir || 'ltr',
         _root: '../',
         _site: SITE,
@@ -131,7 +136,7 @@ function renderSitemap(year) {
     ];
     const urls = items.map(({ loc, priority, alternates }) => {
         const alts = alternates
-            ? LANGS.map(a => `        <xhtml:link rel="alternate" hreflang="${a}" href="${SITE}/${a}/"/>`).join('\n') + '\n'
+            ? LANGS.map(a => `        <xhtml:link rel="alternate" hreflang="${LANG_TAG[a]}" href="${SITE}/${a}/"/>`).join('\n') + '\n'
             : '';
         return `    <url>
         <loc>${loc}</loc>
@@ -163,7 +168,7 @@ function main() {
     const template = fs.readFileSync(L('template.html'), 'utf8');
     const year = new Date().getFullYear();
 
-    // Todas las claves de la plantilla deben existir en los cuatro idiomas.
+    // Todas las claves de la plantilla deben existir en los cinco idiomas.
     const tokens = [...new Set([...template.matchAll(/\{\{([\w.]+)\}\}/g)].map(m => m[1]))]
         .filter(k => !k.startsWith('_'));
     const problems = [];
@@ -186,7 +191,7 @@ function main() {
     fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), renderSitemap(year), 'utf8');
     fs.writeFileSync(path.join(ROOT, 'robots.txt'), renderRobots(), 'utf8');
 
-    console.log('Landing: 4 páginas + sitemap.xml + robots.txt en la raíz del repo');
+    console.log('Landing: 5 páginas + sitemap.xml + robots.txt en la raíz del repo');
     console.log(`URL base del sitio: ${SITE} (se puede cambiar con SITE_URL=...)`);
     console.log('Recordatorio: npm run build:landing:css compila assets/landing.css.');
 }

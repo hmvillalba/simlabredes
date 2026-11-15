@@ -1,12 +1,12 @@
-// Valida que la salida declarada para Vercel contenga las dos páginas estáticas
+// Valida que la salida declarada para Vercel contenga el simulador y las cinco portadas
 // y todos sus recursos locales, sin exigir Vercel CLI ni conexión de red.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const OUT = path.join(ROOT, 'public');
-const LANGS = ['es', 'en', 'pt', 'fr'];
+const OUT = path.resolve(process.env.VERCEL_OUTPUT_DIR || path.join(ROOT, 'public'));
+const LANGS = ['es', 'ar', 'en', 'pt', 'fr'];
 let ok = 0;
 let fail = 0;
 
@@ -22,6 +22,8 @@ function check(label, condition) {
 
 const config = JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8'));
 check('Vercel publica el directorio public/', config.outputDirectory === 'public');
+check('Vercel redirige la raíz al español neutro',
+    config.redirects.some(r => r.source === '/' && r.destination === '/es/'));
 
 for (const file of ['index.html', 'LICENSE', 'robots.txt', 'sitemap.xml']) {
     check(`public/${file} está incluido`, fs.existsSync(path.join(OUT, file)));

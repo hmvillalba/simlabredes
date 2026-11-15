@@ -5,11 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SimLab Redes — Simulador de redes para enseñar y aprender</title>
-    <meta name="description" content="Simulador de redes interactivo, gratuito y sin instalación. Armá topologías, configurá IP, DHCP y VLAN, y mirá el tráfico ARP, DNS y HTTP en el aula.">
+    <meta name="description" content="Simulador de redes interactivo, gratuito y sin instalación. Crea topologías, configura IP, DHCP y VLAN, y observa el tráfico ARP, DNS y HTTP en el aula.">
     <meta name="author" content="Hugo Martin Villalba">
     <meta name="theme-color" content="#020617">
     <link rel="canonical" href="https://simlabredes.vercel.app/es/">
         <link rel="alternate" hreflang="es" href="https://simlabredes.vercel.app/es/">
+    <link rel="alternate" hreflang="es-AR" href="https://simlabredes.vercel.app/ar/">
     <link rel="alternate" hreflang="en" href="https://simlabredes.vercel.app/en/">
     <link rel="alternate" hreflang="pt" href="https://simlabredes.vercel.app/pt/">
     <link rel="alternate" hreflang="fr" href="https://simlabredes.vercel.app/fr/">
@@ -18,7 +19,7 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="SimLab Redes">
     <meta property="og:title" content="SimLab Redes — Simulador de redes para enseñar y aprender">
-    <meta property="og:description" content="Simulador de redes interactivo, gratuito y sin instalación. Armá topologías, configurá IP, DHCP y VLAN, y mirá el tráfico ARP, DNS y HTTP en el aula.">
+    <meta property="og:description" content="Simulador de redes interactivo, gratuito y sin instalación. Crea topologías, configura IP, DHCP y VLAN, y observa el tráfico ARP, DNS y HTTP en el aula.">
     <meta property="og:url" content="https://simlabredes.vercel.app/es/">
     <meta property="og:image" content="https://simlabredes.vercel.app/assets/landing/og.png">
     <meta property="og:image:alt" content="Captura del simulador con dos redes unidas por un router">
@@ -27,7 +28,7 @@
     <meta property="og:locale" content="es_ES">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="SimLab Redes — Simulador de redes para enseñar y aprender">
-    <meta name="twitter:description" content="Simulador de redes interactivo, gratuito y sin instalación. Armá topologías, configurá IP, DHCP y VLAN, y mirá el tráfico ARP, DNS y HTTP en el aula.">
+    <meta name="twitter:description" content="Simulador de redes interactivo, gratuito y sin instalación. Crea topologías, configura IP, DHCP y VLAN, y observa el tráfico ARP, DNS y HTTP en el aula.">
     <meta name="twitter:image" content="https://simlabredes.vercel.app/assets/landing/og.png">
     <!-- Recursos locales, sin CDNs (los mismos del simulador) -->
     <link rel="stylesheet" href="../assets/landing.css">
@@ -103,8 +104,9 @@
                 <a href="https://github.com/hmvillalba/simlabredes" target="_blank" rel="noopener noreferrer"
                     class="rounded-lg px-3 py-2 hover:bg-slate-800 hover:text-white"><i class="fa-brands fa-github mr-1.5" aria-hidden="true"></i>Repositorio</a>
             </nav>
-            <nav class="lang-nav" aria-label="Otros idiomas">
-                <span aria-current="page">ES</span>
+            <nav class="lang-nav" aria-label="Idioma">
+                <span lang="es" aria-current="page">ES</span>
+                <a href="../ar/index.html" hreflang="es-AR" lang="es-AR" title="Español (Argentina)">AR</a>
                 <a href="../en/index.html" hreflang="en" lang="en" title="English">EN</a>
                 <a href="../pt/index.html" hreflang="pt" lang="pt" title="Português">PT</a>
                 <a href="../fr/index.html" hreflang="fr" lang="fr" title="Français">FR</a>
@@ -124,8 +126,8 @@
                 <p class="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-[11px] font-medium text-emerald-300">
                     <i class="fa-solid fa-circle-check" aria-hidden="true"></i>Gratis · Sin instalar · Funciona sin internet
                 </p>
-                <h1 class="max-w-3xl text-3xl font-bold leading-tight tracking-tight text-white sm:text-5xl">Aprender redes armando redes</h1>
-                <p class="mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">SimLab Redes es un simulador pensado para clase: los estudiantes arman topologías, configuran equipos y ven cómo viajan los paquetes capa por capa, sin instalar nada.</p>
+                <h1 class="max-w-3xl text-3xl font-bold leading-tight tracking-tight text-white sm:text-5xl">Aprende redes creando redes</h1>
+                <p class="mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base">SimLab Redes es un simulador pensado para el aula: los estudiantes crean topologías, configuran equipos y ven cómo viajan los paquetes capa por capa, sin instalar nada.</p>
                 <div class="mt-7 flex flex-wrap items-center gap-3">
                     <a href="../index.html"
                         class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:-translate-y-0.5 hover:bg-emerald-400">
@@ -137,7 +139,7 @@
                     </a>
                 </div>
                 <p class="mt-4 max-w-xl text-[11px] leading-relaxed text-slate-500">
-                    <i class="fa-solid fa-plug-circle-check mr-1" aria-hidden="true"></i>Corre en el navegador: también abriendo el archivo desde una carpeta o un pendrive, sin servidor.
+                    <i class="fa-solid fa-plug-circle-check mr-1" aria-hidden="true"></i>Funciona en el navegador: también puedes abrir el archivo desde una carpeta o una memoria USB, sin servidor.
                 </p>
                 <figure class="mt-10 overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/60 shadow-2xl">
                     <img src="../assets/landing/simulator-desktop.png" width="1440" height="900" loading="eager"
@@ -155,7 +157,7 @@
                     <li class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
                         <i class="fa-solid fa-diagram-project text-lg text-emerald-400" aria-hidden="true"></i>
                         <h3 class="mt-3 text-sm font-semibold text-slate-100">Topologías en el navegador</h3>
-                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Routers WiFi y L3, switches, PCs, notebooks, servidores web, DNS y VPN. Se tienden y cortan cables con el mouse.</p>
+                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Routers WiFi y L3, switches, PC, portátiles, servidores web y DNS, y VPN. Conecta y desconecta cables con el mouse.</p>
                     </li>
                     <li class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
                         <i class="fa-solid fa-shuffle text-lg text-sky-400" aria-hidden="true"></i>
@@ -165,12 +167,12 @@
                     <li class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
                         <i class="fa-solid fa-table-list text-lg text-amber-400" aria-hidden="true"></i>
                         <h3 class="mt-3 text-sm font-semibold text-slate-100">Tablas y consolas</h3>
-                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Tablas ARP, MAC, DNS y de routing que se actualizan solas, y consola por equipo para practicar comandos.</p>
+                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Tablas ARP, MAC, DNS y de routing que se actualizan automáticamente, y una consola por equipo para practicar comandos.</p>
                     </li>
                     <li class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
                         <i class="fa-solid fa-chalkboard-user text-lg text-rose-400" aria-hidden="true"></i>
                         <h3 class="mt-3 text-sm font-semibold text-slate-100">Listo para el aula</h3>
-                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Actividades con fallas para resolver, entrega del trabajo con el nombre del alumno y corrección para el docente.</p>
+                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Actividades con fallas para resolver, entrega del trabajo con el nombre del estudiante y corrección para el docente.</p>
                     </li>
                 </ul>
             </div>
@@ -180,7 +182,7 @@
         <section class="border-t border-slate-800/80 bg-slate-900/40 py-14 sm:py-16">
             <div class="mx-auto max-w-6xl px-4">
                 <h2 class="text-2xl font-bold text-white sm:text-3xl">Cómo se ve</h2>
-                <p class="mt-2 max-w-2xl text-sm text-slate-400">Capturas del simulador real, en escritorio y en celular.</p>
+                <p class="mt-2 max-w-2xl text-sm text-slate-400">Capturas del simulador real, en computadora y en celular.</p>
                 <div class="mt-8 grid gap-6 lg:grid-cols-3">
                     <figure class="lg:col-span-2">
                         <img src="../assets/landing/simulator-desktop.png" width="1440" height="900" loading="lazy"
@@ -211,7 +213,7 @@
                     <div class="rounded-2xl border border-sky-500/25 bg-sky-500/5 p-5">
                         <i class="fa-solid fa-clipboard-check text-lg text-sky-400" aria-hidden="true"></i>
                         <h3 class="mt-3 text-sm font-semibold text-slate-100">Entrega y corrección</h3>
-                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">El alumno guarda su red con su nombre y vos la abrís desde «Corregir entregas».</p>
+                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">El estudiante guarda su red con su nombre y tú la abres desde «Corregir entregas».</p>
                     </div>
                     <div class="rounded-2xl border border-amber-500/25 bg-amber-500/5 p-5">
                         <i class="fa-solid fa-tv text-lg text-amber-400" aria-hidden="true"></i>
@@ -223,18 +225,18 @@
                     <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
                         <h3 class="text-sm font-semibold text-slate-100"><i class="fa-solid fa-stopwatch mr-1.5 text-slate-500" aria-hidden="true"></i>Una clase de 45 minutos</h3>
                         <ol class="mt-3 list-decimal space-y-2 pl-5 text-xs leading-relaxed text-slate-400">
-                            <li>Abrí un ejemplo o una actividad y proyectalo mientras explicás la topología.</li>
-                            <li>Los alumnos la reconstruyen en su equipo y prueban con ping hasta que responda.</li>
-                            <li>Cada uno guarda la red con su nombre y vos la abrís en «Corregir entregas».</li>
+                            <li>Abre un ejemplo o una actividad y proyéctalo mientras explicas la topología.</li>
+                            <li>Los estudiantes la reconstruyen en sus equipos y prueban con ping hasta obtener respuesta.</li>
+                            <li>Cada estudiante guarda la red con su nombre y tú la abres en «Corregir entregas».</li>
                         </ol>
                     </div>
                     <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
                         <h3 class="text-sm font-semibold text-slate-100"><i class="fa-solid fa-list-check mr-1.5 text-slate-500" aria-hidden="true"></i>Cuatro ejercicios para empezar</h3>
                         <ul class="mt-3 list-disc space-y-2 pl-5 text-xs leading-relaxed text-slate-400">
-                            <li>Cambiar la red de una PC para que haga ping al otro extremo del router.</li>
+                            <li>Cambiar la red de una PC para que pueda hacer ping al otro extremo del router.</li>
                             <li>Reparar un DHCP que no entrega direcciones y comprobar con ipconfig.</li>
-                            <li>Separar dos grupos de equipos con VLAN y verificar que no se vean.</li>
-                            <li>Publicar un servidor web detrás del router y alcanzarlo desde Internet.</li>
+                            <li>Separar dos grupos de equipos con VLAN y verificar que no se vean entre sí.</li>
+                            <li>Publicar un servidor web detrás del router y acceder a él desde Internet.</li>
                         </ul>
                     </div>
                 </div>
@@ -250,18 +252,18 @@
                 <ol class="mt-8 grid gap-4 sm:grid-cols-3">
                     <li class="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
                         <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-xs font-bold text-emerald-300">1</span>
-                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Abrí el simulador</h3>
-                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Se abre en el navegador y ya está: no hay cuentas ni descargas.</p>
+                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Abre el simulador</h3>
+                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Se abre en el navegador y listo: no necesitas cuentas ni descargas.</p>
                     </li>
                     <li class="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
                         <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-xs font-bold text-emerald-300">2</span>
-                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Elegí un ejemplo</h3>
+                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Elige un ejemplo</h3>
                         <p class="mt-1.5 text-xs leading-relaxed text-slate-400">En el menú Archivo hay redes de ejemplo para ver la herramienta en acción.</p>
                     </li>
                     <li class="rounded-2xl border border-slate-800 bg-slate-950/60 p-5">
                         <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 text-xs font-bold text-emerald-300">3</span>
-                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Guardá tu trabajo</h3>
-                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Se guarda en .json, se exporta a PNG, JPG y PDF, y también como copia para usar sin internet.</p>
+                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Guarda tu trabajo</h3>
+                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Guárdalo en .json, expórtalo a PNG, JPG o PDF, o descarga una copia para usar sin internet.</p>
                     </li>
                 </ol>
                 <div class="mt-8 flex flex-wrap items-center gap-3">
@@ -269,7 +271,7 @@
                         class="inline-flex items-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:-translate-y-0.5 hover:bg-emerald-400">
                         <i class="fa-solid fa-play" aria-hidden="true"></i>Abrir simulador
                     </a>
-                    <span class="text-[11px] text-slate-500">Corre en el navegador: también abriendo el archivo desde una carpeta o un pendrive, sin servidor.</span>
+                    <span class="text-[11px] text-slate-500">Funciona en el navegador: también puedes abrir el archivo desde una carpeta o una memoria USB, sin servidor.</span>
                 </div>
             </div>
         </section>
@@ -283,12 +285,12 @@
                 <div class="mt-8 grid gap-4 sm:grid-cols-3">
                     <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
                         <i class="fa-solid fa-share-nodes text-lg text-sky-400" aria-hidden="true"></i>
-                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Mencioná el proyecto</h3>
-                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Contale a colegas y estudiantes de dónde lo sacaste, o compartí el enlace en tu material de clase.</p>
+                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Menciona el proyecto</h3>
+                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Cuéntales a colegas y estudiantes de dónde lo obtuviste, o comparte el enlace en tu material de clase.</p>
                     </div>
                     <div class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
                         <i class="fa-solid fa-star text-lg text-amber-400" aria-hidden="true"></i>
-                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Dejá una estrella</h3>
+                        <h3 class="mt-3 text-sm font-semibold text-slate-100">Deja una estrella</h3>
                         <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Una estrella en GitHub ayuda a que otros docentes lo encuentren.</p>
                         <a href="https://github.com/hmvillalba/simlabredes" target="_blank" rel="noopener noreferrer"
                             class="mt-3 inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-slate-600 hover:text-white">
@@ -298,11 +300,11 @@
                     <div class="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 p-5">
                         <i class="fa-solid fa-mug-hot text-lg text-emerald-400" aria-hidden="true"></i>
                         <h3 class="mt-3 text-sm font-semibold text-slate-100">Donación (opcional)</h3>
-                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Si te gusta el Simulador queda a tu criterio una Mención o Donación para el autor.</p>
+                        <p class="mt-1.5 text-xs leading-relaxed text-slate-400">Si te gusta el simulador, puedes mencionar el proyecto o hacer una donación al autor.</p>
                         <div class="mt-3 flex flex-col gap-2">
                             <a href="https://cafecito.app/hmvillalba" target="_blank" rel="noopener noreferrer"
                                 class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-sky-500 px-3 py-2 text-xs font-semibold text-white shadow-md shadow-sky-500/20 transition hover:-translate-y-0.5 hover:bg-sky-400">
-                                <i class="fa-solid fa-mug-hot" aria-hidden="true"></i>Invitame un Cafecito
+                                <i class="fa-solid fa-mug-hot" aria-hidden="true"></i>Invítame un Cafecito
                             </a>
                             <a href="https://ko-fi.com/hugomartinvillalba" target="_blank" rel="noopener noreferrer"
                                 class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#ff5e5b] px-3 py-2 text-xs font-semibold text-white shadow-md shadow-rose-500/20 transition hover:-translate-y-0.5 hover:bg-[#ff423e]">
@@ -320,7 +322,7 @@
                     </h3>
                     <p class="mt-3 text-sm font-semibold text-slate-100">© 2026 Hugo Martín Villalba</p>
                     <p class="mt-1 text-[11px] text-slate-400">Distribuido bajo Licencia MIT</p>
-                    <p class="mt-3 max-w-3xl text-[11px] leading-relaxed text-slate-500">Si te gusta el Simulador queda a tu criterio una Mención o Donación para el autor.</p>
+                    <p class="mt-3 max-w-3xl text-[11px] leading-relaxed text-slate-500">Si te gusta el simulador, puedes mencionar el proyecto o hacer una donación al autor.</p>
                     <p class="mt-2 max-w-3xl text-[11px] leading-relaxed text-slate-500">El código se puede usar, copiar, modificar y redistribuir, incluso en clase, conservando el aviso de copyright. Se entrega tal cual, sin garantías.</p>
                     <a href="../LICENSE"
                         class="mt-4 inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:border-slate-600 hover:text-white">
@@ -334,7 +336,7 @@
         <section id="codigo" class="border-t border-slate-800/80 bg-slate-900/40 py-14 sm:py-16">
             <div class="mx-auto max-w-6xl px-4">
                 <h2 class="text-2xl font-bold text-white sm:text-3xl">Código abierto</h2>
-                <p class="mt-2 max-w-2xl text-sm text-slate-400">El proyecto es MIT: podés usarlo en clase, modificarlo y compartirlo.</p>
+                <p class="mt-2 max-w-2xl text-sm text-slate-400">El proyecto tiene licencia MIT: puedes usarlo en clase, modificarlo y compartirlo.</p>
                 <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     <a href="../LICENSE" class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 transition hover:border-slate-700 hover:bg-slate-900">
                         <i class="fa-solid fa-scale-balanced text-lg text-emerald-400" aria-hidden="true"></i>

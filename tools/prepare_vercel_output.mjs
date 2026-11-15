@@ -5,9 +5,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const OUT = path.join(ROOT, 'public');
+const OUT = path.resolve(process.env.VERCEL_OUTPUT_DIR || path.join(ROOT, 'public'));
 const FILES = ['index.html', 'LICENSE', 'robots.txt', 'sitemap.xml'];
-const DIRS = ['assets', 'en', 'es', 'fr', 'js', 'lang', 'pt'];
+const DIRS = ['assets', 'ar', 'en', 'es', 'fr', 'js', 'lang', 'pt'];
 
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });
