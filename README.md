@@ -10,7 +10,7 @@ Desarrollado como una aplicación web autónoma (Single Page Application) basada
 
 ## 🚀 Inicio rápido para desarrollar
 
-El simulador funciona abriendo `index.html` directamente: Tailwind, Font Awesome y las tipografías son archivos locales. No se necesita internet ni un servidor para usarlo.
+El proyecto tiene **dos páginas estáticas independientes**: la portada multilingüe y el simulador. Ambos usan recursos locales (sin CDNs), así que no hace falta internet para abrirlos. En Vercel, `/` lleva a la portada en español; localmente, abre `es/index.html` para la portada o `index.html` para el simulador. Desde la portada puedes cambiar entre español, inglés, portugués y francés y abrir el simulador.
 
 Para regenerar los recursos después de cambiar clases de Tailwind, diccionarios o `js/i18n.js`:
 
