@@ -303,6 +303,7 @@ window.I18N_DICTS.en = {
             reply: 'Done! {s} received the reply from {d}. The communication works.'
         },
         fail: {
+            statusPrefix: 'FAIL: ',
             noGateway: '{s} wants to reach another network ({ip}) but has no gateway: it does not know how to get out.',
             logNoGateway: '{s} has no gateway configured.',
             gatewayMissing: 'The gateway of {s} ({gw}) does not exist in this network: the packet does not know how to get out.',

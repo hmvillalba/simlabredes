@@ -7,6 +7,18 @@
         <changefreq>monthly</changefreq>
         <priority>1.0</priority>
         <xhtml:link rel="alternate" hreflang="es" href="https://simlabredes.vercel.app/es/"/>
+        <xhtml:link rel="alternate" hreflang="es-AR" href="https://simlabredes.vercel.app/ar/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://simlabredes.vercel.app/en/"/>
+        <xhtml:link rel="alternate" hreflang="pt" href="https://simlabredes.vercel.app/pt/"/>
+        <xhtml:link rel="alternate" hreflang="fr" href="https://simlabredes.vercel.app/fr/"/>
+    </url>
+    <url>
+        <loc>https://simlabredes.vercel.app/ar/</loc>
+        <lastmod>2026-01-01</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>1.0</priority>
+        <xhtml:link rel="alternate" hreflang="es" href="https://simlabredes.vercel.app/es/"/>
+        <xhtml:link rel="alternate" hreflang="es-AR" href="https://simlabredes.vercel.app/ar/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://simlabredes.vercel.app/en/"/>
         <xhtml:link rel="alternate" hreflang="pt" href="https://simlabredes.vercel.app/pt/"/>
         <xhtml:link rel="alternate" hreflang="fr" href="https://simlabredes.vercel.app/fr/"/>
@@ -17,6 +29,7 @@
         <changefreq>monthly</changefreq>
         <priority>1.0</priority>
         <xhtml:link rel="alternate" hreflang="es" href="https://simlabredes.vercel.app/es/"/>
+        <xhtml:link rel="alternate" hreflang="es-AR" href="https://simlabredes.vercel.app/ar/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://simlabredes.vercel.app/en/"/>
         <xhtml:link rel="alternate" hreflang="pt" href="https://simlabredes.vercel.app/pt/"/>
         <xhtml:link rel="alternate" hreflang="fr" href="https://simlabredes.vercel.app/fr/"/>
@@ -27,6 +40,7 @@
         <changefreq>monthly</changefreq>
         <priority>1.0</priority>
         <xhtml:link rel="alternate" hreflang="es" href="https://simlabredes.vercel.app/es/"/>
+        <xhtml:link rel="alternate" hreflang="es-AR" href="https://simlabredes.vercel.app/ar/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://simlabredes.vercel.app/en/"/>
         <xhtml:link rel="alternate" hreflang="pt" href="https://simlabredes.vercel.app/pt/"/>
         <xhtml:link rel="alternate" hreflang="fr" href="https://simlabredes.vercel.app/fr/"/>
@@ -37,6 +51,7 @@
         <changefreq>monthly</changefreq>
         <priority>1.0</priority>
         <xhtml:link rel="alternate" hreflang="es" href="https://simlabredes.vercel.app/es/"/>
+        <xhtml:link rel="alternate" hreflang="es-AR" href="https://simlabredes.vercel.app/ar/"/>
         <xhtml:link rel="alternate" hreflang="en" href="https://simlabredes.vercel.app/en/"/>
         <xhtml:link rel="alternate" hreflang="pt" href="https://simlabredes.vercel.app/pt/"/>
         <xhtml:link rel="alternate" hreflang="fr" href="https://simlabredes.vercel.app/fr/"/>

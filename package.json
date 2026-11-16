@@ -2,7 +2,7 @@
   "name": "simulador-redes-educativo",
   "version": "1.0.0",
   "private": true,
-  "description": "Simulador de Redes Educativo — simulador de redes multilingüe (es/en/pt/fr) para aula.",
+  "description": "Simulador de Redes Educativo — simulador multilingüe con landing es/ar/en/pt/fr para el aula.",
   "license": "MIT",
   "repository": {
     "type": "git",

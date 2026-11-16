@@ -36,7 +36,7 @@ const bodyTag = html.match(/<body[^>]*>/)[0];
 const pristineBody = html.slice(html.indexOf(bodyTag) + bodyTag.length, html.lastIndexOf('</body>'));
 const bundleWin = { I18N_DICTS: {} };
 vm.runInNewContext(read('assets/offline-bundle.js'), { window: bundleWin });
-for (const lang of ['es', 'en', 'pt', 'fr']) vm.runInNewContext(read(`lang/${lang}.js`), { window: bundleWin });
+for (const lang of ['es', 'ar', 'en', 'pt', 'fr']) vm.runInNewContext(read(`lang/${lang}.js`), { window: bundleWin });
 vm.runInNewContext(read('js/i18n.js'), {
     window: Object.assign(bundleWin, {
         navigator: { language: 'de-DE', languages: ['de-DE'] },
@@ -78,8 +78,8 @@ check('saveOfflineCopy() genera un archivo HTML', !!captured && captured.name.en
 if (!captured) { console.error(`\nResultado: ${ok} ok, ${fail} fallidos`); process.exit(1); }
 const copy = captured.blob.parts[0];
 check('la copia fija el idioma elegido (fr)', copy.includes('window.I18N_INITIAL_LANG = "fr"') && copy.includes('<html lang="fr"'));
-check('la copia incrusta los 4 diccionarios y el motor i18n',
-    ['lang/es.js', 'lang/en.js', 'lang/pt.js', 'lang/fr.js', 'js/i18n.js'].every(n => copy.includes(`data-offline-src="${n}"`)));
+check('la copia incrusta los 5 diccionarios y el motor i18n',
+    ['lang/es.js', 'lang/ar.js', 'lang/en.js', 'lang/pt.js', 'lang/fr.js', 'js/i18n.js'].every(n => copy.includes(`data-offline-src="${n}"`)));
 check('la copia incrusta CSS y fuentes como data URI', copy.includes('<style id="offline-css">') && copy.includes('url(data:font/woff2;base64,'));
 check('la copia no deja url() externas', !/url\(\s*['"]?(?:https?:)?\/\//i.test(copy) && !/url\(\s*['"]?(?!data:)[^)'"]+\)/.test(copy));
 check('la copia no referencia hojas ni scripts relativos', !/<(?:link|script)[^>]*(?:href|src)="assets\//.test(copy));
@@ -118,8 +118,8 @@ for (const code of scriptsToRun) {
     });
 }
 check('la copia arranca en fr aunque el navegador/preferencia digan otra cosa', copyWin.I18N.lang === 'fr' && copyState.lang === 'fr');
-check('la copia trae los 4 idiomas y permite cambiar en vivo', Object.keys(copyWin.I18N_DICTS).sort().join(',') === 'en,es,fr,pt' && (copyWin.I18N.setLang('pt'), copyWin.I18N.t('menu.file') !== ''));
-check('OFFLINE_BUNDLE se reconstruye para re-guardar la copia', !!copyWin.OFFLINE_BUNDLE && Object.keys(copyWin.OFFLINE_BUNDLE.scripts).length === 5);
+check('la copia trae los 5 idiomas y permite cambiar en vivo', Object.keys(copyWin.I18N_DICTS).sort().join(',') === 'ar,en,es,fr,pt' && (copyWin.I18N.setLang('pt'), copyWin.I18N.t('menu.file') !== ''));
+check('OFFLINE_BUNDLE se reconstruye para re-guardar la copia', !!copyWin.OFFLINE_BUNDLE && Object.keys(copyWin.OFFLINE_BUNDLE.scripts).length === 6);
 
 console.log(`\nResultado: ${ok} ok, ${fail} fallidos`);
 process.exit(fail ? 1 : 0);

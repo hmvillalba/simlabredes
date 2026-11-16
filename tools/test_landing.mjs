@@ -3,14 +3,14 @@
 // Uso: node tools/test_landing.mjs (también corre con `npm run check`)
 //
 // Comprueba, sin navegador ni red:
-//   - que las páginas de los 4 idiomas existan y sean HTML completo;
+//   - que las páginas de los 5 idiomas existan y sean HTML completo;
 //   - que los diccionarios de landing/i18n tengan exactamente las mismas claves;
 //   - que no quede ningún token {{...}} sin resolver;
-//   - hreflang completo (4 idiomas + x-default) y canónica por idioma;
+//   - hreflang completo (5 idiomas + x-default) y canónica por idioma;
 //   - metadatos OG/Twitter con imagen y locale;
 //   - que no haya recursos de CDNs (todo local, como el simulador);
 //   - que las imágenes y el CSS referenciados existan en disco;
-//   - que la sección de apoyo/derechos esté en los cuatro idiomas;
+//   - que la sección de apoyo/derechos esté en los cinco idiomas;
 //   - que el enlace al simulador apunte a un index.html que exista;
 //   - que sitemap.xml, robots.txt y vercel.json sean coherentes con las páginas.
 import fs from 'node:fs';
@@ -20,7 +20,9 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const L = (...p) => path.join(ROOT, 'landing', ...p);
-const LANGS = ['es', 'en', 'pt', 'fr'];
+const LANGS = ['es', 'ar', 'en', 'pt', 'fr'];
+const LANG_TAG = { es: 'es', ar: 'es-AR', en: 'en', pt: 'pt', fr: 'fr' };
+const OG_LOCALE = { es: 'es_ES', ar: 'es_AR', en: 'en_US', pt: 'pt_BR', fr: 'fr_FR' };
 const SITE = (process.env.SITE_URL || 'https://simlabredes.vercel.app').replace(/\/+$/, '');
 
 let ok = 0, fail = 0;
@@ -52,6 +54,12 @@ const flat = (obj, prefix = '', out = {}) => {
 
 const esFlat = flat(dicts.es);
 const esKeys = new Set(Object.keys(esFlat));
+check('[es] español neutro identificado en el selector', dicts.es?._meta.name === 'Español neutro');
+check('[ar] español rioplatense identificado en el selector', dicts.ar?._meta.name === 'Español (Argentina)');
+check('[es] usa formas de español neutro',
+    dicts.es?.hero?.title === 'Aprende redes creando redes' && dicts.es?.start?.s1Title === 'Abre el simulador');
+check('[ar] conserva el contenido rioplatense original',
+    dicts.ar?.hero?.title === 'Aprender redes armando redes' && dicts.ar?.start?.s1Title === 'Abrí el simulador');
 for (const lang of LANGS) {
     if (lang === 'es') continue;
     const keys = new Set(Object.keys(flat(dicts[lang])));
@@ -67,6 +75,8 @@ for (const lang of LANGS) {
 // legítimas (misma palabra en los dos idiomas) para que el chequeo siga siendo
 // estricto con el resto.
 const SAME_ALLOWED = {
+    // La variante rioplatense conserva el contenido que estaba publicado en es.
+    ar: Object.keys(esFlat),
     pt: ['nav.simulator', 'hero.ctaPrimary']   // "Abrir simulador" se escribe igual
 };
 for (const lang of LANGS) {
@@ -91,14 +101,15 @@ for (const lang of LANGS) {
 
     check(`[${lang}] es un documento HTML completo`,
         html.startsWith('<!DOCTYPE html>') && html.includes('</html>'));
+    const expectedDir = dicts[lang]?._meta.dir || 'ltr';
     check(`[${lang}] <html lang> y dir correctos`,
-        html.includes(`<html lang="${lang}" dir="ltr"`), (html.match(/<html[^>]*>/) || [''])[0]);
+        html.includes(`<html lang="${LANG_TAG[lang]}" dir="${expectedDir}"`), (html.match(/<html[^>]*>/) || [''])[0]);
     check(`[${lang}] no quedan tokens sin resolver`,
         !/\{\{[\w.]+\}\}/.test(html), (html.match(/\{\{[\w.]+\}\}/g) || []).slice(0, 3).join(', '));
 
     // hreflang y canónica
     for (const other of LANGS) {
-        check(`[${lang}] hreflang ${other}`, html.includes(`hreflang="${other}" href="${SITE}/${other}/"`));
+        check(`[${lang}] hreflang ${other}`, html.includes(`hreflang="${LANG_TAG[other]}" href="${SITE}/${other}/"`));
     }
     check(`[${lang}] hreflang x-default`, html.includes('hreflang="x-default"'));
     check(`[${lang}] canónica propia`, html.includes(`<link rel="canonical" href="${SITE}/${lang}/">`));
@@ -107,6 +118,8 @@ for (const lang of LANGS) {
     check(`[${lang}] Open Graph completo`,
         ['og:type', 'og:title', 'og:description', 'og:url', 'og:image', 'og:image:alt', 'og:locale']
             .every(p => html.includes(`property="${p}"`)));
+    check(`[${lang}] locale Open Graph correcto`,
+        html.includes(`property="og:locale" content="${OG_LOCALE[lang]}"`));
     check(`[${lang}] Twitter Card`,
         ['twitter:card', 'twitter:title', 'twitter:description', 'twitter:image']
             .every(n => html.includes(`name="${n}"`)));
@@ -116,6 +129,10 @@ for (const lang of LANGS) {
     // navegación entre idiomas
     check(`[${lang}] enlaces a los otros idiomas`, LANGS.filter(l => l !== lang)
         .every(l => html.includes(`href="../${l}/index.html"`)));
+    check(`[${lang}] selector con etiqueta accesible`,
+        html.includes(`aria-label="${dicts[lang].nav.langLabel}"`));
+    check(`[${lang}] selector marca el idioma actual`,
+        html.includes(`<span lang="${LANG_TAG[lang]}" aria-current="page">${lang.toUpperCase()}</span>`));
 
     // Sin CDNs: los únicos recursos que se pueden cargar son locales. Las URLs
     // absolutas de canonical/hreflang/og:* son datos, no recursos, así que solo
@@ -163,7 +180,7 @@ for (const lang of LANGS) {
 
 
 // --- 3. Rutas del sitio: portada en la raíz y simulador aparte ------------
-// El dominio abre la portada (/ redirige a /es/, que es el x-default) y el
+// El dominio abre la portada (/ redirige a /es/, español neutro y x-default) y el
 // simulador queda accesible sin pasar por ella en /index.html y en el alias
 // /simulador. La configuración vive en vercel.json porque el sitio no tiene
 // servidor propio.
@@ -202,11 +219,14 @@ const sitemap = path.join(ROOT, 'sitemap.xml');
 check('sitemap.xml existe', fs.existsSync(sitemap));
 if (fs.existsSync(sitemap)) {
     const xml = fs.readFileSync(sitemap, 'utf8');
-    check('sitemap declara los 4 idiomas', LANGS.every(l => xml.includes(`<loc>${SITE}/${l}/</loc>`)));
+    check('sitemap declara los 5 idiomas', LANGS.every(l => xml.includes(`<loc>${SITE}/${l}/</loc>`)));
     check('sitemap incluye el simulador', xml.includes(`<loc>${SITE}/index.html</loc>`));
     check('sitemap no anuncia la raíz como página propia (es una redirección)',
         !xml.includes(`<loc>${SITE}/</loc>`));
-    check('sitemap con anotaciones hreflang', LANGS.every(l => xml.includes(`hreflang="${l}"`)));
+    check('sitemap con anotaciones hreflang', LANGS.every(l => xml.includes(`hreflang="${LANG_TAG[l]}"`)));
+    check('español neutro aparece como x-default en las páginas',
+        LANGS.every(l => xml.includes(`hreflang="es" href="${SITE}/es/`)));
+    check('sitemap etiqueta Argentina como español argentino', xml.includes(`hreflang="es-AR" href="${SITE}/ar/`));
     check('sitemap no declara equivalentes por idioma del simulador',
         !/<url>\s*<loc>[^<]*\/index\.html<\/loc>[\s\S]*?xhtml:link[\s\S]*?<\/url>/.test(xml));
     check('sitemap es XML bien formado (declaración y urlset)',

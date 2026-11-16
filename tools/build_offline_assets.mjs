@@ -7,8 +7,8 @@
 //
 //   - css:    Tailwind compilado + Font Awesome + tipografías, con las fuentes
 //             incrustadas como data URI (así el archivo final no depende de nadie).
-//   - scripts: los diccionarios (es/en/pt/fr) y el motor i18n, para que la copia
-//             tenga los cuatro idiomas y no solo el texto ya renderizado.
+//   - scripts: los diccionarios (es/ar/en/pt/fr) y el motor i18n, para que la copia
+//             tenga los cinco idiomas y no solo el texto ya renderizado.
 //
 // El bundle se carga bajo demanda (solo cuando el usuario pide la copia), así
 // que no pesa en la carga normal de la página.
@@ -88,7 +88,7 @@ async function main() {
     assertNoExternalRefs(css);
 
     const scripts = {};
-    for (const f of ['es', 'en', 'pt', 'fr']) scripts[`lang/${f}.js`] = fs.readFileSync(path.join(ROOT, 'lang', `${f}.js`), 'utf8');
+    for (const f of ['es', 'ar', 'en', 'pt', 'fr']) scripts[`lang/${f}.js`] = fs.readFileSync(path.join(ROOT, 'lang', `${f}.js`), 'utf8');
     scripts['js/i18n.js'] = fs.readFileSync(path.join(ROOT, 'js', 'i18n.js'), 'utf8');
 
     const bundle = { version: 1, css, scripts };
