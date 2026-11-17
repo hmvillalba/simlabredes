@@ -520,6 +520,7 @@ window.I18N_DICTS.fr = {
         invalidGateway: 'La passerelle n’est pas une IPv4 valide.',
         gatewayWrongSubnet: 'La passerelle doit être sur le même sous-réseau que l’appareil.',
         ipConfigApplied: 'Configuration IP appliquée correctement.',
+        offLan: '{d} : l’IP {ip} n’appartient pas au réseau de {r} ({net}). Le câble est connecté, mais il ne pourra communiquer ni avec le routeur ni avec le reste du réseau.',
         activityLoaded: 'Activité chargée : {title}',
         activitySolved: 'Activité résolue !'
     },
@@ -733,6 +734,8 @@ window.I18N_DICTS.fr = {
         },
         fail: {
             statusPrefix: 'ÉCHEC : ',
+            hostOffLan: '{d} a l’IP {ip}, qui n’appartient pas au réseau de {r} ({net}). Le câble est bon, mais {r} ne peut pas lui remettre de paquets : il faut lui donner une IP de ce réseau (ou utiliser le DHCP).',
+            logHostOffLan: '{d} ({ip}) est hors du réseau de {r} ({net}) : le routeur ne peut pas lui remettre de paquets.',
             noGateway: '{s} veut atteindre un autre réseau ({ip}) mais n’a pas de passerelle : il ne sait pas par où sortir.',
             logNoGateway: '{s} n’a pas de passerelle configurée.',
             gatewayMissing: 'La passerelle de {s} ({gw}) n’existe pas dans ce réseau : le paquet ne sait pas par où sortir.',

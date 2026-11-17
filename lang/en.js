@@ -304,6 +304,8 @@ window.I18N_DICTS.en = {
         },
         fail: {
             statusPrefix: 'FAIL: ',
+            hostOffLan: '{d} has IP {ip}, which is not in {r}’s network ({net}). The cable is fine, but {r} cannot deliver packets to it: give it an address from that network (or use DHCP).',
+            logHostOffLan: '{d} ({ip}) is outside {r}’s network ({net}): the router cannot deliver packets to it.',
             noGateway: '{s} wants to reach another network ({ip}) but has no gateway: it does not know how to get out.',
             logNoGateway: '{s} has no gateway configured.',
             gatewayMissing: 'The gateway of {s} ({gw}) does not exist in this network: the packet does not know how to get out.',
@@ -499,6 +501,7 @@ window.I18N_DICTS.en = {
         invalidGateway: 'The gateway is not a valid IPv4 address.',
         gatewayWrongSubnet: 'The gateway must be on the same subnet as the device.',
         ipConfigApplied: 'IP configuration applied successfully.',
+        offLan: '{d}: IP {ip} is not in {r}’s network ({net}). The cable connects, but it will not be able to reach the router or the rest of the network.',
         activityLoaded: 'Activity loaded: {title}',
         activitySolved: 'Activity solved!'
     },

@@ -303,6 +303,8 @@ window.I18N_DICTS.pt = {
         },
         fail: {
             statusPrefix: 'FALHA: ',
+            hostOffLan: '{d} tem o IP {ip}, que não é da rede de {r} ({net}). O cabo está bom, mas {r} não consegue entregar pacotes a ele: é preciso dar-lhe um IP dessa rede (ou usar DHCP).',
+            logHostOffLan: '{d} ({ip}) está fora da rede de {r} ({net}): o roteador não consegue entregar pacotes a ele.',
             noGateway: '{s} quer chegar em outra rede ({ip}) mas não tem gateway: não sabe por onde sair.',
             logNoGateway: '{s} não tem gateway configurado.',
             gatewayMissing: 'O gateway de {s} ({gw}) não existe nesta rede: o pacote não sabe por onde sair.',
@@ -498,6 +500,7 @@ window.I18N_DICTS.pt = {
         invalidGateway: 'O gateway não é um endereço IPv4 válido.',
         gatewayWrongSubnet: 'O gateway precisa estar na mesma sub-rede do equipamento.',
         ipConfigApplied: 'Configuração de IP aplicada com sucesso.',
+        offLan: '{d}: o IP {ip} não é da rede de {r} ({net}). O cabo conecta, mas ele não conseguirá se comunicar com o roteador nem com o resto da rede.',
         activityLoaded: 'Atividade carregada: {title}',
         activitySolved: 'Atividade resolvida!'
     },

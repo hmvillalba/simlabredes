@@ -1287,9 +1287,10 @@
                 devEl.dataset.id = dev.id;
 
                 const statusColor = getDeviceStatusColor(dev);
+                const mis = lanMismatch(dev), warnTitle = mis ? lanWarnText(dev, mis) : '';
 
                 devEl.innerHTML = `
-                    <div class="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-900 border-2 ${getStatusBorderClass(statusColor)} shadow-lg hover:scale-110 transition-all duration-200">
+                    <div ${warnTitle ? 'title="' + escapeHtml(warnTitle) + '"' : ''} class="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-900 border-2 ${getStatusBorderClass(statusColor)} shadow-lg hover:scale-110 transition-all duration-200">
                         <!-- Status indicator light -->
                         <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full ${statusColor} border-2 border-slate-900 shadow-sm"></span>
                         
@@ -1377,6 +1378,7 @@
             if (dev.type === 'cloud') return 'bg-cyan-500';
             if (dev.type === 'switch' && dev.switchLayer === 'L2') return 'bg-blue-500';
             if (dev.ip.startsWith('169.254')) return 'bg-amber-500'; // APIPA
+            if (lanMismatch(dev)) return 'bg-amber-500'; // IP de otra red que la del router
             if (dev.ip === '0.0.0.0') return 'bg-rose-500';
             return 'bg-emerald-500';
         }
@@ -1482,7 +1484,7 @@
 
                 // Styling cable based on status
                 const isApipa = devA.ip.startsWith('169.254') || devB.ip.startsWith('169.254');
-                line.setAttribute('stroke', isApipa ? '#f59e0b' : '#10b981');
+                line.setAttribute('stroke', (isApipa || lanMismatch(devA) || lanMismatch(devB)) ? '#f59e0b' : '#10b981');
                 line.setAttribute('stroke-width', '3');
                 line.setAttribute('stroke-dasharray', conn.type === 'wifi' ? '6 6' : 'none');
                 line.setAttribute('opacity', '0.85');
@@ -1619,6 +1621,42 @@
         const WIFI_TYPES = ['phone', 'laptop', 'tv'];
         function isWifiClient(d) { return !!d && WIFI_TYPES.includes(d.type); }
         function hasWiredLink(d) { return state.connections.some(c => c.type !== 'wifi' && (c.from === d.id || c.to === d.id)); }
+
+        // ---- Capa 3 vs. capa 1: ¿el equipo está en la red del router al que está conectado? ----
+        // Un cable (o un enlace WiFi) puede estar perfecto y aun así el equipo tener una IP de OTRA red:
+        // el enlace físico está "verde", pero los paquetes no pueden entregarse.
+        const HOST_TYPES = ['pc', 'laptop', 'phone', 'tv'];
+        function netLabel(ip, mask) {
+            const a = ipv4ToInt(ip), m = ipv4ToInt(mask);
+            if (a === null || m === null) return String(ip);
+            return `${intToIpv4((a & m) >>> 0)}/${m.toString(2).replace(/0/g, '').length}`;
+        }
+        // Primer equipo de capa 3 (router, router L3, switch L3) alcanzable pasando solo por switches L2.
+        // Devuelve { gw, ip, mask } con la red que ese equipo sirve hacia este lado.
+        function lanInfo(dev) {
+            if (!dev) return null;
+            const seen = new Set([dev.id]), queue = [dev.id];
+            while (queue.length) {
+                const id = queue.shift();
+                for (const nid of getConnectedNeighbors(id)) {
+                    if (seen.has(nid)) continue; seen.add(nid);
+                    const n = state.devices.find(d => d.id === nid); if (!n) continue;
+                    if (n.type === 'router' || (n.type === 'switch' && n.switchLayer === 'L3')) return { gw: n, ip: n.ip, mask: n.mask };
+                    if (n.type === 'lrouter') { const f = (n.ifaces || {})[id]; return f && f.ip ? { gw: n, ip: f.ip, mask: f.mask } : null; }
+                    if (n.type === 'switch') queue.push(nid);
+                }
+            }
+            return null;
+        }
+        // Solo se advierte para routers de una sola red (router WiFi). Devuelve null si está todo bien.
+        function lanMismatch(dev) {
+            if (!dev || !HOST_TYPES.includes(dev.type)) return null;
+            if (!dev.ip || dev.ip === '0.0.0.0' || dev.ip.startsWith('169.254.') || ipv4ToInt(dev.ip) === null) return null;
+            const info = lanInfo(dev);
+            if (!info || info.gw.type !== 'router' || ipv4ToInt(info.ip) === null) return null;
+            return sameSubnet(dev.ip, info.ip, info.mask) ? null : { router: info.gw, net: netLabel(info.ip, info.mask) };
+        }
+        function lanWarnText(dev, mis) { return I18N.t('toast.offLan', { d: dev.name, ip: dev.ip, r: mis.router.name, net: mis.net }); }
         function reevaluateNetworkState() {
             state.devices.forEach(dev => {
                 if (dev.type === 'router' || dev.type === 'lrouter' || dev.type === 'cloud' || (dev.type === 'switch' && dev.switchLayer === 'L3')) return;
@@ -1635,6 +1673,7 @@
                 }
             });
             renderDevices();
+            if (typeof renderCables === 'function') renderCables();
         }
 
         function validateStaticIp(devId) {
@@ -1651,6 +1690,7 @@
             dev.ip = ip; dev.mask = mask; dev.gateway = gateway || '0.0.0.0';
             reevaluateNetworkState();
             showToast(I18N.t('toast.ipConfigApplied'), 'success');
+            const mis = lanMismatch(dev); if (mis) showToast(lanWarnText(dev, mis), 'warning');
             openDeviceModal(dev.id);
             return true;
         }
@@ -1685,10 +1725,11 @@
             }
             // Internet no enruta direcciones privadas: dos redes distintas no se ven por su IP local (hace falta VPN).
             const isPrivateIp = ip => /^10\./.test(ip) || /^192\.168\./.test(ip) || /^172\.(1[6-9]|2\d|3[01])\./.test(ip);
-            if (path.slice(1, -1).some(id => (state.devices.find(d => d.id === id) || {}).type === 'cloud') && isPrivateIp(dst.ip)) return I18N.t('diag.privateIp', { ip: dst.ip });
+            if ((path.slice(1, -1).some(id => (state.devices.find(d => d.id === id) || {}).type === 'cloud') || (src.type === 'cloud' && dst.type !== 'cloud')) && isPrivateIp(dst.ip)) return I18N.t('diag.privateIp', { ip: dst.ip });
             const s1 = sameSubnet(src.ip, dst.ip, src.mask), s2 = sameSubnet(dst.ip, src.ip, dst.mask);
             if (s1 !== s2) return I18N.t('diag.subnetMismatch', { src: src.name, dst: dst.name });
             if (s1) return null;
+            for (const d of [src, dst]) { const mis = lanMismatch(d); if (mis) return I18N.t('sim.fail.hostOffLan', { d: d.name, ip: d.ip, r: mis.router.name, net: mis.net }); }
             const seq = path.map(id => state.devices.find(d => d.id === id));
             const leg = (a, b, sq) => {
                 if (a.type === 'lrouter') { return routeLookup(a, b.ip) ? null : I18N.t('diag.noRoute', { name: a.name, ip: b.ip }); }
@@ -4061,6 +4102,84 @@
             try { return await runExchange({ protocol: 'ARP', source, destination: hop, path: p, token, pre: nextProtocol }); } finally { arpTargetIp = null; }
         }
 
+        // Diagnóstico de capa 3 común a los dos modos (simple y avanzado).
+        // Devuelve null si el paquete puede ir y volver, o { culprit, msg, log }: el equipo al que hay que
+        // marcarle la falla. No siempre es el que origina el ping (p. ej. si el destino está mal configurado).
+        function l3Diagnosis(source, destination, path, protocol, withRoutes) {
+            if (protocol === 'ARP') return null;
+            const T = (k, v) => I18N.t(k, v);
+            const bad = (culprit, key, logKey, vars, logVars) => ({ culprit, msg: T(key, vars), log: () => T(logKey || key, logVars || vars) });
+            const isInfra = d => d.type === 'router' || d.type === 'lrouter' || d.type === 'switch' || d.type === 'cloud';
+            const devOf = id => state.devices.find(d => d.id === id);
+            const mid = path.slice(1, -1).map(devOf).filter(Boolean);
+            // 1) Un equipo con DHCP que no consiguió dirección (169.254.x.x) no puede hablar con nadie.
+            for (const d of [source, destination]) {
+                if (d.ipMode === 'dhcp' && d.ip && d.ip.startsWith('169.254')) return bad(d, 'diag.noDhcp', null, { name: d.name });
+            }
+            // 2) IP repetida.
+            for (const d of [source, destination]) {
+                const o = state.devices.find(x => x.id !== d.id && x.type !== 'switch' && x.ip === d.ip && x.ip !== '0.0.0.0');
+                if (o) return bad(d, 'diag.duplicateIp', null, { a: d.name, b: o.name, ip: d.ip });
+            }
+            // 3) Internet no enruta direcciones privadas.
+            const isPrivateIp = ip => /^10\./.test(ip) || /^192\.168\./.test(ip) || /^172\.(1[6-9]|2\d|3[01])\./.test(ip);
+            if (isPrivateIp(destination.ip)) {
+                const cloud = mid.find(d => d.type === 'cloud');
+                if (cloud) return bad(cloud, 'diag.privateIp', null, { ip: destination.ip });
+                if (source.type === 'cloud' && destination.type !== 'cloud') return bad(mid.find(d => d.type === 'router' || d.type === 'lrouter') || source, 'diag.privateIp', null, { ip: destination.ip });
+            }
+            // 4) Máscaras que no coinciden: uno cree que están en la misma red y el otro no.
+            const s1 = sameSubnet(source.ip, destination.ip, source.mask), s2 = sameSubnet(destination.ip, source.ip, destination.mask);
+            if (s1 !== s2) {
+                const ref = d => { const i = lanInfo(d); return i ? i.mask : null; };
+                const rs = ref(source), rd = ref(destination);
+                const culprit = (rs && rd && source.mask !== rs && destination.mask === rd) ? source : destination;
+                return bad(culprit, 'diag.subnetMismatch', null, { src: source.name, dst: destination.name });
+            }
+            if (s1) return null; // misma red: se hablan directo
+            // 5) Redes distintas: hace falta salir por un router.
+            for (const d of [source, destination]) {
+                const mis = lanMismatch(d);
+                if (mis) return bad(d, 'sim.fail.hostOffLan', 'sim.fail.logHostOffLan', { d: d.name, ip: d.ip, r: mis.router.name, net: mis.net });
+            }
+            if (!isInfra(source)) {
+                const gwSet = source.gateway && source.gateway !== '0.0.0.0';
+                const gwDev = gwSet ? state.devices.find(d => d.id !== source.id && ownsIp(d, source.gateway)) : null;
+                if (!gwSet) return bad(source, 'sim.fail.noGateway', 'sim.fail.logNoGateway', { s: source.name, ip: destination.ip }, { s: source.name });
+                if (!gwDev) return bad(source, 'sim.fail.gatewayMissing', 'sim.fail.logGatewayMissing', { s: source.name, gw: source.gateway }, { gw: source.gateway });
+                if (!sameSubnet(source.ip, source.gateway, source.mask)) return bad(source, 'sim.fail.gatewayOtherNet', 'sim.fail.logGatewayOtherNet', { gw: source.gateway, s: source.name, ip: source.ip }, { s: source.name });
+                if (!path.includes(gwDev.id)) return bad(source, 'sim.fail.pathNotViaGw', 'sim.fail.logPathNotViaGw', { d: destination.name, gw: gwDev.name }, { gw: gwDev.name });
+            } else if (source.type === 'lrouter') {
+                if (!routeLookup(source, destination.ip)) return bad(source, 'sim.route.notFound', 'sim.log.routeNotFound', { name: source.name, ip: destination.ip });
+            } else if (source.type === 'router') {
+                // Un router de una sola red solo sale hacia Internet (o hacia otro router).
+                const beyond = destination.type === 'cloud' || mid.some(d => d.type === 'cloud' || d.type === 'lrouter' || d.type === 'router');
+                if (!beyond) return bad(source, 'sim.route.notFound', 'sim.log.routeNotFound', { name: source.name, ip: destination.ip });
+            }
+            // El destino recibiría el paquete, pero ¿sabe cómo responder?
+            if ((destination.type === 'pc' || isWifiClient(destination)) && !sameSubnet(destination.ip, source.ip, destination.mask)) {
+                const dg = destination.gateway && destination.gateway !== '0.0.0.0';
+                if (!dg || !state.devices.some(d => d.id !== destination.id && ownsIp(d, destination.gateway))) {
+                    return bad(destination, 'sim.fail.destNoGateway', 'sim.fail.logDestNoGateway', { d: destination.name, reason: dg ? T('sim.fail.reasonGwMissing', { gw: destination.gateway }) : T('sim.fail.reasonNoGw') }, { d: destination.name });
+                }
+            }
+            // Tablas de rutas de los routers del camino (ida y vuelta). En el modo avanzado se comprueban durante la
+            // animación, equipo por equipo; en el modo simple se comprueban acá para que el resultado sea el mismo.
+            if (withRoutes) {
+                const fwd = path.map(devOf);
+                for (const [sq, target] of [[fwd, destination], [fwd.slice().reverse(), source]]) {
+                    for (let j = 1; j < sq.length - 1; j++) {
+                        const n = sq[j]; if (!n || n.type !== 'lrouter') continue;
+                        const hit = routeLookup(n, target.ip);
+                        if (!hit) return bad(n, 'sim.route.notFound', 'sim.log.routeNotFound', { name: n.name, ip: target.ip });
+                        const next = macPair(sq, j).to;
+                        if (hit.kind === 'static' && !ownsIp(next, hit.ref.via)) return bad(n, 'sim.route.wrongNext', 'sim.log.routeWrongNext', { name: n.name, via: hit.ref.via, next: next.name }, { name: n.name });
+                    }
+                }
+            }
+            return null;
+        }
+
         async function startTrafficSimulation() {
             stopTrafficSimulation(false);
             const sourceId = Number(document.getElementById('traffic-source')?.value);
@@ -4112,20 +4231,9 @@
                     return await runExchange({ protocol, source, destination, path: plan.path, token, pre: null });
                 } finally { vpnCtx = null; }
             }
+            const l3 = l3Diagnosis(source, destination, path, protocol, !isAdvanced());
+            if (l3) return simFail(l3.culprit, l3.msg, l3.log, token);
             if (isAdvanced()) {
-                // Diagnóstico de red (capa 3): ¿sabe el origen cómo salir de su red?
-                if (protocol !== 'ARP' && !sameSubnet(source.ip, destination.ip, source.mask)) {
-                    const gwSet = source.gateway && source.gateway !== '0.0.0.0';
-                    const gwDev = gwSet ? state.devices.find(d => d.id !== source.id && ownsIp(d, source.gateway)) : null;
-                    if (!gwSet) return simFail(source, I18N.t('sim.fail.noGateway', { s: source.name, ip: destination.ip }), () => I18N.t('sim.fail.logNoGateway', { s: source.name }), token);
-                    if (!gwDev) return simFail(source, I18N.t('sim.fail.gatewayMissing', { s: source.name, gw: source.gateway }), () => I18N.t('sim.fail.logGatewayMissing', { gw: source.gateway }), token);
-                    if (!sameSubnet(source.ip, source.gateway, source.mask)) return simFail(source, I18N.t('sim.fail.gatewayOtherNet', { gw: source.gateway, s: source.name, ip: source.ip }), () => I18N.t('sim.fail.logGatewayOtherNet', { s: source.name }), token);
-                    if (!path.includes(gwDev.id)) return simFail(source, I18N.t('sim.fail.pathNotViaGw', { d: destination.name, gw: gwDev.name }), () => I18N.t('sim.fail.logPathNotViaGw', { gw: gwDev.name }), token);
-                    if ((destination.type === 'pc' || isWifiClient(destination)) && !sameSubnet(destination.ip, source.ip, destination.mask)) {
-                        const dg = destination.gateway && destination.gateway !== '0.0.0.0';
-                        if (!dg || !state.devices.some(d => d.id !== destination.id && ownsIp(d, destination.gateway))) return simFail(source, I18N.t('sim.fail.destNoGateway', { d: destination.name, reason: dg ? I18N.t('sim.fail.reasonGwMissing', { gw: destination.gateway }) : I18N.t('sim.fail.reasonNoGw') }), () => I18N.t('sim.fail.logDestNoGateway', { d: destination.name }), token);
-                    }
-                }
                 const name = (document.getElementById('traffic-site')?.value || '').trim().toLowerCase() || 'www.ejemplo.com';
                 const recordOf = (dnsDev, host) => (dnsDev.records || []).find(r => r.name === host)?.ip || null;
                 const dnsOff = dnsDev => dnsDev.type === 'dns' && dnsDev.dnsOnline === false;

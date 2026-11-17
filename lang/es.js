@@ -531,6 +531,7 @@ window.I18N_DICTS.es = {
         invalidGateway: 'La puerta de enlace no es una IPv4 válida.',
         gatewayWrongSubnet: 'La puerta de enlace debe estar en la misma subred que el dispositivo.',
         ipConfigApplied: 'Configuración IP aplicada correctamente.',
+        offLan: '{d}: la IP {ip} no es de la red de {r} ({net}). El cable conecta, pero no podrá comunicarse con el router ni con el resto de la red.',
         activityLoaded: 'Actividad cargada: {title}',
         activitySolved: '¡Actividad resuelta!'
     },
@@ -744,6 +745,8 @@ window.I18N_DICTS.es = {
         },
         fail: {
             statusPrefix: 'FALLO: ',
+            hostOffLan: '{d} tiene la IP {ip}, que no es de la red de {r} ({net}). El cable está bien, pero {r} no puede entregarle paquetes: hay que darle una IP de esa red (o usar DHCP).',
+            logHostOffLan: '{d} ({ip}) está fuera de la red de {r} ({net}): el router no puede entregarle paquetes.',
             noGateway: '{s} quiere llegar a otra red ({ip}) pero no tiene puerta de enlace: no sabe por dónde salir.',
             logNoGateway: '{s} no tiene puerta de enlace configurada.',
             gatewayMissing: 'La puerta de enlace de {s} ({gw}) no existe en esta red: el paquete no sabe por dónde salir.',
