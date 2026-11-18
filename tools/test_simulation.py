@@ -9,7 +9,9 @@ Qué comprueba, abriendo index.html con file:// y sin internet:
      el resultado de la simulación (modo simple y avanzado) coincide con diagnose().
   2. Atribución: la falla se le marca al equipo que está mal, no al que origina el ping
      (caso del PC con IP fija en otra red que la del router WiFi).
-  3. Sin errores de JavaScript.
+  3. Actividades de fallas físicas (cable dañado, adaptador WiFi, contraseña): empiezan fallando, el diagnóstico
+     dice la causa correcta, se resuelven con el arreglo indicado y después la simulación funciona.
+  4. Sin errores de JavaScript.
 Sale con código distinto de 0 si algo falla.
 """
 import json, pathlib, sys
@@ -73,6 +75,40 @@ with sync_playwright() as p:
         # el cable/equipo avisa aunque el enlace físico esté bien
         check(pg.evaluate("!!lanMismatch(state.devices.find(d => d.name === 'PC_Alumno_3'))"), 'lanMismatch debe detectar el PC fuera de la red del router')
         check(pg.evaluate("!lanMismatch(state.devices.find(d => d.name === 'Notebook_2'))"), 'lanMismatch no debe marcar la notebook (está bien)')
+
+    # ---- Actividades de fallas físicas: cada una debe empezar fallando, mostrar el diagnóstico correcto y poder resolverse ----
+    NB = "state.devices.find(d => d.name === 'Notebook_2')"; PCA = "state.devices.find(d => d.name === 'PC_Alumno_3')"
+    FIX_CABLE = "{ const c = state.connections.find(c => c.broken); setCableBroken(c.from, c.to, false); }"
+    FIX_WIFI = "setWifiAdapter(%s.id, true)" % NB
+    FIX_IP = "{ const pc = %s; pc.ipMode = 'dhcp'; reevaluateNetworkState(); }" % PCA
+    FIX_PASS = "{ const nb = %s, r = state.devices.find(d => d.type === 'router'); window.prompt = () => r.wifiPass; connectWifi(nb.id, r.wifiSsid); }" % NB
+    ACT_STEPS = {
+        18: [('dañado', FIX_CABLE)],
+        19: [('no es de la red de', FIX_IP)],
+        20: [('adaptador WiFi apagado', FIX_WIFI)],
+        21: [('no está conectado a ninguna red WiFi', FIX_PASS)],
+        22: [('dañado', FIX_CABLE)],
+        23: [('adaptador WiFi apagado', FIX_WIFI), ('dañado', FIX_CABLE), ('no es de la red de', FIX_IP)],
+    }
+    check(pg.evaluate("ACTIVITIES.length") >= 24, 'faltan las actividades nuevas (se esperaban al menos 24)')
+    for mode in ('advanced', 'simple'):
+        for idx, steps in ACT_STEPS.items():
+            goals = pg.evaluate("i => { window.dialogs = 0; const g = ACTIVITIES[i].build(); renderDevices(); renderCables(); updateTrafficSelectors(); document.getElementById('traffic-mode').value = '%s'; applySimMode(false); window.__g = g; return g.map(([a, b]) => [a.id, b.id]); }" % mode, idx)
+            for n, (expected, fix) in enumerate(steps):
+                msg = pg.evaluate("window.__g.map(([a, b]) => diagnose(a, b)).find(Boolean) || null")
+                check(msg is not None and expected in msg, f"[{mode}] actividad {idx + 1}, paso {n + 1}: el diagnóstico debía contener «{expected}» y fue: {msg}")
+                r = pg.evaluate(RUN, [goals[0][0], goals[0][1], 'ICMP'])
+                check(not r['ok'], f"[{mode}] actividad {idx + 1}, paso {n + 1}: la simulación debía fallar antes de arreglar")
+                pg.evaluate(fix)
+            msg = pg.evaluate("window.__g.map(([a, b]) => diagnose(a, b)).find(Boolean) || null")
+            check(msg is None, f"[{mode}] actividad {idx + 1}: tras los arreglos todavía falla: {msg}")
+            r = pg.evaluate(RUN, [goals[0][0], goals[0][1], 'ICMP'])
+            check(r['ok'], f"[{mode}] actividad {idx + 1}: tras los arreglos la simulación debía funcionar")
+        # un cable dañado se marca en rojo en sus dos extremos y el resto de la red sigue andando
+        pg.evaluate("ACTIVITIES[18].build(); renderDevices(); renderCables(); updateTrafficSelectors();")
+        ids = pg.evaluate("Object.fromEntries(state.devices.map(d => [d.name, d.id]))")
+        r = pg.evaluate(RUN, [ids['PC_A1'], ids['PC_A2'], 'ICMP']); check(sorted(r['red']) == sorted(['PC_A2', 'Switch_A']), f"[{mode}] cable dañado: deben marcarse sus dos extremos y fue {r['red']}")
+        r = pg.evaluate(RUN, [ids['PC_A1'], ids['PC_B1'], 'ICMP']); check(r['ok'], f"[{mode}] un cable dañado en PC_A2 no debe afectar a PC_A1 -> PC_B1")
     check(not errs, 'errores de JavaScript: ' + '; '.join(errs[:3]))
     b.close()
 

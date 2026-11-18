@@ -394,6 +394,8 @@ window.I18N_DICTS.es = {
             vpnHint: 'Para llegar a un servidor VPN local desde Internet: UDP, mismo puerto afuera y adentro (WireGuard 51820 · OpenVPN 1194 · ZeroTier 9993), hacia la IP del servidor VPN.'
         },
         wifi: {
+            adapterLabel: 'Adaptador WiFi activado',
+            adapterOffNote: 'El adaptador está apagado: este equipo no ve ni usa ninguna red WiFi.',
             networks: 'Redes WiFi al alcance:',
             none: 'No se encontraron redes WiFi disponibles.',
             signal: 'Señal: Excelente | Canal 6',
@@ -402,6 +404,9 @@ window.I18N_DICTS.es = {
             prompt: 'Contraseña de la red WiFi "{ssid}":'
         },
         conn: {
+            broken: 'Cable dañado',
+            replace: 'Reemplazar cable',
+            damage: 'Dañar cable',
             list: 'Lista de conexiones activas conectadas a los puertos de {name}:',
             none: 'No hay cables o redes inalámbricas conectadas a este dispositivo.',
             linkType: 'Tipo enlace: {type} | IP: {ip}',
@@ -519,6 +524,11 @@ window.I18N_DICTS.es = {
         cleared: 'Área de trabajo limpiada'
     },
     toast: {
+        cableReplaced: 'Cable reemplazado: el enlace vuelve a funcionar.',
+        cableDamaged: 'Cable dañado: el enlace dejó de pasar señal.',
+        wifiAdapterOn: 'Adaptador WiFi activado.',
+        wifiAdapterOff: 'Adaptador WiFi apagado.',
+        wifiAdapterNeeded: 'Enciende primero el adaptador WiFi.',
         deviceAdded: 'Dispositivo agregado: {name}',
         clickCableToDelete: 'Haz clic directamente en la línea del cable para eliminarlo',
         cableSourceSelected: 'Dispositivo origen seleccionado. Elige el destino.',
@@ -536,6 +546,9 @@ window.I18N_DICTS.es = {
         activitySolved: '¡Actividad resuelta!'
     },
     diag: {
+        brokenCable: 'El cable entre {a} y {b} está dañado: no pasa ninguna señal. Hay que reemplazarlo.',
+        wifiOff: '{name} tiene el adaptador WiFi apagado: no puede enviar ni recibir nada.',
+        wifiNotJoined: '{name} no está conectado a ninguna red WiFi (revisa la red y la contraseña).',
         dnsUnreachable: '{src} no llega al servidor DNS ({dns}): {reason}',
         dnsOffline: 'El servidor DNS {dns} está apagado.',
         dnsUnknownName: 'El servidor DNS {dns} no conoce el nombre {site}.',
@@ -686,6 +699,9 @@ window.I18N_DICTS.es = {
         },
         // Carteles (lo que se ve sobre el lienzo) y líneas del log de tráfico.
         cap: {
+            brokenCable: 'El cable entre {a} y {b} está dañado: la señal no pasa.',
+            wifiOff: '{name} tiene el WiFi apagado: no puede comunicarse.',
+            wifiNotJoined: '{name} no está conectado a ninguna red WiFi.',
             arpKnown: '{s} ya conoce la MAC de {hop} ({ip}). Mira su tabla ARP: no necesita preguntar de nuevo.',
             arpUnknown: '{s} no conoce la MAC de {hop}{gw}. Antes de enviar datos, la pregunta con ARP.',
             noPath: '{s} no puede llegar a {d}: no hay cables ni Wi‑Fi que los unan',
@@ -698,6 +714,9 @@ window.I18N_DICTS.es = {
             dnsWrongHost: 'El nombre {name} apunta a {real} ({ip}), no a {dest}. La página se pide a {real}.'
         },
         log: {
+            brokenCable: 'FALLO: cable dañado entre {a} y {b}.',
+            wifiOff: 'FALLO: {name} tiene el adaptador WiFi apagado.',
+            wifiNotJoined: 'FALLO: {name} no está unido a ninguna red WiFi.',
             arpKnown: '{s} usa su tabla ARP (ya conoce a {hop}).',
             arpUnknown: '{s} no tiene a {hop} en su tabla ARP: hace una consulta ARP primero.',
             noPath: 'FALLO: {s} no tiene una ruta de enlaces hasta {d}.',
@@ -922,6 +941,36 @@ window.I18N_DICTS.es = {
                 title: 'La VPN con dos problemas',
                 story: 'La oficina tiene un servidor VPN local. PC_Casa1 y PC_Oficina1 deberían comunicarse por la VPN, pero no lo logran. Esta vez hay más de un problema.',
                 hint: 'Arregla un problema y verifica otra vez: puede quedar otro. Piensa en cómo se llega desde afuera al servidor y en si las dos PC están en la VPN.'
+            },
+            19: {
+                title: 'El cable dañado',
+                story: 'PC_A1 y PC_A2 están conectadas al mismo switch, pero dejaron de verse. Las dos tienen la IP bien configurada.',
+                hint: 'Mira los cables: uno está cortado (línea roja con una ✕). Puedes reemplazarlo desde la pestaña Conexiones del equipo, o quitarlo y conectar uno nuevo.'
+            },
+            20: {
+                title: 'Cable verde, red caída',
+                story: 'PC_Alumno_3 está conectada por cable al router WiFi y Notebook_2 por WiFi. La notebook funciona bien, pero la PC no se comunica con nadie aunque el cable está conectado.',
+                hint: 'Un cable bien conectado no alcanza: la PC también necesita una IP de la red del router. Compara su IP con la del router, o déjala en DHCP.'
+            },
+            21: {
+                title: 'El adaptador apagado',
+                story: 'Notebook_2 estaba conectada al WiFi del aula, pero ahora no se comunica con PC_Alumno_3. Nadie tocó el router.',
+                hint: 'Abre las propiedades de la notebook y mira la pestaña WiFi: el adaptador puede estar apagado.'
+            },
+            22: {
+                title: 'La contraseña del WiFi',
+                story: 'Notebook_2 todavía no logra entrar a la red WiFi del aula, y por eso no se ve con PC_Alumno_3.',
+                hint: 'Busca la contraseña en la configuración WiFi del router y vuelve a conectar la notebook desde su pestaña WiFi.'
+            },
+            23: {
+                title: 'Cable dañado entre routers',
+                story: 'Dos routers unen las redes 192.168.1.0/24 y 192.168.2.0/24 y sus rutas están bien, pero PC_A1 no llega a PC_B1.',
+                hint: 'Sigue el camino de los paquetes, router por router: el enlace entre los dos routers tiene un cable dañado.'
+            },
+            24: {
+                title: 'Tres problemas en el aula',
+                story: 'Notebook_2 no logra hablar con PC_Alumno_3, y no hay una sola causa: los problemas aparecen por capas.',
+                hint: 'Empieza por la capa física (cables y adaptador WiFi) y luego revisa las direcciones IP. Usa el diagnóstico para ver qué falla ahora.'
             }
         }
     },

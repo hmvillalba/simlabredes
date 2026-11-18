@@ -383,6 +383,8 @@ window.I18N_DICTS.fr = {
             vpnHint: 'Pour atteindre un serveur VPN local depuis Internet : UDP, même port dehors et dedans (WireGuard 51820 · OpenVPN 1194 · ZeroTier 9993), vers l’IP du serveur VPN.'
         },
         wifi: {
+            adapterLabel: 'Adaptateur WiFi activé',
+            adapterOffNote: 'L’adaptateur est désactivé : cet appareil ne voit ni n’utilise aucun réseau WiFi.',
             networks: 'Réseaux WiFi à portée :',
             none: 'Aucun réseau WiFi disponible n’a été trouvé.',
             signal: 'Signal : excellent | Canal 6',
@@ -391,6 +393,9 @@ window.I18N_DICTS.fr = {
             prompt: 'Mot de passe du réseau WiFi « {ssid} » :'
         },
         conn: {
+            broken: 'Câble endommagé',
+            replace: 'Remplacer le câble',
+            damage: 'Endommager le câble',
             list: 'Liste des connexions actives reliées aux ports de {name} :',
             none: 'Aucun câble ni réseau sans fil n’est connecté à cet appareil.',
             linkType: 'Type de liaison : {type} | IP : {ip}',
@@ -508,6 +513,11 @@ window.I18N_DICTS.fr = {
         cleared: 'Zone de travail nettoyée'
     },
     toast: {
+        cableReplaced: 'Câble remplacé : la liaison fonctionne à nouveau.',
+        cableDamaged: 'Câble endommagé : la liaison ne transmet plus de signal.',
+        wifiAdapterOn: 'Adaptateur WiFi activé.',
+        wifiAdapterOff: 'Adaptateur WiFi désactivé.',
+        wifiAdapterNeeded: 'Activez d’abord l’adaptateur WiFi.',
         deviceAdded: 'Appareil ajouté : {name}',
         clickCableToDelete: 'Cliquez directement sur la ligne du câble pour le supprimer',
         cableSourceSelected: 'Appareil source sélectionné. Choisissez la destination.',
@@ -525,6 +535,9 @@ window.I18N_DICTS.fr = {
         activitySolved: 'Activité résolue !'
     },
     diag: {
+        brokenCable: 'Le câble entre {a} et {b} est endommagé : aucun signal ne passe. Il faut le remplacer.',
+        wifiOff: '{name} a son adaptateur WiFi désactivé : il ne peut ni envoyer ni recevoir.',
+        wifiNotJoined: '{name} n’est connecté à aucun réseau WiFi (vérifiez le réseau et le mot de passe).',
         dnsUnreachable: '{src} n’atteint pas le serveur DNS ({dns}) : {reason}',
         dnsOffline: 'Le serveur DNS {dns} est éteint.',
         dnsUnknownName: 'Le serveur DNS {dns} ne connaît pas le nom {site}.',
@@ -675,6 +688,9 @@ window.I18N_DICTS.fr = {
         },
         // Messages (ce qu’on voit sur le canevas) et lignes du journal de trafic.
         cap: {
+            brokenCable: 'Le câble entre {a} et {b} est endommagé : le signal ne passe pas.',
+            wifiOff: '{name} a le WiFi désactivé : il ne peut pas communiquer.',
+            wifiNotJoined: '{name} n’est connecté à aucun réseau WiFi.',
             arpKnown: '{s} connaît déjà le MAC de {hop} ({ip}). Regardez sa table ARP : il n’a pas besoin de redemander.',
             arpUnknown: '{s} ne connaît pas le MAC de {hop}{gw}. Avant d’envoyer des données, il le demande avec ARP.',
             noPath: '{s} ne peut pas atteindre {d} : aucun câble ni WiFi ne les relie',
@@ -687,6 +703,9 @@ window.I18N_DICTS.fr = {
             dnsWrongHost: 'Le nom {name} pointe vers {real} ({ip}), pas vers {dest}. La page est demandée à {real}.'
         },
         log: {
+            brokenCable: 'ÉCHEC : câble endommagé entre {a} et {b}.',
+            wifiOff: 'ÉCHEC : {name} a son adaptateur WiFi désactivé.',
+            wifiNotJoined: 'ÉCHEC : {name} n’a rejoint aucun réseau WiFi.',
             arpKnown: '{s} utilise sa table ARP (il connaît déjà {hop}).',
             arpUnknown: '{s} n’a pas {hop} dans sa table ARP : il fait d’abord une requête ARP.',
             noPath: 'ÉCHEC : {s} n’a pas de chemin de liaisons jusqu’à {d}.',
@@ -911,6 +930,36 @@ window.I18N_DICTS.fr = {
                 title: 'Le VPN avec deux problèmes',
                 story: 'Le bureau a un serveur VPN local. PC_Casa1 et PC_Oficina1 devraient communiquer par le VPN, mais ils n’y arrivent pas. Cette fois il y a plus d’un problème.',
                 hint: 'Réparez un problème et vérifiez encore une fois : il peut en rester un autre. Pensez à comment on atteint le serveur depuis l’extérieur et si les deux PC sont dans le VPN.'
+            },
+            19: {
+                title: 'Le câble endommagé',
+                story: 'PC_A1 et PC_A2 sont reliés au même switch, mais ils ne se voient plus. Tous deux ont une IP correcte.',
+                hint: 'Regardez les câbles : l’un est coupé (ligne rouge avec une ✕). Vous pouvez le remplacer depuis l’onglet Connexions de l’appareil, ou le retirer et en brancher un nouveau.'
+            },
+            20: {
+                title: 'Câble vert, réseau en panne',
+                story: 'PC_Alumno_3 est relié par câble au routeur WiFi et Notebook_2 en WiFi. Le portable fonctionne bien, mais le PC ne communique avec personne alors que son câble est branché.',
+                hint: 'Un câble branché ne suffit pas : le PC a aussi besoin d’une IP du réseau du routeur. Comparez son IP à celle du routeur, ou remettez-le en DHCP.'
+            },
+            21: {
+                title: 'L’adaptateur éteint',
+                story: 'Notebook_2 était connecté au WiFi de la salle, mais il ne communique plus avec PC_Alumno_3. Personne n’a touché au routeur.',
+                hint: 'Ouvrez les propriétés du portable et regardez l’onglet WiFi : l’adaptateur est peut-être désactivé.'
+            },
+            22: {
+                title: 'Le mot de passe du WiFi',
+                story: 'Notebook_2 n’arrive toujours pas à rejoindre le WiFi de la salle, et ne peut donc pas joindre PC_Alumno_3.',
+                hint: 'Cherchez le mot de passe dans la configuration WiFi du routeur et reconnectez le portable depuis son onglet WiFi.'
+            },
+            23: {
+                title: 'Câble endommagé entre routeurs',
+                story: 'Deux routeurs relient les réseaux 192.168.1.0/24 et 192.168.2.0/24 et leurs routes sont correctes, mais PC_A1 n’atteint pas PC_B1.',
+                hint: 'Suivez le chemin des paquets, routeur par routeur : la liaison entre les deux routeurs a un câble endommagé.'
+            },
+            24: {
+                title: 'Trois problèmes dans la salle',
+                story: 'Notebook_2 n’arrive pas à parler à PC_Alumno_3, et il y a plusieurs causes : les problèmes apparaissent couche par couche.',
+                hint: 'Commencez par la couche physique (câbles et adaptateur WiFi), puis vérifiez les adresses IP. Utilisez le diagnostic pour voir ce qui échoue maintenant.'
             }
         }
     },

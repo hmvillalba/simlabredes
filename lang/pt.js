@@ -244,6 +244,9 @@ window.I18N_DICTS.pt = {
         },
         // Avisos sobre a tela e linhas do log de tráfego.
         cap: {
+            brokenCable: 'O cabo entre {a} e {b} está danificado: o sinal não passa.',
+            wifiOff: '{name} está com o WiFi desligado: não consegue se comunicar.',
+            wifiNotJoined: '{name} não está conectado a nenhuma rede WiFi.',
             arpKnown: '{s} já conhece o MAC de {hop} ({ip}). Veja a tabela ARP dele: não precisa perguntar de novo.',
             arpUnknown: '{s} não conhece o MAC de {hop}{gw}. Antes de enviar dados, ele pergunta com ARP.',
             noPath: '{s} não consegue chegar em {d}: não há cabos nem WiFi ligando os dois',
@@ -256,6 +259,9 @@ window.I18N_DICTS.pt = {
             dnsWrongHost: 'O nome {name} aponta para {real} ({ip}), não para {dest}. A página é pedida a {real}.'
         },
         log: {
+            brokenCable: 'FALHA: cabo danificado entre {a} e {b}.',
+            wifiOff: 'FALHA: {name} está com o adaptador WiFi desligado.',
+            wifiNotJoined: 'FALHA: {name} não entrou em nenhuma rede WiFi.',
             arpKnown: '{s} usa sua tabela ARP (já conhece {hop}).',
             arpUnknown: '{s} não tem {hop} na tabela ARP: faz uma consulta ARP antes.',
             noPath: 'FALHA: {s} não tem rota de enlaces até {d}.',
@@ -482,12 +488,47 @@ window.I18N_DICTS.pt = {
                 title: 'A VPN com dois problemas',
                 story: 'O escritório tem um servidor VPN local. PC_Casa1 e PC_Oficina1 deveriam se comunicar pela VPN, mas não conseguem. Dessa vez há mais de um problema.',
                 hint: 'Conserte um problema e verifique de novo: pode sobrar outro. Pense em como se chega de fora ao servidor e se os dois PCs estão na VPN.'
+            },
+            19: {
+                title: 'O cabo danificado',
+                story: 'PC_A1 e PC_A2 estão ligados ao mesmo switch, mas deixaram de se ver. Ambos têm o IP bem configurado.',
+                hint: 'Olhe os cabos: um está cortado (linha vermelha com um ✕). Você pode substituí-lo na aba Conexões do equipamento, ou removê-lo e conectar um novo.'
+            },
+            20: {
+                title: 'Cabo verde, rede fora do ar',
+                story: 'PC_Alumno_3 está ligado por cabo ao roteador WiFi e Notebook_2 por WiFi. O notebook funciona bem, mas o PC não se comunica com ninguém, embora o cabo esteja conectado.',
+                hint: 'Um cabo bem conectado não basta: o PC também precisa de um IP da rede do roteador. Compare o IP dele com o do roteador, ou deixe-o em DHCP.'
+            },
+            21: {
+                title: 'O adaptador desligado',
+                story: 'Notebook_2 estava conectado ao WiFi da sala, mas agora não se comunica com PC_Alumno_3. Ninguém mexeu no roteador.',
+                hint: 'Abra as propriedades do notebook e veja a aba WiFi: o adaptador pode estar desligado.'
+            },
+            22: {
+                title: 'A senha do WiFi',
+                story: 'Notebook_2 ainda não consegue entrar na rede WiFi da sala, e por isso não se comunica com PC_Alumno_3.',
+                hint: 'Procure a senha na configuração WiFi do roteador e reconecte o notebook pela aba WiFi dele.'
+            },
+            23: {
+                title: 'Cabo danificado entre roteadores',
+                story: 'Dois roteadores unem as redes 192.168.1.0/24 e 192.168.2.0/24 e as rotas estão certas, mas PC_A1 não chega a PC_B1.',
+                hint: 'Siga o caminho dos pacotes, roteador por roteador: o enlace entre os dois roteadores tem um cabo danificado.'
+            },
+            24: {
+                title: 'Três problemas na sala',
+                story: 'Notebook_2 não consegue falar com PC_Alumno_3, e não há uma causa só: os problemas aparecem por camadas.',
+                hint: 'Comece pela camada física (cabos e adaptador WiFi) e depois confira os endereços IP. Use o diagnóstico para ver o que falha agora.'
             }
         }
     },
 
     // Fase 3 · zona 4 — mensagens dinâmicas (toasts e diagnósticos):
     toast: {
+        cableReplaced: 'Cabo substituído: o enlace voltou a funcionar.',
+        cableDamaged: 'Cabo danificado: o enlace deixou de passar sinal.',
+        wifiAdapterOn: 'Adaptador WiFi ligado.',
+        wifiAdapterOff: 'Adaptador WiFi desligado.',
+        wifiAdapterNeeded: 'Ligue primeiro o adaptador WiFi.',
         deviceAdded: 'Equipamento adicionado: {name}',
         clickCableToDelete: 'Clique direto na linha do cabo para excluí-lo',
         cableSourceSelected: 'Equipamento de origem selecionado. Escolha o destino.',
@@ -505,6 +546,9 @@ window.I18N_DICTS.pt = {
         activitySolved: 'Atividade resolvida!'
     },
     diag: {
+        brokenCable: 'O cabo entre {a} e {b} está danificado: nenhum sinal passa. É preciso substituí-lo.',
+        wifiOff: '{name} está com o adaptador WiFi desligado: não consegue enviar nem receber nada.',
+        wifiNotJoined: '{name} não está conectado a nenhuma rede WiFi (verifique a rede e a senha).',
         dnsUnreachable: '{src} não chega ao servidor DNS ({dns}): {reason}',
         dnsOffline: 'O servidor DNS {dns} está desligado.',
         dnsUnknownName: 'O servidor DNS {dns} não conhece o nome {site}.',
@@ -805,6 +849,8 @@ window.I18N_DICTS.pt = {
             vpnHint: 'Para chegar a um servidor VPN local pela Internet: UDP, a mesma porta fora e dentro (WireGuard 51820 · OpenVPN 1194 · ZeroTier 9993), apontando para o IP do servidor VPN.'
         },
         wifi: {
+            adapterLabel: 'Adaptador WiFi ligado',
+            adapterOffNote: 'O adaptador está desligado: este equipamento não vê nem usa nenhuma rede WiFi.',
             networks: 'Redes WiFi ao alcance:',
             none: 'Nenhuma rede WiFi disponível foi encontrada.',
             signal: 'Sinal: Excelente | Canal 6',
@@ -813,6 +859,9 @@ window.I18N_DICTS.pt = {
             prompt: 'Senha da rede WiFi "{ssid}":'
         },
         conn: {
+            broken: 'Cabo danificado',
+            replace: 'Substituir cabo',
+            damage: 'Danificar cabo',
             list: 'Lista de conexões ativas ligadas às portas de {name}:',
             none: 'Não há cabos nem redes sem fio conectadas a este dispositivo.',
             linkType: 'Tipo de enlace: {type} | IP: {ip}',

@@ -1377,6 +1377,8 @@
         function getDeviceStatusColor(dev) {
             if (dev.type === 'cloud') return 'bg-cyan-500';
             if (dev.type === 'switch' && dev.switchLayer === 'L2') return 'bg-blue-500';
+            if (isWifiClient(dev) && dev.wifiEnabled === false && !hasWiredLink(dev)) return 'bg-rose-500'; // adaptador WiFi apagado
+            if (state.connections.some(c => c.broken && (c.from === dev.id || c.to === dev.id)) && getConnectedNeighbors(dev.id).length === 0) return 'bg-rose-500'; // sin enlace
             if (dev.ip.startsWith('169.254')) return 'bg-amber-500'; // APIPA
             if (lanMismatch(dev)) return 'bg-amber-500'; // IP de otra red que la del router
             if (dev.ip === '0.0.0.0') return 'bg-rose-500';
@@ -1408,7 +1410,12 @@
                     (c.from === deviceId && c.to === state.cableSourceId)
                 );
 
-                if (exists) {
+                const old = state.connections.find(c => (c.from === state.cableSourceId && c.to === deviceId) || (c.from === deviceId && c.to === state.cableSourceId));
+                if (exists && old && old.broken) {
+                    delete old.broken;
+                    showToast(I18N.t('toast.cableReplaced'), "success");
+                    reevaluateNetworkState();
+                } else if (exists) {
                     showToast(I18N.t('toast.linkExists'), "warning");
                 } else {
                     state.connections.push({
@@ -1484,9 +1491,11 @@
 
                 // Styling cable based on status
                 const isApipa = devA.ip.startsWith('169.254') || devB.ip.startsWith('169.254');
-                line.setAttribute('stroke', (isApipa || lanMismatch(devA) || lanMismatch(devB)) ? '#f59e0b' : '#10b981');
+                const wifiOff = conn.type === 'wifi' && [devA, devB].some(d => isWifiClient(d) && d.wifiEnabled === false);
+                const baseColor = conn.broken ? '#f43f5e' : wifiOff ? '#64748b' : ((isApipa || lanMismatch(devA) || lanMismatch(devB)) ? '#f59e0b' : '#10b981');
+                line.setAttribute('stroke', baseColor);
                 line.setAttribute('stroke-width', '3');
-                line.setAttribute('stroke-dasharray', conn.type === 'wifi' ? '6 6' : 'none');
+                line.setAttribute('stroke-dasharray', conn.broken ? '2 8' : conn.type === 'wifi' ? '6 6' : 'none');
                 line.setAttribute('opacity', '0.85');
                 line.setAttribute('class', 'transition-all duration-150');
 
@@ -1498,7 +1507,7 @@
 
                 group.addEventListener('mouseleave', () => {
                     line.setAttribute('stroke-width', '3');
-                    line.setAttribute('stroke', isApipa ? '#f59e0b' : '#10b981');
+                    line.setAttribute('stroke', baseColor);
                 });
 
                 group.addEventListener('click', (e) => {
@@ -1510,6 +1519,21 @@
 
                 group.appendChild(hitArea);
                 group.appendChild(line);
+                if (conn.broken) {
+                    // marca ✕ en el medio del cable dañado
+                    const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+                    for (const [dx1, dy1, dx2, dy2] of [[-7, -7, 7, 7], [-7, 7, 7, -7]]) {
+                        const cross = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        cross.setAttribute('x1', mx + dx1); cross.setAttribute('y1', my + dy1); cross.setAttribute('x2', mx + dx2); cross.setAttribute('y2', my + dy2);
+                        cross.setAttribute('stroke', '#f43f5e'); cross.setAttribute('stroke-width', '3'); cross.setAttribute('stroke-linecap', 'round'); cross.setAttribute('pointer-events', 'none');
+                        group.appendChild(cross);
+                    }
+                }
+                if (conn.broken || wifiOff) {
+                    const tip = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+                    tip.textContent = conn.broken ? I18N.t('dev.conn.broken') : I18N.t('dev.wifi.adapterOffNote');
+                    group.appendChild(tip);
+                }
                 svgCanvas.appendChild(group);
             });
         }
@@ -1555,14 +1579,17 @@
             return addr !== network && addr !== broadcast;
         }
 
-        function getConnectedNeighbors(devId) {
+        // opts.all = true ignora las fallas físicas (cable dañado, adaptador WiFi apagado): sirve para diagnosticarlas.
+        function getConnectedNeighbors(devId, opts) {
+            const all = !!(opts && opts.all);
             return state.connections.filter(c => c.from === devId || c.to === devId).filter(c => {
+                if (c.broken && !all) return false;
                 if (c.type !== 'wifi') return true;
                 const a = state.devices.find(d => d.id === c.from);
                 const b = state.devices.find(d => d.id === c.to);
                 const client = isWifiClient(a) ? a : (isWifiClient(b) ? b : null);
                 const ap = a && a.type === 'router' ? a : (b && b.type === 'router' ? b : null);
-                return !client || !ap || (client.wifiAuthenticated && client.connectedWifiSsid === ap.wifiSsid);
+                return !client || !ap || (client.wifiAuthenticated && client.connectedWifiSsid === ap.wifiSsid && (all || client.wifiEnabled !== false));
             }).map(c => c.from === devId ? c.to : c.from);
         }
 
@@ -1620,7 +1647,7 @@
 
         const WIFI_TYPES = ['phone', 'laptop', 'tv'];
         function isWifiClient(d) { return !!d && WIFI_TYPES.includes(d.type); }
-        function hasWiredLink(d) { return state.connections.some(c => c.type !== 'wifi' && (c.from === d.id || c.to === d.id)); }
+        function hasWiredLink(d) { return state.connections.some(c => c.type !== 'wifi' && !c.broken && (c.from === d.id || c.to === d.id)); }
 
         // ---- Capa 3 vs. capa 1: ¿el equipo está en la red del router al que está conectado? ----
         // Un cable (o un enlace WiFi) puede estar perfecto y aun así el equipo tener una IP de OTRA red:
@@ -1714,10 +1741,11 @@
                     if (owner.id !== dst.id) return I18N.t('diag.nameWrongHost', { site: site, owner: owner.name, ip: ip, dst: dst.name });
                 }
             }
+            const path = findConnectionPath(src.id, dst.id);
+            if (!path) { const pf = physicalFault(src, dst); if (pf) return physicalFaultText(pf); }
             for (const d of [src, dst]) {
                 if (d.ipMode === 'dhcp' && d.ip && d.ip.startsWith('169.254')) return I18N.t('diag.noDhcp', { name: d.name });
             }
-            const path = findConnectionPath(src.id, dst.id);
             if (!path) return I18N.t('diag.noPhysicalPath', { src: src.name, dst: dst.name });
             for (const d of [src, dst]) {
                 const o = state.devices.find(x => x.id !== d.id && x.type !== 'switch' && x.ip === d.ip && x.ip !== '0.0.0.0');
@@ -1759,6 +1787,23 @@
             renderDevices(); renderCables();
             return { n, dns };
         }
+        // Aula con un router WiFi, una PC por cable y una notebook por WiFi (base de varias actividades de fallas).
+        function connBetween(a, b) { return state.connections.find(c => (c.from === a && c.to === b) || (c.from === b && c.to === a)); }
+        function buildWifiClassroom(o) {
+            o = o || {};
+            if (typeof clearNetworkTables === 'function') clearNetworkTables(false);
+            state.devices = []; state.connections = []; state.nextDeviceId = 1;
+            const r = createDevice('router', 300, 90); r.name = 'Router_WiFi_1';
+            const pc = createDevice('pc', 120, 300); pc.name = 'PC_Alumno_3';
+            const nb = createDevice('laptop', 520, 260); nb.name = 'Notebook_2';
+            state.connections.push(Object.assign({ from: r.id, to: pc.id, type: 'ethernet' }, o.cableBroken ? { broken: true } : {}));
+            if (o.nbJoined !== false) { state.connections.push({ from: r.id, to: nb.id, type: 'wifi' }); nb.connectedWifiSsid = r.wifiSsid; nb.wifiAuthenticated = true; }
+            if (o.nbEnabled === false) nb.wifiEnabled = false;
+            if (o.pcIp) { pc.ipMode = 'static'; pc.ip = o.pcIp; pc.mask = '255.255.255.0'; pc.gateway = o.pcGw || '0.0.0.0'; }
+            reevaluateNetworkState();
+            return { r, pc, nb };
+        }
+
         const ACTIVITIES = [
             {
                 lvl: 'Fácil', title: 'act.builtin.1.title', story: 'act.builtin.1.story', hint: 'act.builtin.1.hint',
@@ -1857,6 +1902,36 @@
             {
                 lvl: 'Difícil', title: 'act.builtin.18.title', story: 'act.builtin.18.story', hint: 'act.builtin.18.hint',
                 build() { loadDemoVpn('local'); const L = window.__vpnLab; delete L.b1.vpn; renderDevices(); return [[L.a1, L.b1, '@vpn']]; }
+            },
+            {
+                lvl: 'Fácil', title: 'act.builtin.19.title', story: 'act.builtin.19.story', hint: 'act.builtin.19.hint',
+                build() { const n = loadDemoTwoNetworks(); const c = connBetween(n.swA.id, n.a2.id); if (c) c.broken = true; reevaluateNetworkState(); return [[n.a1, n.a2]]; }
+            },
+            {
+                lvl: 'Fácil', title: 'act.builtin.20.title', story: 'act.builtin.20.story', hint: 'act.builtin.20.hint',
+                build() { const L = buildWifiClassroom({ pcIp: '192.168.0.11', pcGw: '0.0.0.0' }); return [[L.pc, L.nb]]; }
+            },
+            {
+                lvl: 'Fácil', title: 'act.builtin.21.title', story: 'act.builtin.21.story', hint: 'act.builtin.21.hint',
+                build() { const L = buildWifiClassroom({ nbEnabled: false }); return [[L.nb, L.pc]]; }
+            },
+            {
+                lvl: 'Medio', title: 'act.builtin.22.title', story: 'act.builtin.22.story', hint: 'act.builtin.22.hint',
+                build() { const L = buildWifiClassroom({ nbJoined: false }); return [[L.nb, L.pc]]; }
+            },
+            {
+                lvl: 'Medio', title: 'act.builtin.23.title', story: 'act.builtin.23.story', hint: 'act.builtin.23.hint',
+                build() {
+                    const goals = ACTIVITIES[5].build(); // la red de dos routers...
+                    const r1 = state.devices.find(d => d.name === 'Router_1'), r2 = state.devices.find(d => d.name === 'Router_2');
+                    r2.routes = [{ net: '192.168.1.0', prefix: 24, via: '10.0.0.1' }]; // ...ahora con las rutas bien
+                    const c = connBetween(r1.id, r2.id); if (c) c.broken = true; // pero con el cable entre routers dañado
+                    reevaluateNetworkState(); return goals;
+                }
+            },
+            {
+                lvl: 'Difícil', title: 'act.builtin.24.title', story: 'act.builtin.24.story', hint: 'act.builtin.24.hint',
+                build() { const L = buildWifiClassroom({ pcIp: '192.168.0.11', pcGw: '0.0.0.0', nbEnabled: false, cableBroken: true }); return [[L.nb, L.pc]]; }
             }
         ];
         let currentActivity = null;
@@ -2337,6 +2412,8 @@
             const routers = state.devices.filter(d => d.type === 'router');
             let html = `
                 <div class="space-y-3 text-xs">
+                    <label class="flex items-center gap-2 text-slate-200 cursor-pointer"><input id="wifi-adapter" type="checkbox" ${dev.wifiEnabled !== false ? 'checked' : ''} onchange="setWifiAdapter(${dev.id}, this.checked)"> ${I18N.t('dev.wifi.adapterLabel')}</label>
+                    ${dev.wifiEnabled === false ? `<p class="text-amber-400">${I18N.t('dev.wifi.adapterOffNote')}</p>` : ''}
                     <p class="text-slate-400">${I18N.t('dev.wifi.networks')}</p>
                     <div class="space-y-2">
             `;
@@ -2392,10 +2469,13 @@
                                         <i class="${getDeviceIconClass(targetDev)}"></i>
                                     </div>
                                     <div>
-                                        <span class="text-xs font-bold text-slate-200 block">${targetDev.name}</span>
+                                        <span class="text-xs font-bold text-slate-200 block">${targetDev.name}${conn.broken ? ' <span class="text-rose-400 font-semibold">· ' + I18N.t('dev.conn.broken') + '</span>' : ''}</span>
                                         <span class="text-[10px] text-slate-400">${I18N.t('dev.conn.linkType', { type: conn.type === 'wifi' ? I18N.t('dev.conn.typeWifi') : I18N.t('dev.conn.typeEthernet'), ip: targetDev.ip })}</span>
                                     </div>
                                 </div>
+                                ${conn.type === 'wifi' ? '' : (conn.broken
+                            ? `<button onclick="setCableBroken(${conn.from}, ${conn.to}, false); openDeviceModal(${dev.id});" class="px-3 py-1 mr-2 bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-800 text-emerald-300 rounded text-xs transition"><i class="fa-solid fa-rotate text-[10px]"></i> ${I18N.t('dev.conn.replace')}</button>`
+                            : `<button onclick="setCableBroken(${conn.from}, ${conn.to}, true); openDeviceModal(${dev.id});" class="px-3 py-1 mr-2 bg-amber-950/60 hover:bg-amber-900 border border-amber-800 text-amber-300 rounded text-xs transition"><i class="fa-solid fa-bolt text-[10px]"></i> ${I18N.t('dev.conn.damage')}</button>`)}
                                 <button onclick="deleteCable(${conn.from}, ${conn.to}); openDeviceModal(${dev.id});" class="px-3 py-1 bg-rose-950/60 hover:bg-rose-900 border border-rose-800 text-rose-300 rounded text-xs transition flex items-center space-x-1">
                                     <i class="fa-solid fa-scissors text-[10px]"></i>
                                     <span>${I18N.t('dev.conn.disconnect')}</span>
@@ -2445,6 +2525,7 @@
             const dev = state.devices.find(d => d.id == devId);
             const router = state.devices.find(d => d.wifiSsid === ssid);
             if (!dev || !router) return;
+            if (dev.wifiEnabled === false) { showToast(I18N.t('toast.wifiAdapterNeeded'), 'warning'); return; }
             const password = prompt(I18N.t('dev.wifi.prompt', { ssid: ssid }));
             if (password === null) return;
             if (password !== router.wifiPass) {
@@ -2926,12 +3007,12 @@
             while (log.children.length > 20) log.firstElementChild.remove();
             log.scrollTop = log.scrollHeight;
         }
-        function findConnectionPath(sourceId, destinationId) {
+        function findConnectionPath(sourceId, destinationId, opts) {
             const queue = [sourceId], previous = new Map([[sourceId, null]]);
             while (queue.length) {
                 const current = queue.shift();
                 if (current === destinationId) break;
-                for (const next of getConnectedNeighbors(current)) {
+                for (const next of getConnectedNeighbors(current, opts)) {
                     if (!previous.has(next)) { previous.set(next, current); queue.push(next); }
                 }
             }
@@ -2939,6 +3020,44 @@
             const path = [];
             for (let node = destinationId; node !== null; node = previous.get(node)) path.unshift(node);
             return path;
+        }
+        // Si no hay camino, ¿se debe a una falla física concreta? (adaptador WiFi apagado, WiFi sin unir, cable dañado)
+        function physicalFault(src, dst) {
+            const dv = id => state.devices.find(d => d.id === id);
+            const hasCable = d => state.connections.some(c => c.type !== 'wifi' && (c.from === d.id || c.to === d.id));
+            const pureWifi = d => isWifiClient(d) && !hasCable(d);
+            const joined = d => !!(d.wifiAuthenticated && state.devices.some(x => x.type === 'router' && x.wifiSsid === d.connectedWifiSsid));
+            for (const d of [src, dst]) if (pureWifi(d) && d.wifiEnabled === false) return { type: 'wifiOff', dev: d };
+            for (const d of [src, dst]) if (pureWifi(d) && !joined(d)) return { type: 'wifiNotJoined', dev: d };
+            const p = findConnectionPath(src.id, dst.id, { all: true });
+            if (!p) return null;
+            for (let i = 0; i < p.length - 1; i++) {
+                const c = state.connections.find(c => (c.from === p[i] && c.to === p[i + 1]) || (c.to === p[i] && c.from === p[i + 1]));
+                if (!c) continue;
+                if (c.broken) return { type: 'broken', a: dv(p[i]), b: dv(p[i + 1]) };
+                if (c.type === 'wifi') { const cl = [dv(c.from), dv(c.to)].find(isWifiClient); if (cl && cl.wifiEnabled === false) return { type: 'wifiOff', dev: cl }; }
+            }
+            return null;
+        }
+        function physicalFaultText(pf) {
+            return pf.type === 'broken' ? I18N.t('diag.brokenCable', { a: pf.a.name, b: pf.b.name })
+                : pf.type === 'wifiOff' ? I18N.t('diag.wifiOff', { name: pf.dev.name })
+                    : I18N.t('diag.wifiNotJoined', { name: pf.dev.name });
+        }
+        function setCableBroken(fromId, toId, broken) {
+            const c = state.connections.find(c => (c.from === fromId && c.to === toId) || (c.from === toId && c.to === fromId));
+            if (!c || c.type === 'wifi') return false;
+            if (broken) c.broken = true; else delete c.broken;
+            reevaluateNetworkState();
+            showToast(I18N.t(broken ? 'toast.cableDamaged' : 'toast.cableReplaced'), broken ? 'warning' : 'success');
+            return true;
+        }
+        function setWifiAdapter(devId, on) {
+            const dev = state.devices.find(d => d.id == devId); if (!dev) return;
+            if (on) delete dev.wifiEnabled; else dev.wifiEnabled = false;
+            reevaluateNetworkState();
+            showToast(I18N.t(on ? 'toast.wifiAdapterOn' : 'toast.wifiAdapterOff'), on ? 'success' : 'warning');
+            openDeviceModal(dev.id);
         }
         function getConnectionBetween(a, b) {
             return state.connections.find(c => (c.from === a && c.to === b) || (c.from === b && c.to === a));
@@ -4197,11 +4316,19 @@
             trafficPaused = false;
             const pb = document.getElementById('traffic-pause'); if (pb) pb.innerHTML = '<i class="fa-solid fa-pause"></i>';
             if (!path) {
-                const msg = I18N.t('sim.cap.noPath', { s: source.name, d: destination.name });
-                if (status) status.textContent = I18N.t('sim.status.noPath');
-                addTrafficLog(() => I18N.t('sim.log.noPath', { s: source.name, d: destination.name }), 'text-rose-400');
+                const pf = physicalFault(source, destination);
+                const msg = !pf ? I18N.t('sim.cap.noPath', { s: source.name, d: destination.name })
+                    : pf.type === 'broken' ? I18N.t('sim.cap.brokenCable', { a: pf.a.name, b: pf.b.name })
+                        : pf.type === 'wifiOff' ? I18N.t('sim.cap.wifiOff', { name: pf.dev.name })
+                            : I18N.t('sim.cap.wifiNotJoined', { name: pf.dev.name });
+                if (status) status.textContent = pf ? I18N.t('sim.fail.statusPrefix') + msg : I18N.t('sim.status.noPath');
+                addTrafficLog(() => !pf ? I18N.t('sim.log.noPath', { s: source.name, d: destination.name })
+                    : pf.type === 'broken' ? I18N.t('sim.log.brokenCable', { a: pf.a.name, b: pf.b.name })
+                        : pf.type === 'wifiOff' ? I18N.t('sim.log.wifiOff', { name: pf.dev.name })
+                            : I18N.t('sim.log.wifiNotJoined', { name: pf.dev.name }), 'text-rose-400');
                 showTrafficCaption(msg, 0, 0, 'fail');
-                pulseDevice(source, '#f43f5e', 2400, token).then(ok => { if (ok) hideTrafficCaption(); });
+                if (pf && pf.type === 'broken') pulseDevice(pf.b, '#f43f5e', 2400, token);
+                pulseDevice(!pf ? source : pf.type === 'broken' ? pf.a : pf.dev, '#f43f5e', 2400, token).then(ok => { if (ok) hideTrafficCaption(); });
                 showToast(I18N.t('sim.toast.noPath'), 'warning');
                 return;
             }

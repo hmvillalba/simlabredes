@@ -245,6 +245,9 @@ window.I18N_DICTS.en = {
         },
         // Cards shown over the canvas and lines of the traffic log.
         cap: {
+            brokenCable: 'The cable between {a} and {b} is damaged: the signal does not get through.',
+            wifiOff: '{name} has WiFi turned off: it cannot communicate.',
+            wifiNotJoined: '{name} is not connected to any WiFi network.',
             arpKnown: '{s} already knows the MAC of {hop} ({ip}). Look at its ARP table: it does not need to ask again.',
             arpUnknown: '{s} does not know the MAC of {hop}{gw}. Before sending data, it asks with ARP.',
             noPath: '{s} cannot reach {d}: there are no cables or WiFi links joining them',
@@ -257,6 +260,9 @@ window.I18N_DICTS.en = {
             dnsWrongHost: 'The name {name} points to {real} ({ip}), not to {dest}. The page is requested from {real}.'
         },
         log: {
+            brokenCable: 'FAIL: damaged cable between {a} and {b}.',
+            wifiOff: 'FAIL: {name} has its WiFi adapter turned off.',
+            wifiNotJoined: 'FAIL: {name} has not joined any WiFi network.',
             arpKnown: '{s} uses its ARP table (it already knows {hop}).',
             arpUnknown: '{s} does not have {hop} in its ARP table: it queries ARP first.',
             noPath: 'FAIL: {s} has no link route to {d}.',
@@ -483,12 +489,47 @@ window.I18N_DICTS.en = {
                 title: 'The VPN with two problems',
                 story: 'The office has a local VPN server. PC_Casa1 and PC_Oficina1 should talk through the VPN, but they cannot. This time there is more than one problem.',
                 hint: 'Fix one problem and verify again: there may be another one. Think about how to reach the server from outside and whether both PCs are in the VPN.'
+            },
+            19: {
+                title: 'The damaged cable',
+                story: 'PC_A1 and PC_A2 are connected to the same switch, but they stopped seeing each other. Both have the right IP settings.',
+                hint: 'Look at the cables: one is cut (red line with an ✕). You can replace it from the device’s Connections tab, or remove it and connect a new one.'
+            },
+            20: {
+                title: 'Green cable, dead network',
+                story: 'PC_Alumno_3 is wired to the WiFi router and Notebook_2 is on WiFi. The notebook works fine, but the PC cannot talk to anyone even though its cable is plugged in.',
+                hint: 'A cable that is plugged in is not enough: the PC also needs an IP address from the router’s network. Compare its IP with the router’s, or set it back to DHCP.'
+            },
+            21: {
+                title: 'The switched-off adapter',
+                story: 'Notebook_2 was connected to the classroom WiFi, but now it cannot reach PC_Alumno_3. Nobody touched the router.',
+                hint: 'Open the notebook’s properties and look at the WiFi tab: the adapter may be turned off.'
+            },
+            22: {
+                title: 'The WiFi password',
+                story: 'Notebook_2 still cannot join the classroom WiFi, so it cannot reach PC_Alumno_3.',
+                hint: 'Find the password in the router’s WiFi settings and reconnect the notebook from its WiFi tab.'
+            },
+            23: {
+                title: 'Damaged cable between routers',
+                story: 'Two routers join the 192.168.1.0/24 and 192.168.2.0/24 networks and their routes are correct, but PC_A1 cannot reach PC_B1.',
+                hint: 'Follow the packets router by router: the link between the two routers has a damaged cable.'
+            },
+            24: {
+                title: 'Three problems in the classroom',
+                story: 'Notebook_2 cannot talk to PC_Alumno_3, and there is more than one cause: the problems show up layer by layer.',
+                hint: 'Start with the physical layer (cables and WiFi adapter), then check the IP addresses. Use the diagnosis to see what is failing now.'
             }
         }
     },
 
     // Fase 3 · zona 4 — mensajes dinámicos (toasts y diagnósticos):
     toast: {
+        cableReplaced: 'Cable replaced: the link works again.',
+        cableDamaged: 'Cable damaged: the link no longer carries a signal.',
+        wifiAdapterOn: 'WiFi adapter turned on.',
+        wifiAdapterOff: 'WiFi adapter turned off.',
+        wifiAdapterNeeded: 'Turn on the WiFi adapter first.',
         deviceAdded: 'Device added: {name}',
         clickCableToDelete: 'Click directly on the cable line to delete it',
         cableSourceSelected: 'Source device selected. Choose the destination.',
@@ -506,6 +547,9 @@ window.I18N_DICTS.en = {
         activitySolved: 'Activity solved!'
     },
     diag: {
+        brokenCable: 'The cable between {a} and {b} is damaged: no signal gets through. It needs to be replaced.',
+        wifiOff: '{name} has its WiFi adapter turned off: it cannot send or receive anything.',
+        wifiNotJoined: '{name} is not connected to any WiFi network (check the network and the password).',
         dnsUnreachable: '{src} cannot reach the DNS server ({dns}): {reason}',
         dnsOffline: 'The DNS server {dns} is off.',
         dnsUnknownName: 'The DNS server {dns} does not know the name {site}.',
@@ -640,6 +684,8 @@ window.I18N_DICTS.en = {
             vpnHint: 'To reach a local VPN server from the Internet: UDP, same port outside and inside (WireGuard 51820 · OpenVPN 1194 · ZeroTier 9993), towards the IP of the VPN server.'
         },
         wifi: {
+            adapterLabel: 'WiFi adapter on',
+            adapterOffNote: 'The adapter is off: this device cannot see or use any WiFi network.',
             networks: 'WiFi networks in range:',
             none: 'No WiFi networks were found.',
             signal: 'Signal: Excellent | Channel 6',
@@ -648,6 +694,9 @@ window.I18N_DICTS.en = {
             prompt: 'Password of the WiFi network "{ssid}":'
         },
         conn: {
+            broken: 'Damaged cable',
+            replace: 'Replace cable',
+            damage: 'Damage cable',
             list: 'Active connections plugged into the ports of {name}:',
             none: 'There are no cables or wireless networks connected to this device.',
             linkType: 'Link type: {type} | IP: {ip}',
