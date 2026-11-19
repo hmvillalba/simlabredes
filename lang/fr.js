@@ -39,6 +39,7 @@ window.I18N_DICTS.fr = {
         supportTitle: 'À propos du simulateur et soutien à l’auteur'
     },
     menu: {
+        cableLabels: 'Afficher le type et le débit des câbles',
         file: 'Fichier',
         view: 'Affichage',
         saveNetwork: 'Enregistrer le réseau…',
@@ -73,7 +74,7 @@ window.I18N_DICTS.fr = {
     // Phase 3 · zone 2 — panneaux (palette, canevas, simulation, activité) :
     device: {
         paletteTitle: 'Ajouter des appareils',
-        paletteHint: 'Cliquez sur un appareil pour l’ajouter. Un double clic sur un appareil du réseau ouvre ses propriétés ; la touche Suppr le supprime.',
+        paletteHint: 'Cliquez sur un appareil pour l’ajouter. Un double clic sur un appareil du réseau ouvre ses propriétés ; la touche Suppr le supprime. Un double clic sur un câble permet de changer son type, sa longueur et son débit.',
         legendTitle: 'Légende des états :',
         legendOk: 'Connexion OK / IP valide',
         legendApipa: 'APIPA (sans IP / sans DHCP)',
@@ -393,6 +394,7 @@ window.I18N_DICTS.fr = {
             prompt: 'Mot de passe du réseau WiFi « {ssid} » :'
         },
         conn: {
+            props: 'Propriétés',
             broken: 'Câble endommagé',
             replace: 'Remplacer le câble',
             damage: 'Endommager le câble',
@@ -513,6 +515,8 @@ window.I18N_DICTS.fr = {
         cleared: 'Zone de travail nettoyée'
     },
     toast: {
+        cableUpdated: 'Câble mis à jour : {type}, {len} m, {speed}.',
+        cableUpdatedDown: 'Câble mis à jour, mais avec ces réglages aucun signal ne passe.',
         cableReplaced: 'Câble remplacé : la liaison fonctionne à nouveau.',
         cableDamaged: 'Câble endommagé : la liaison ne transmet plus de signal.',
         wifiAdapterOn: 'Adaptateur WiFi activé.',
@@ -534,7 +538,42 @@ window.I18N_DICTS.fr = {
         activityLoaded: 'Activité chargée : {title}',
         activitySolved: 'Activité résolue !'
     },
+    cable: {
+        title: 'Propriétés du câble',
+        type: 'Type de câble',
+        shield: 'Blindage',
+        shieldUtp: 'UTP (non blindé)',
+        shieldStp: 'STP (blindé)',
+        length: 'Longueur (m)',
+        interference: 'Passe par une zone d’interférences (moteurs, néons)',
+        fiberMM: 'Fibre multimode',
+        fiberSM: 'Fibre monomode',
+        noFiberOpt: 'pas de port fibre sur {name}',
+        sumCable: 'Débit du câble',
+        sumPorts: 'Ports des appareils',
+        sumRange: 'Portée maximale',
+        sumLink: 'Débit de la liaison',
+        limitCable: 'limité par le câble',
+        limitPort: 'limité par le port de {name}',
+        limitNoise: 'limité par les interférences',
+        warnTooLong: 'Le câble mesure {len} m et ce type va jusqu’à {max} m : pas de signal.',
+        warnNoFiber: '{name} n’a pas de port fibre : la fibre ne peut pas y être branchée.',
+        warnNoise: 'Les interférences dégradent le câble UTP : le débit chute et des erreurs apparaissent. Un câble STP ou la fibre n’est pas touché.',
+        warnFast: 'Le Cat 6 n’atteint 10 Gbps que jusqu’à {len} m ; au-delà, il tombe à 1 Gbps.',
+        invalidLen: 'La longueur doit être un nombre supérieur à 0.',
+        apply: 'Appliquer',
+        cancel: 'Annuler',
+        remove: 'Supprimer le câble',
+        tooltip: '{type} · {len} m · {speed}',
+        reasonCable: 'le câble {type} ne dépasse pas {speed}',
+        reasonNoise: 'les interférences limitent le câble UTP à {speed}',
+        reasonPort: 'le port de {name} ne dépasse pas {speed}',
+        reasonWifi: 'la liaison WiFi atteint {speed}',
+    },
+
     diag: {
+        cableTooLong: 'Le câble entre {a} et {b} mesure {len} m et un câble {type} ne va que jusqu’à {max} m : le signal n’arrive pas. Il faut un autre type de câble (par exemple, la fibre).',
+        noFiberPort: 'Le câble entre {a} et {b} est en fibre, mais {name} n’a pas de port fibre.',
         brokenCable: 'Le câble entre {a} et {b} est endommagé : aucun signal ne passe. Il faut le remplacer.',
         wifiOff: '{name} a son adaptateur WiFi désactivé : il ne peut ni envoyer ni recevoir.',
         wifiNotJoined: '{name} n’est connecté à aucun réseau WiFi (vérifiez le réseau et le mot de passe).',
@@ -688,6 +727,8 @@ window.I18N_DICTS.fr = {
         },
         // Messages (ce qu’on voit sur le canevas) et lignes du journal de trafic.
         cap: {
+            cableTooLong: 'Le câble entre {a} et {b} mesure {len} m pour une portée de {max} m : pas de signal.',
+            noFiberPort: 'Le câble en fibre entre {a} et {b} est inutilisable : {name} n’a pas de port fibre.',
             brokenCable: 'Le câble entre {a} et {b} est endommagé : le signal ne passe pas.',
             wifiOff: '{name} a le WiFi désactivé : il ne peut pas communiquer.',
             wifiNotJoined: '{name} n’est connecté à aucun réseau WiFi.',
@@ -703,6 +744,9 @@ window.I18N_DICTS.fr = {
             dnsWrongHost: 'Le nom {name} pointe vers {real} ({ip}), pas vers {dest}. La page est demandée à {real}.'
         },
         log: {
+            cableTooLong: 'ÉCHEC : Câble trop long entre {a} et {b}.',
+            noFiberPort: 'ÉCHEC : Ports fibre incompatibles entre {a} et {b}.',
+            pathSpeed: 'Débit du chemin : {speed} (la liaison la plus lente est {a} ↔ {b}).',
             brokenCable: 'ÉCHEC : câble endommagé entre {a} et {b}.',
             wifiOff: 'ÉCHEC : {name} a son adaptateur WiFi désactivé.',
             wifiNotJoined: 'ÉCHEC : {name} n’a rejoint aucun réseau WiFi.',
@@ -817,6 +861,7 @@ window.I18N_DICTS.fr = {
             hard: 'Difficile'
         },
         goal: {
+            speed: 'que {a} et {b} communiquent à {speed} ou plus',
             prefix: '🎯 Objectif : {goals}.',
             comm: 'que {a} et {b} communiquent',
             vpn: 'que {a} et {b} communiquent par le VPN',
@@ -833,6 +878,7 @@ window.I18N_DICTS.fr = {
             unsolved: 'non résolue ❌'
         },
         msg: {
+            speedLow: 'Le chemin de {a} à {b} n’atteint que {cur} alors qu’il faut {need} : la liaison la plus lente est {x} ↔ {y} ({cause}).',
             solved: '✅ Résolu{student} ! Le réseau fonctionne. Enregistrez le réseau pour le rendre.',
             notYetLabel: 'Pas encore :',
             notYet: '{a} et {b} n’arrivent pas à communiquer. Utilisez « Indice » si vous bloquez.',
@@ -960,6 +1006,26 @@ window.I18N_DICTS.fr = {
                 title: 'Trois problèmes dans la salle',
                 story: 'Notebook_2 n’arrive pas à parler à PC_Alumno_3, et il y a plusieurs causes : les problèmes apparaissent couche par couche.',
                 hint: 'Commencez par la couche physique (câbles et adaptateur WiFi), puis vérifiez les adresses IP. Utilisez le diagnostic pour voir ce qui échoue maintenant.'
+            },
+            25: {
+                title: 'Le câble lent',
+                story: 'PC_A1 et PC_A2 partagent un switch, mais les transferts entre eux sont lents. Il faut atteindre 1 Gbps.',
+                hint: 'Double-cliquez sur chaque câble et regardez le débit de la liaison : l’un est d’une ancienne catégorie. Remplacez-le par une catégorie supérieure.'
+            },
+            26: {
+                title: 'Entre deux bâtiments',
+                story: 'La salle de PC_B1 est dans un autre bâtiment, à 150 m du routeur, et le câble Cat 6 qui les relie ne transmet aucun signal.',
+                hint: 'Un câble en cuivre porte à 100 m au maximum. Double-cliquez sur le long câble et choisissez la fibre optique : le switch et le routeur ont bien des ports fibre.'
+            },
+            27: {
+                title: 'Interférences dans l’atelier',
+                story: 'Le câble de PC_A2 longe des moteurs de l’atelier et la connexion rame. Il faut atteindre 1 Gbps.',
+                hint: 'Les interférences dégradent les câbles non blindés (UTP). Double-cliquez sur ce câble et passez-le à un câble blindé (STP).'
+            },
+            28: {
+                title: 'Trois problèmes de câblage',
+                story: 'PC_A1 et PC_B1 devraient communiquer à 1 Gbps, mais il y a plusieurs problèmes de câbles, de natures différentes.',
+                hint: 'Parcourez le chemin liaison par liaison en double-cliquant sur chaque câble : regardez la catégorie, la longueur et la proximité d’interférences. Utilisez le diagnostic pour voir lequel échoue maintenant.'
             }
         }
     },

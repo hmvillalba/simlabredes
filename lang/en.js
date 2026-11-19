@@ -38,6 +38,7 @@ window.I18N_DICTS.en = {
         supportTitle: 'About the simulator and support the author'
     },
     menu: {
+        cableLabels: 'Show cable type and speed',
         file: 'File',
         view: 'View',
         saveNetwork: 'Save network…',
@@ -72,7 +73,7 @@ window.I18N_DICTS.en = {
     // Fase 3 · zona 2 — paneles (paleta, lienzo, simulación, actividad):
     device: {
         paletteTitle: 'Add devices',
-        paletteHint: 'Click a device to add it. Double-click a device on the canvas to open its settings; the Del key removes it.',
+        paletteHint: 'Click a device to add it. Double-click a device on the canvas to open its settings; the Del key removes it. Double-click a cable to change its type, length and speed.',
         legendTitle: 'Status legend:',
         legendOk: 'Connected / Valid IP',
         legendApipa: 'APIPA (No IP / No DHCP)',
@@ -245,6 +246,8 @@ window.I18N_DICTS.en = {
         },
         // Cards shown over the canvas and lines of the traffic log.
         cap: {
+            cableTooLong: 'The cable between {a} and {b} is {len} m long but its reach is {max} m: no signal.',
+            noFiberPort: 'The fiber cable between {a} and {b} is useless: {name} has no fiber port.',
             brokenCable: 'The cable between {a} and {b} is damaged: the signal does not get through.',
             wifiOff: '{name} has WiFi turned off: it cannot communicate.',
             wifiNotJoined: '{name} is not connected to any WiFi network.',
@@ -260,6 +263,9 @@ window.I18N_DICTS.en = {
             dnsWrongHost: 'The name {name} points to {real} ({ip}), not to {dest}. The page is requested from {real}.'
         },
         log: {
+            cableTooLong: 'FAIL: Too-long cable between {a} and {b}.',
+            noFiberPort: 'FAIL: Incompatible fiber ports between {a} and {b}.',
+            pathSpeed: 'Path speed: {speed} (the slowest link is {a} ↔ {b}).',
             brokenCable: 'FAIL: damaged cable between {a} and {b}.',
             wifiOff: 'FAIL: {name} has its WiFi adapter turned off.',
             wifiNotJoined: 'FAIL: {name} has not joined any WiFi network.',
@@ -376,6 +382,7 @@ window.I18N_DICTS.en = {
             hard: 'Hard'
         },
         goal: {
+            speed: 'that {a} and {b} communicate at {speed} or more',
             prefix: '🎯 Goal: {goals}.',
             comm: 'that {a} and {b} can communicate',
             vpn: 'that {a} and {b} can communicate through the VPN',
@@ -392,6 +399,7 @@ window.I18N_DICTS.en = {
             unsolved: 'not solved ❌'
         },
         msg: {
+            speedLow: 'The path from {a} to {b} only reaches {cur} and {need} is required: the slowest link is {x} ↔ {y} ({cause}).',
             solved: '✅ Solved{student}! The network works. Save the network to submit it.',
             notYetLabel: 'Not yet:',
             notYet: '{a} and {b} cannot communicate. Use the hint if you get stuck.',
@@ -519,12 +527,34 @@ window.I18N_DICTS.en = {
                 title: 'Three problems in the classroom',
                 story: 'Notebook_2 cannot talk to PC_Alumno_3, and there is more than one cause: the problems show up layer by layer.',
                 hint: 'Start with the physical layer (cables and WiFi adapter), then check the IP addresses. Use the diagnosis to see what is failing now.'
+            },
+            25: {
+                title: 'The slow cable',
+                story: 'PC_A1 and PC_A2 share a switch, but transfers between them are slow. They need to reach 1 Gbps.',
+                hint: 'Double-click each cable and check the link speed: one is an old category. Replace it with a higher category.'
+            },
+            26: {
+                title: 'Between buildings',
+                story: 'PC_B1’s room is in another building, 150 m from the router, and the Cat 6 cable linking them carries no signal.',
+                hint: 'A copper cable reaches 100 m at most. Double-click the long cable and choose optical fiber: the switch and the router do have fiber ports.'
+            },
+            27: {
+                title: 'Interference in the workshop',
+                story: 'PC_A2’s cable runs next to some workshop motors and the connection crawls. It needs to reach 1 Gbps.',
+                hint: 'Interference degrades unshielded (UTP) cables. Double-click that cable and switch it to a shielded (STP) one.'
+            },
+            28: {
+                title: 'Three cabling problems',
+                story: 'PC_A1 and PC_B1 should communicate at 1 Gbps, but there is more than one cable problem, of different kinds.',
+                hint: 'Walk the path link by link, double-clicking each cable: check the category, the length and whether it passes near interference. Use the diagnosis to see which one is failing now.'
             }
         }
     },
 
     // Fase 3 · zona 4 — mensajes dinámicos (toasts y diagnósticos):
     toast: {
+        cableUpdated: 'Cable updated: {type}, {len} m, {speed}.',
+        cableUpdatedDown: 'Cable updated, but with these settings no signal gets through.',
         cableReplaced: 'Cable replaced: the link works again.',
         cableDamaged: 'Cable damaged: the link no longer carries a signal.',
         wifiAdapterOn: 'WiFi adapter turned on.',
@@ -546,7 +576,42 @@ window.I18N_DICTS.en = {
         activityLoaded: 'Activity loaded: {title}',
         activitySolved: 'Activity solved!'
     },
+    cable: {
+        title: 'Cable properties',
+        type: 'Cable type',
+        shield: 'Shielding',
+        shieldUtp: 'UTP (unshielded)',
+        shieldStp: 'STP (shielded)',
+        length: 'Length (m)',
+        interference: 'Runs through an area with interference (motors, fluorescent lights)',
+        fiberMM: 'Multimode fiber',
+        fiberSM: 'Single-mode fiber',
+        noFiberOpt: 'no fiber port on {name}',
+        sumCable: 'Cable speed',
+        sumPorts: 'Device ports',
+        sumRange: 'Maximum length',
+        sumLink: 'Link speed',
+        limitCable: 'limited by the cable',
+        limitPort: 'limited by {name}’s port',
+        limitNoise: 'limited by interference',
+        warnTooLong: 'The cable is {len} m long and this type reaches {max} m: no signal.',
+        warnNoFiber: '{name} has no fiber port: fiber cannot be connected there.',
+        warnNoise: 'Interference degrades UTP cable: speed drops and errors appear. STP cable or fiber is not affected.',
+        warnFast: 'Cat 6 only reaches 10 Gbps up to {len} m; beyond that it drops to 1 Gbps.',
+        invalidLen: 'The length must be a number greater than 0.',
+        apply: 'Apply',
+        cancel: 'Cancel',
+        remove: 'Remove cable',
+        tooltip: '{type} · {len} m · {speed}',
+        reasonCable: 'the {type} cable only reaches {speed}',
+        reasonNoise: 'interference reduces the UTP cable to {speed}',
+        reasonPort: '{name}’s port only reaches {speed}',
+        reasonWifi: 'the WiFi link reaches {speed}',
+    },
+
     diag: {
+        cableTooLong: 'The cable between {a} and {b} is {len} m long and a {type} cable only reaches {max} m: the signal does not make it. Use another type of cable (for example, fiber).',
+        noFiberPort: 'The cable between {a} and {b} is fiber, but {name} has no fiber port.',
         brokenCable: 'The cable between {a} and {b} is damaged: no signal gets through. It needs to be replaced.',
         wifiOff: '{name} has its WiFi adapter turned off: it cannot send or receive anything.',
         wifiNotJoined: '{name} is not connected to any WiFi network (check the network and the password).',
@@ -694,6 +759,7 @@ window.I18N_DICTS.en = {
             prompt: 'Password of the WiFi network "{ssid}":'
         },
         conn: {
+            props: 'Properties',
             broken: 'Damaged cable',
             replace: 'Replace cable',
             damage: 'Damage cable',

@@ -49,6 +49,7 @@ window.I18N_DICTS.es = {
         supportTitle: 'Acerca del simulador y apoyar al autor'
     },
     menu: {
+        cableLabels: 'Mostrar tipo y velocidad de los cables',
         file: 'Archivo',
         view: 'Ver',
         saveNetwork: 'Guardar red…',
@@ -84,7 +85,7 @@ window.I18N_DICTS.es = {
     // Fase 3 · zona 2 — paneles (paleta, lienzo, simulación, actividad):
     device: {
         paletteTitle: 'Agregar Dispositivos',
-        paletteHint: 'Haz clic en un equipo para añadirlo. Doble clic sobre un equipo de la red abre sus propiedades; la tecla Supr lo elimina.',
+        paletteHint: 'Haz clic en un equipo para añadirlo. Doble clic sobre un equipo de la red abre sus propiedades; la tecla Supr lo elimina. Doble clic sobre un cable para cambiar su tipo, longitud y velocidad.',
         legendTitle: 'Leyenda de Estados:',
         legendOk: 'Conexión OK / IP Válida',
         legendApipa: 'APIPA (Sin IP / Sin DHCP)',
@@ -404,6 +405,7 @@ window.I18N_DICTS.es = {
             prompt: 'Contraseña de la red WiFi "{ssid}":'
         },
         conn: {
+            props: 'Propiedades',
             broken: 'Cable dañado',
             replace: 'Reemplazar cable',
             damage: 'Dañar cable',
@@ -524,6 +526,8 @@ window.I18N_DICTS.es = {
         cleared: 'Área de trabajo limpiada'
     },
     toast: {
+        cableUpdated: 'Cable actualizado: {type}, {len} m, {speed}.',
+        cableUpdatedDown: 'Cable actualizado, pero con esta configuración no pasa señal.',
         cableReplaced: 'Cable reemplazado: el enlace vuelve a funcionar.',
         cableDamaged: 'Cable dañado: el enlace dejó de pasar señal.',
         wifiAdapterOn: 'Adaptador WiFi activado.',
@@ -545,7 +549,42 @@ window.I18N_DICTS.es = {
         activityLoaded: 'Actividad cargada: {title}',
         activitySolved: '¡Actividad resuelta!'
     },
+    cable: {
+        title: 'Propiedades del cable',
+        type: 'Tipo de cable',
+        shield: 'Blindaje',
+        shieldUtp: 'UTP (sin blindaje)',
+        shieldStp: 'STP (blindado)',
+        length: 'Longitud (m)',
+        interference: 'Pasa por una zona con interferencia (motores, luces fluorescentes)',
+        fiberMM: 'Fibra multimodo',
+        fiberSM: 'Fibra monomodo',
+        noFiberOpt: 'sin puerto de fibra en {name}',
+        sumCable: 'Velocidad del cable',
+        sumPorts: 'Puertos de los equipos',
+        sumRange: 'Alcance máximo',
+        sumLink: 'Velocidad del enlace',
+        limitCable: 'limitada por el cable',
+        limitPort: 'limitada por el puerto de {name}',
+        limitNoise: 'limitada por la interferencia',
+        warnTooLong: 'El cable mide {len} m y este tipo llega a {max} m: no hay señal.',
+        warnNoFiber: '{name} no tiene puerto de fibra: la fibra no se puede conectar ahí.',
+        warnNoise: 'La interferencia degrada el cable UTP: baja la velocidad y aparecen errores. Un cable STP o la fibra no se ven afectados.',
+        warnFast: 'Cat 6 solo alcanza 10 Gbps hasta {len} m; más allá baja a 1 Gbps.',
+        invalidLen: 'La longitud debe ser un número mayor que 0.',
+        apply: 'Aplicar',
+        cancel: 'Cancelar',
+        remove: 'Eliminar cable',
+        tooltip: '{type} · {len} m · {speed}',
+        reasonCable: 'el cable {type} solo llega a {speed}',
+        reasonNoise: 'la interferencia reduce el cable UTP a {speed}',
+        reasonPort: 'el puerto de {name} solo llega a {speed}',
+        reasonWifi: 'el enlace WiFi llega a {speed}',
+    },
+
     diag: {
+        cableTooLong: 'El cable entre {a} y {b} mide {len} m y un cable {type} solo llega a {max} m: la señal no alcanza. Hay que usar otro tipo de cable (por ejemplo, fibra).',
+        noFiberPort: 'El cable entre {a} y {b} es de fibra, pero {name} no tiene puerto de fibra.',
         brokenCable: 'El cable entre {a} y {b} está dañado: no pasa ninguna señal. Hay que reemplazarlo.',
         wifiOff: '{name} tiene el adaptador WiFi apagado: no puede enviar ni recibir nada.',
         wifiNotJoined: '{name} no está conectado a ninguna red WiFi (revisa la red y la contraseña).',
@@ -699,6 +738,8 @@ window.I18N_DICTS.es = {
         },
         // Carteles (lo que se ve sobre el lienzo) y líneas del log de tráfico.
         cap: {
+            cableTooLong: 'El cable entre {a} y {b} mide {len} m y su alcance es de {max} m: no llega la señal.',
+            noFiberPort: 'El cable de fibra entre {a} y {b} no sirve: {name} no tiene puerto de fibra.',
             brokenCable: 'El cable entre {a} y {b} está dañado: la señal no pasa.',
             wifiOff: '{name} tiene el WiFi apagado: no puede comunicarse.',
             wifiNotJoined: '{name} no está conectado a ninguna red WiFi.',
@@ -714,6 +755,9 @@ window.I18N_DICTS.es = {
             dnsWrongHost: 'El nombre {name} apunta a {real} ({ip}), no a {dest}. La página se pide a {real}.'
         },
         log: {
+            cableTooLong: 'FALLO: Cable demasiado largo entre {a} y {b}.',
+            noFiberPort: 'FALLO: Puertos de fibra incompatibles entre {a} y {b}.',
+            pathSpeed: 'Velocidad del camino: {speed} (el enlace más lento es {a} ↔ {b}).',
             brokenCable: 'FALLO: cable dañado entre {a} y {b}.',
             wifiOff: 'FALLO: {name} tiene el adaptador WiFi apagado.',
             wifiNotJoined: 'FALLO: {name} no está unido a ninguna red WiFi.',
@@ -828,6 +872,7 @@ window.I18N_DICTS.es = {
             hard: 'Difícil'
         },
         goal: {
+            speed: 'que {a} y {b} se comuniquen a {speed} o más',
             prefix: '🎯 Objetivo: {goals}.',
             comm: 'que {a} y {b} se comuniquen',
             vpn: 'que {a} y {b} se comuniquen por la VPN',
@@ -844,6 +889,7 @@ window.I18N_DICTS.es = {
             unsolved: 'sin resolver ❌'
         },
         msg: {
+            speedLow: 'El camino de {a} a {b} llega solo a {cur} y hace falta {need}: el enlace más lento es {x} ↔ {y} ({cause}).',
             solved: '✅ ¡Resuelto{student}! La red funciona. Guarda la red para entregarla.',
             notYetLabel: 'Todavía no:',
             notYet: '{a} y {b} no logran comunicarse. Usa «Pista» si no sabes cómo seguir.',
@@ -971,6 +1017,26 @@ window.I18N_DICTS.es = {
                 title: 'Tres problemas en el aula',
                 story: 'Notebook_2 no logra hablar con PC_Alumno_3, y no hay una sola causa: los problemas aparecen por capas.',
                 hint: 'Empieza por la capa física (cables y adaptador WiFi) y luego revisa las direcciones IP. Usa el diagnóstico para ver qué falla ahora.'
+            },
+            25: {
+                title: 'El cable lento',
+                story: 'PC_A1 y PC_A2 comparten un switch, pero la transferencia entre ellas es lenta. Hace falta que lleguen a 1 Gbps.',
+                hint: 'Haz doble clic sobre cada cable y mira la velocidad del enlace: uno es de una categoría antigua. Cámbialo por uno de mayor categoría.'
+            },
+            26: {
+                title: 'Entre edificios',
+                story: 'La sala de PC_B1 está en otro edificio, a 150 m del router, y el cable Cat 6 que los une no da señal.',
+                hint: 'Un cable de cobre llega a 100 m como máximo. Haz doble clic sobre el cable largo y elige fibra óptica: el switch y el router sí tienen puerto de fibra.'
+            },
+            27: {
+                title: 'Interferencia en el taller',
+                story: 'El cable de PC_A2 pasa junto a unos motores del taller y la conexión se arrastra. Hace falta que llegue a 1 Gbps.',
+                hint: 'La interferencia degrada los cables sin blindaje (UTP). Haz doble clic sobre ese cable y cámbialo a un cable blindado (STP).'
+            },
+            28: {
+                title: 'Tres problemas de cableado',
+                story: 'PC_A1 y PC_B1 deberían comunicarse a 1 Gbps, pero hay más de un problema en los cables, de distintos tipos.',
+                hint: 'Recorre el camino enlace por enlace con doble clic en cada cable: mira la categoría, la longitud y si pasa cerca de interferencias. Usa el diagnóstico para ver cuál falla ahora.'
             }
         }
     },

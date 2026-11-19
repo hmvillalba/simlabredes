@@ -19,6 +19,26 @@
     <script src="lang/fr.js"></script>
     <script src="js/i18n.js"></script>
     <style id="app-style">
+        /* ---- Ventana del cable y botones de la pestaña Conexiones (no dependen de clases compiladas de Tailwind) ---- */
+        .nsx-backdrop { position: fixed; inset: 0; z-index: 70; display: flex; align-items: center; justify-content: center; padding: 1rem; background: rgba(0, 0, 0, .6); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+        .nsx-field { outline: none; }
+        .nsx-field:focus { border-color: #0ea5e9; }
+        .nsx-btn-primary { background: #059669; color: #fff; border: 0; cursor: pointer; transition: background .15s; }
+        .nsx-btn-primary:hover { background: #10b981; }
+        .nsx-btn-emerald, .nsx-btn-amber, .nsx-btn-sky { border: 1px solid; cursor: pointer; transition: background .15s; }
+        .nsx-btn-emerald { background: rgba(2, 44, 34, .6); border-color: #065f46; color: #6ee7b7; }
+        .nsx-btn-emerald:hover { background: #064e3b; }
+        .nsx-btn-amber { background: rgba(69, 26, 3, .6); border-color: #92400e; color: #fcd34d; }
+        .nsx-btn-amber:hover { background: #78350f; }
+        .nsx-btn-sky { background: rgba(8, 47, 73, .6); border-color: #075985; color: #7dd3fc; }
+        .nsx-btn-sky:hover { background: #0c4a6e; }
+        body.light-mode .nsx-btn-emerald { background: #d1fae5; border-color: #6ee7b7; color: #047857; }
+        body.light-mode .nsx-btn-emerald:hover { background: #a7f3d0; }
+        body.light-mode .nsx-btn-amber { background: #fef3c7; border-color: #fcd34d; color: #92400e; }
+        body.light-mode .nsx-btn-amber:hover { background: #fde68a; }
+        body.light-mode .nsx-btn-sky { background: #e0f2fe; border-color: #7dd3fc; color: #0369a1; }
+        body.light-mode .nsx-btn-sky:hover { background: #bae6fd; }
+
         /* Las tipografías (Inter y Fira Code) las carga assets/fonts/fonts.css. */
 
         body {
@@ -442,6 +462,9 @@
                     <button id="toggle-sim-btn" onclick="togglePanel('sim')"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
                             class="fa-solid fa-eye w-4"></i><span data-i18n="menu.simPanel">Panel de simulación</span></button>
+                    <button id="toggle-cable-labels-btn" onclick="closeMenus();toggleCableLabels()"
+                        class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
+                            class="fa-solid fa-gauge-high w-4"></i><span data-i18n="menu.cableLabels">Mostrar tipo y velocidad de los cables</span></button>
                     <div class="my-1 border-t border-slate-800"></div>
                     <button id="theme-toggle" onclick="closeMenus();toggleTheme()"
                         class="w-full text-left px-3 py-2 rounded-md hover:bg-slate-800 text-xs text-slate-200 flex items-center gap-2 transition"><i
@@ -1378,7 +1401,7 @@
             if (dev.type === 'cloud') return 'bg-cyan-500';
             if (dev.type === 'switch' && dev.switchLayer === 'L2') return 'bg-blue-500';
             if (isWifiClient(dev) && dev.wifiEnabled === false && !hasWiredLink(dev)) return 'bg-rose-500'; // adaptador WiFi apagado
-            if (state.connections.some(c => c.broken && (c.from === dev.id || c.to === dev.id)) && getConnectedNeighbors(dev.id).length === 0) return 'bg-rose-500'; // sin enlace
+            if (state.connections.some(c => (c.broken || cableDownReason(c)) && (c.from === dev.id || c.to === dev.id)) && getConnectedNeighbors(dev.id).length === 0) return 'bg-rose-500'; // sin enlace
             if (dev.ip.startsWith('169.254')) return 'bg-amber-500'; // APIPA
             if (lanMismatch(dev)) return 'bg-amber-500'; // IP de otra red que la del router
             if (dev.ip === '0.0.0.0') return 'bg-rose-500';
@@ -1492,35 +1515,62 @@
                 // Styling cable based on status
                 const isApipa = devA.ip.startsWith('169.254') || devB.ip.startsWith('169.254');
                 const wifiOff = conn.type === 'wifi' && [devA, devB].some(d => isWifiClient(d) && d.wifiEnabled === false);
-                const baseColor = conn.broken ? '#f43f5e' : wifiOff ? '#64748b' : ((isApipa || lanMismatch(devA) || lanMismatch(devB)) ? '#f59e0b' : '#10b981');
+                const li = linkInfo(conn), down = !!(li && li.down);
+                const baseColor = down ? '#f43f5e' : wifiOff ? '#64748b' : ((isApipa || lanMismatch(devA) || lanMismatch(devB)) ? '#f59e0b' : '#10b981');
+                const baseWidth = conn.type === 'wifi' ? 3 : li.speed >= 10000 ? 4.5 : li.speed >= 1000 ? 3 : 2; // más rápido = más grueso
                 line.setAttribute('stroke', baseColor);
-                line.setAttribute('stroke-width', '3');
-                line.setAttribute('stroke-dasharray', conn.broken ? '2 8' : conn.type === 'wifi' ? '6 6' : 'none');
+                line.setAttribute('stroke-width', String(baseWidth));
+                line.setAttribute('stroke-dasharray', down ? '2 8' : conn.type === 'wifi' ? '6 6' : 'none');
                 line.setAttribute('opacity', '0.85');
                 line.setAttribute('class', 'transition-all duration-150');
 
                 // Hover / Click handler to delete cable
+                group.style.cursor = conn.type === 'wifi' ? 'default' : 'pointer';
                 group.addEventListener('mouseenter', () => {
                     line.setAttribute('stroke-width', '5');
                     line.setAttribute('stroke', '#f43f5e'); // Highlight in red when hovering
                 });
 
                 group.addEventListener('mouseleave', () => {
-                    line.setAttribute('stroke-width', '3');
+                    line.setAttribute('stroke-width', String(baseWidth));
                     line.setAttribute('stroke', baseColor);
                 });
 
+                // Un clic solo elimina con la herramienta «Eliminar cable»; el doble clic abre las propiedades del cable.
                 group.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    if (state.activeTool === 'delete-cable' || state.activeTool === 'select' || state.activeTool === 'cable') {
-                        deleteCable(conn.from, conn.to);
-                    }
+                    if (state.activeTool === 'delete-cable') deleteCable(conn.from, conn.to);
+                });
+                group.addEventListener('dblclick', (e) => {
+                    e.stopPropagation(); e.preventDefault();
+                    if (conn.type !== 'wifi') openCableModal(conn.from, conn.to);
                 });
 
                 group.appendChild(hitArea);
                 group.appendChild(line);
-                if (conn.broken) {
-                    // marca ✕ en el medio del cable dañado
+                if (li && li.spec && !li.down && li.spec.T.medium === 'fiber') {
+                    // la fibra se dibuja con un núcleo claro en el centro
+                    const core = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                    for (const k of ['x1', 'y1', 'x2', 'y2']) core.setAttribute(k, line.getAttribute(k));
+                    core.setAttribute('stroke', '#e0f2fe'); core.setAttribute('stroke-width', '1.2'); core.setAttribute('opacity', '0.9'); core.setAttribute('pointer-events', 'none');
+                    group.appendChild(core);
+                }
+                if (state.showCableLabels && conn.type !== 'wifi') {
+                    const lx = (x1 + x2) / 2, ly = (y1 + y2) / 2 - 10;
+                    const lab = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    lab.setAttribute('x', lx); lab.setAttribute('y', ly); lab.setAttribute('text-anchor', 'middle'); lab.setAttribute('font-size', '10');
+                    lab.setAttribute('font-family', 'Fira Code, monospace'); lab.setAttribute('fill', down ? '#fda4af' : '#cbd5e1');
+                    lab.setAttribute('stroke', '#020617'); lab.setAttribute('stroke-width', '3'); lab.setAttribute('paint-order', 'stroke'); lab.setAttribute('pointer-events', 'none');
+                    lab.textContent = `${cableShortLabel(li.spec)} · ${down ? '✕' : fmtSpeedShort(li.speed)}`;
+                    group.appendChild(lab);
+                }
+                if (conn.type !== 'wifi' && !conn.broken && !wifiOff) {
+                    const tip = document.createElementNS('http://www.w3.org/2000/svg', 'title');
+                    tip.textContent = I18N.t('cable.tooltip', { type: cableTypeLabel(li.spec), len: li.spec.length, speed: down ? '—' : fmtSpeed(li.speed) });
+                    group.appendChild(tip);
+                }
+                if (down) {
+                    // marca ✕ en el medio del cable dañado / sin señal
                     const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
                     for (const [dx1, dy1, dx2, dy2] of [[-7, -7, 7, 7], [-7, 7, 7, -7]]) {
                         const cross = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -1584,7 +1634,7 @@
             const all = !!(opts && opts.all);
             return state.connections.filter(c => c.from === devId || c.to === devId).filter(c => {
                 if (c.broken && !all) return false;
-                if (c.type !== 'wifi') return true;
+                if (c.type !== 'wifi') return all || !cableDownReason(c);
                 const a = state.devices.find(d => d.id === c.from);
                 const b = state.devices.find(d => d.id === c.to);
                 const client = isWifiClient(a) ? a : (isWifiClient(b) ? b : null);
@@ -1647,7 +1697,7 @@
 
         const WIFI_TYPES = ['phone', 'laptop', 'tv'];
         function isWifiClient(d) { return !!d && WIFI_TYPES.includes(d.type); }
-        function hasWiredLink(d) { return state.connections.some(c => c.type !== 'wifi' && !c.broken && (c.from === d.id || c.to === d.id)); }
+        function hasWiredLink(d) { return state.connections.some(c => c.type !== 'wifi' && !c.broken && !cableDownReason(c) && (c.from === d.id || c.to === d.id)); }
 
         // ---- Capa 3 vs. capa 1: ¿el equipo está en la red del router al que está conectado? ----
         // Un cable (o un enlace WiFi) puede estar perfecto y aun así el equipo tener una IP de OTRA red:
@@ -1932,6 +1982,28 @@
             {
                 lvl: 'Difícil', title: 'act.builtin.24.title', story: 'act.builtin.24.story', hint: 'act.builtin.24.hint',
                 build() { const L = buildWifiClassroom({ pcIp: '192.168.0.11', pcGw: '0.0.0.0', nbEnabled: false, cableBroken: true }); return [[L.nb, L.pc]]; }
+            },
+            {
+                lvl: 'Fácil', title: 'act.builtin.25.title', story: 'act.builtin.25.story', hint: 'act.builtin.25.hint',
+                build() { const n = loadDemoTwoNetworks(); connBetween(n.swA.id, n.a1.id).cable = { type: 'cat5', length: 10 }; reevaluateNetworkState(); return [[n.a1, n.a2, '@speed:1000']]; }
+            },
+            {
+                lvl: 'Medio', title: 'act.builtin.26.title', story: 'act.builtin.26.story', hint: 'act.builtin.26.hint',
+                build() { const n = loadDemoTwoNetworks(); connBetween(n.r.id, n.swB.id).cable = { type: 'cat6', length: 150 }; reevaluateNetworkState(); return [[n.a1, n.b1]]; }
+            },
+            {
+                lvl: 'Medio', title: 'act.builtin.27.title', story: 'act.builtin.27.story', hint: 'act.builtin.27.hint',
+                build() { const n = loadDemoTwoNetworks(); connBetween(n.swA.id, n.a2.id).cable = { type: 'cat6', length: 25, interference: true }; reevaluateNetworkState(); return [[n.a1, n.a2, '@speed:1000']]; }
+            },
+            {
+                lvl: 'Difícil', title: 'act.builtin.28.title', story: 'act.builtin.28.story', hint: 'act.builtin.28.hint',
+                build() {
+                    const n = loadDemoTwoNetworks();
+                    connBetween(n.swA.id, n.a1.id).cable = { type: 'cat5', length: 10 };
+                    connBetween(n.r.id, n.swB.id).cable = { type: 'cat6', length: 150 };
+                    connBetween(n.swB.id, n.b1.id).cable = { type: 'cat6', length: 25, interference: true };
+                    reevaluateNetworkState(); return [[n.a1, n.b1, '@speed:1000']];
+                }
             }
         ];
         let currentActivity = null;
@@ -1963,6 +2035,7 @@
                 const A = dv(x), B = dv(y);
                 const an = A ? A.name : '?', bn = B ? B.name : '?';
                 return site === '@vpn' ? I18N.t('act.goal.vpn', { a: an, b: bn })
+                    : (typeof site === 'string' && site.startsWith('@speed:')) ? I18N.t('act.goal.speed', { a: an, b: bn, speed: fmtSpeed(Number(site.slice(7))) })
                     : site ? I18N.t('act.goal.site', { a: an, site })
                         : I18N.t('act.goal.comm', { a: an, b: bn });
             }).join(I18N.t('act.goal.and'));
@@ -2015,6 +2088,12 @@
                 const A = state.devices.find(d => d.id === x), B = state.devices.find(d => d.id === y);
                 if (!A || !B) return { A: { name: '?' }, B: { name: '?' }, m: I18N.t('act.msg.deviceRemoved') };
                 if (site === '@vpn') { const pl = vpnPlan(A, B); if (!pl.ok) return { A, B, m: pl.msg }; continue; }
+                if (typeof site === 'string' && site.startsWith('@speed:')) {
+                    const need = Number(site.slice(7)), m0 = diagnose(A, B); if (m0) return { A, B, m: m0 };
+                    const ps = pathSpeed(findConnectionPath(A.id, B.id));
+                    if (ps.min < need) return { A, B, m: I18N.t('act.msg.speedLow', { a: A.name, b: B.name, cur: fmtSpeed(ps.min), need: fmtSpeed(need), x: ps.slow.a.name, y: ps.slow.b.name, cause: slowReason(ps.slow) }) };
+                    continue;
+                }
                 const m = diagnose(A, B, site); if (m) return { A, B, m };
             }
             return null;
@@ -2473,9 +2552,10 @@
                                         <span class="text-[10px] text-slate-400">${I18N.t('dev.conn.linkType', { type: conn.type === 'wifi' ? I18N.t('dev.conn.typeWifi') : I18N.t('dev.conn.typeEthernet'), ip: targetDev.ip })}</span>
                                     </div>
                                 </div>
+                                ${conn.type === 'wifi' ? '' : `<button onclick="openCableModal(${conn.from}, ${conn.to})" class="nsx-btn-sky px-3 py-1 mr-2 rounded text-xs"><i class="fa-solid fa-sliders text-[10px]"></i> ${I18N.t('dev.conn.props')}</button>`}
                                 ${conn.type === 'wifi' ? '' : (conn.broken
-                            ? `<button onclick="setCableBroken(${conn.from}, ${conn.to}, false); openDeviceModal(${dev.id});" class="px-3 py-1 mr-2 bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-800 text-emerald-300 rounded text-xs transition"><i class="fa-solid fa-rotate text-[10px]"></i> ${I18N.t('dev.conn.replace')}</button>`
-                            : `<button onclick="setCableBroken(${conn.from}, ${conn.to}, true); openDeviceModal(${dev.id});" class="px-3 py-1 mr-2 bg-amber-950/60 hover:bg-amber-900 border border-amber-800 text-amber-300 rounded text-xs transition"><i class="fa-solid fa-bolt text-[10px]"></i> ${I18N.t('dev.conn.damage')}</button>`)}
+                            ? `<button onclick="setCableBroken(${conn.from}, ${conn.to}, false); openDeviceModal(${dev.id});" class="nsx-btn-emerald px-3 py-1 mr-2 rounded text-xs"><i class="fa-solid fa-rotate text-[10px]"></i> ${I18N.t('dev.conn.replace')}</button>`
+                            : `<button onclick="setCableBroken(${conn.from}, ${conn.to}, true); openDeviceModal(${dev.id});" class="nsx-btn-amber px-3 py-1 mr-2 rounded text-xs"><i class="fa-solid fa-bolt text-[10px]"></i> ${I18N.t('dev.conn.damage')}</button>`)}
                                 <button onclick="deleteCable(${conn.from}, ${conn.to}); openDeviceModal(${dev.id});" class="px-3 py-1 bg-rose-950/60 hover:bg-rose-900 border border-rose-800 text-rose-300 rounded text-xs transition flex items-center space-x-1">
                                     <i class="fa-solid fa-scissors text-[10px]"></i>
                                     <span>${I18N.t('dev.conn.disconnect')}</span>
@@ -2859,7 +2939,15 @@
             checkTopologyData(data);
             closeActivity(); clearNetworkTables(false);
             state.devices = data.devices.map(d => ({ ...d, id: Number(d.id), wifiAuthenticated: Boolean(d.wifiAuthenticated) }));
-            state.connections = data.connections.map(c => ({ ...c, from: Number(c.from), to: Number(c.to) }));
+            state.connections = data.connections.map(c => {
+                const n = { ...c, from: Number(c.from), to: Number(c.to) };
+                if (n.cable && typeof n.cable === 'object' && c.type !== 'wifi') {
+                    const len = Number(n.cable.length);
+                    n.cable = { type: CABLE_TYPES[n.cable.type] ? n.cable.type : DEFAULT_CABLE_TYPE, length: Number.isFinite(len) && len > 0 && len <= 20000 ? len : DEFAULT_CABLE_LEN,
+                        ...(n.cable.shield === 'stp' ? { shield: 'stp' } : {}), ...(n.cable.interference ? { interference: true } : {}) };
+                } else delete n.cable;
+                return n;
+            });
             state.nextDeviceId = Math.max(Number(data.nextDeviceId) || 1, ...state.devices.map(d => d.id + 1), 1);
             reevaluateNetworkState();
             if (data.tables && typeof data.tables === 'object') {
@@ -3021,6 +3109,73 @@
             for (let node = destinationId; node !== null; node = previous.get(node)) path.unshift(node);
             return path;
         }
+        // ===== CABLES: tipo, velocidad, alcance y puertos compatibles =====
+        const CABLE_TYPES = {
+            cat5:    { medium: 'copper', label: 'Cat 5',  speed: 100,   maxLen: 100 },
+            cat5e:   { medium: 'copper', label: 'Cat 5e', speed: 1000,  maxLen: 100 },
+            cat6:    { medium: 'copper', label: 'Cat 6',  speed: 10000, longSpeed: 1000, fastLen: 55, maxLen: 100 }, // 10 Gbps solo hasta 55 m
+            cat6a:   { medium: 'copper', label: 'Cat 6a', speed: 10000, maxLen: 100 },
+            cat7:    { medium: 'copper', label: 'Cat 7',  speed: 10000, maxLen: 100, stpOnly: true },
+            fiberMM: { medium: 'fiber',  speed: 10000, maxLen: 300 },
+            fiberSM: { medium: 'fiber',  speed: 10000, maxLen: 10000 },
+        };
+        const DEFAULT_CABLE_TYPE = 'cat5e', DEFAULT_CABLE_LEN = 5, WIFI_LINK_SPEED = 300;
+        const FIBER_PORT_TYPES = ['switch', 'lrouter', 'cloud', 'dns', 'vpn']; // los demás equipos solo tienen puerto de cobre (RJ45)
+        function hasFiberPort(d) { return !!d && FIBER_PORT_TYPES.includes(d.type); }
+        function portSpeed(d, medium) { if (!d) return 1000; if (d.type === 'cloud' || medium === 'fiber') return 10000; return d.type === 'tv' ? 100 : 1000; }
+        function fmtSpeed(m) { return m >= 1000 ? `${m / 1000} Gbps` : `${m} Mbps`; }
+        function fmtSpeedShort(m) { return m >= 1000 ? `${m / 1000}G` : `${m}M`; }
+        function cableSpec(raw) {
+            const c = (raw && raw.cable) || {};
+            const type = CABLE_TYPES[c.type] ? c.type : DEFAULT_CABLE_TYPE, T = CABLE_TYPES[type];
+            const len = Number(c.length), length = Number.isFinite(len) && len > 0 ? len : DEFAULT_CABLE_LEN;
+            const shield = T.medium === 'fiber' ? null : (T.stpOnly || c.shield === 'stp') ? 'stp' : 'utp';
+            return { type, T, length, shield, interference: !!c.interference };
+        }
+        function cableTypeLabel(spec) { return spec.T.medium === 'fiber' ? I18N.t(spec.type === 'fiberMM' ? 'cable.fiberMM' : 'cable.fiberSM') : `${spec.T.label} ${spec.shield === 'stp' ? 'STP' : 'UTP'}`; }
+        function cableShortLabel(spec) { return spec.T.medium === 'fiber' ? (spec.type === 'fiberMM' ? 'MMF' : 'SMF') : spec.T.label.replace(' ', '') + (spec.shield === 'stp' ? ' STP' : ''); }
+        // ¿Este cable no puede transportar señal entre sus dos extremos? ('noFiberPort' | 'tooLong' | null)
+        function cableDownReason(conn) {
+            if (!conn || conn.type === 'wifi') return null;
+            const s = cableSpec(conn);
+            if (s.T.medium === 'fiber') {
+                const a = state.devices.find(d => d.id === conn.from), b = state.devices.find(d => d.id === conn.to);
+                if (!hasFiberPort(a) || !hasFiberPort(b)) return 'noFiberPort';
+            }
+            return s.length > s.T.maxLen ? 'tooLong' : null;
+        }
+        // Velocidad real de un enlace = el mínimo entre lo que da el cable y lo que dan los puertos de los dos equipos.
+        function linkInfo(conn) {
+            if (!conn) return null;
+            const a = state.devices.find(d => d.id === conn.from), b = state.devices.find(d => d.id === conn.to);
+            if (conn.type === 'wifi') return { wifi: true, a, b, speed: WIFI_LINK_SPEED, down: false, reason: null };
+            const s = cableSpec(conn), T = s.T;
+            const nominal = (T.fastLen && s.length > T.fastLen) ? T.longSpeed : T.speed;
+            const noisy = s.interference && T.medium === 'copper' && s.shield === 'utp'; // el STP y la fibra no se ven afectados
+            const cableSpeed = noisy ? Math.min(nominal, 10) : nominal;
+            const pa = portSpeed(a, T.medium), pb = portSpeed(b, T.medium), ports = Math.min(pa, pb);
+            const reason = conn.broken ? 'broken' : cableDownReason(conn);
+            const speed = reason ? 0 : Math.min(cableSpeed, ports);
+            const limit = reason ? null : (cableSpeed <= ports ? (noisy ? 'noise' : 'cable') : (pa <= pb ? 'portA' : 'portB'));
+            return { spec: s, a, b, nominal, cableSpeed, noisy, pa, pb, reason, down: !!reason, speed, limit };
+        }
+        // Velocidad de un camino = la del enlace más lento (cuello de botella).
+        function pathSpeed(path) {
+            let min = Infinity, slow = null;
+            for (let i = 0; i < path.length - 1; i++) {
+                const c = connBetween(path[i], path[i + 1]); if (!c) continue;
+                const li = linkInfo(c); if (li && li.speed < min) { min = li.speed; slow = li; }
+            }
+            return { min: Number.isFinite(min) ? min : 0, slow };
+        }
+        function speedFactor(speed) { return speed <= 10 ? 3 : speed <= 100 ? 1.8 : speed <= 300 ? 1.4 : speed <= 1000 ? 1 : 0.6; } // tiempo relativo de la animación
+        function slowReason(li) {
+            if (li.wifi) return I18N.t('cable.reasonWifi', { speed: fmtSpeed(li.speed) });
+            if (li.limit === 'noise') return I18N.t('cable.reasonNoise', { speed: fmtSpeed(li.cableSpeed) });
+            if (li.limit === 'portA' || li.limit === 'portB') return I18N.t('cable.reasonPort', { name: (li.limit === 'portA' ? li.a : li.b).name, speed: fmtSpeed(Math.min(li.pa, li.pb)) });
+            return I18N.t('cable.reasonCable', { type: cableTypeLabel(li.spec), speed: fmtSpeed(li.cableSpeed) });
+        }
+
         // Si no hay camino, ¿se debe a una falla física concreta? (adaptador WiFi apagado, WiFi sin unir, cable dañado)
         function physicalFault(src, dst) {
             const dv = id => state.devices.find(d => d.id === id);
@@ -3035,15 +3190,34 @@
                 const c = state.connections.find(c => (c.from === p[i] && c.to === p[i + 1]) || (c.to === p[i] && c.from === p[i + 1]));
                 if (!c) continue;
                 if (c.broken) return { type: 'broken', a: dv(p[i]), b: dv(p[i + 1]) };
+                const dr = cableDownReason(c);
+                if (dr) { const sp = cableSpec(c); return { type: dr === 'tooLong' ? 'tooLong' : 'noFiberPort', a: dv(p[i]), b: dv(p[i + 1]), len: sp.length, max: sp.T.maxLen, cable: cableTypeLabel(sp), noPort: !hasFiberPort(dv(p[i])) ? dv(p[i]) : dv(p[i + 1]) }; }
                 if (c.type === 'wifi') { const cl = [dv(c.from), dv(c.to)].find(isWifiClient); if (cl && cl.wifiEnabled === false) return { type: 'wifiOff', dev: cl }; }
             }
             return null;
         }
         function physicalFaultText(pf) {
             return pf.type === 'broken' ? I18N.t('diag.brokenCable', { a: pf.a.name, b: pf.b.name })
-                : pf.type === 'wifiOff' ? I18N.t('diag.wifiOff', { name: pf.dev.name })
-                    : I18N.t('diag.wifiNotJoined', { name: pf.dev.name });
+                : pf.type === 'tooLong' ? I18N.t('diag.cableTooLong', { a: pf.a.name, b: pf.b.name, len: pf.len, max: pf.max, type: pf.cable })
+                    : pf.type === 'noFiberPort' ? I18N.t('diag.noFiberPort', { a: pf.a.name, b: pf.b.name, name: pf.noPort.name })
+                        : pf.type === 'wifiOff' ? I18N.t('diag.wifiOff', { name: pf.dev.name })
+                            : I18N.t('diag.wifiNotJoined', { name: pf.dev.name });
         }
+        function physicalFaultCap(pf) {
+            return pf.type === 'broken' ? I18N.t('sim.cap.brokenCable', { a: pf.a.name, b: pf.b.name })
+                : pf.type === 'tooLong' ? I18N.t('sim.cap.cableTooLong', { a: pf.a.name, b: pf.b.name, len: pf.len, max: pf.max })
+                    : pf.type === 'noFiberPort' ? I18N.t('sim.cap.noFiberPort', { a: pf.a.name, b: pf.b.name, name: pf.noPort.name })
+                        : pf.type === 'wifiOff' ? I18N.t('sim.cap.wifiOff', { name: pf.dev.name })
+                            : I18N.t('sim.cap.wifiNotJoined', { name: pf.dev.name });
+        }
+        function physicalFaultLog(pf) {
+            return pf.type === 'broken' ? I18N.t('sim.log.brokenCable', { a: pf.a.name, b: pf.b.name })
+                : pf.type === 'tooLong' ? I18N.t('sim.log.cableTooLong', { a: pf.a.name, b: pf.b.name })
+                    : pf.type === 'noFiberPort' ? I18N.t('sim.log.noFiberPort', { a: pf.a.name, b: pf.b.name })
+                        : pf.type === 'wifiOff' ? I18N.t('sim.log.wifiOff', { name: pf.dev.name })
+                            : I18N.t('sim.log.wifiNotJoined', { name: pf.dev.name });
+        }
+        const isLinkFault = pf => pf.type === 'broken' || pf.type === 'tooLong' || pf.type === 'noFiberPort';
         function setCableBroken(fromId, toId, broken) {
             const c = state.connections.find(c => (c.from === fromId && c.to === toId) || (c.from === toId && c.to === fromId));
             if (!c || c.type === 'wifi') return false;
@@ -3355,7 +3529,11 @@
         function movePacketAlong(devs, color, isReply, fraction, token) {
             const ns = 'http://www.w3.org/2000/svg';
             const pts = devs.map(d => ({ x: d.x + 28, y: d.y + 28 }));
-            const cum = [0]; for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
+            // El tiempo de cada tramo depende de la velocidad de su enlace: un cable lento se recorre más despacio.
+            const cum = [0]; for (let i = 1; i < pts.length; i++) {
+                const li = linkInfo(connBetween(devs[i - 1].id, devs[i].id));
+                cum.push(cum[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y) * (li ? speedFactor(li.speed) : 1));
+            }
             const total = cum[cum.length - 1] || 1, ms = Math.max(600, total / 0.17 * fraction) * trafficSpeed();
             const g = document.createElementNS(ns, 'circle');
             g.setAttribute('r', 7); g.setAttribute('class', 'traffic-packet');
@@ -4317,18 +4495,12 @@
             const pb = document.getElementById('traffic-pause'); if (pb) pb.innerHTML = '<i class="fa-solid fa-pause"></i>';
             if (!path) {
                 const pf = physicalFault(source, destination);
-                const msg = !pf ? I18N.t('sim.cap.noPath', { s: source.name, d: destination.name })
-                    : pf.type === 'broken' ? I18N.t('sim.cap.brokenCable', { a: pf.a.name, b: pf.b.name })
-                        : pf.type === 'wifiOff' ? I18N.t('sim.cap.wifiOff', { name: pf.dev.name })
-                            : I18N.t('sim.cap.wifiNotJoined', { name: pf.dev.name });
+                const msg = !pf ? I18N.t('sim.cap.noPath', { s: source.name, d: destination.name }) : physicalFaultCap(pf);
                 if (status) status.textContent = pf ? I18N.t('sim.fail.statusPrefix') + msg : I18N.t('sim.status.noPath');
-                addTrafficLog(() => !pf ? I18N.t('sim.log.noPath', { s: source.name, d: destination.name })
-                    : pf.type === 'broken' ? I18N.t('sim.log.brokenCable', { a: pf.a.name, b: pf.b.name })
-                        : pf.type === 'wifiOff' ? I18N.t('sim.log.wifiOff', { name: pf.dev.name })
-                            : I18N.t('sim.log.wifiNotJoined', { name: pf.dev.name }), 'text-rose-400');
+                addTrafficLog(() => !pf ? I18N.t('sim.log.noPath', { s: source.name, d: destination.name }) : physicalFaultLog(pf), 'text-rose-400');
                 showTrafficCaption(msg, 0, 0, 'fail');
-                if (pf && pf.type === 'broken') pulseDevice(pf.b, '#f43f5e', 2400, token);
-                pulseDevice(!pf ? source : pf.type === 'broken' ? pf.a : pf.dev, '#f43f5e', 2400, token).then(ok => { if (ok) hideTrafficCaption(); });
+                if (pf && isLinkFault(pf)) pulseDevice(pf.b, '#f43f5e', 2400, token);
+                pulseDevice(!pf ? source : isLinkFault(pf) ? pf.a : pf.dev, '#f43f5e', 2400, token).then(ok => { if (ok) hideTrafficCaption(); });
                 showToast(I18N.t('sim.toast.noPath'), 'warning');
                 return;
             }
@@ -4431,6 +4603,7 @@
             const kp = () => k() * (adv ? 1 : 0.55);
             if (status) status.textContent = I18N.t('sim.status.running', { label: label, s: source.name, d: destination.name, hops: hops });
             addTrafficLog(() => I18N.t('sim.log.route', { label: label, path: seqF.map(d => d.name).join(' → ') }));
+            { const ps = pathSpeed(path); if (ps.slow && hops >= 1) addTrafficLog(() => I18N.t('sim.log.pathSpeed', { speed: fmtSpeed(ps.min), a: ps.slow.a.name, b: ps.slow.b.name })); }
 
             const reqLabel = (protocol === 'HTTP' && tcpOpened) ? 'ACK + GET /' : info.req;
             const reqFn = () => (vpnCtx && protocol !== 'ARP') ? I18N.t('sim.req.vpn', { s: source.name, d: destination.name, srcIp: vpnCtx.srcIp, dstIp: vpnCtx.dstIp, preset: vpnCtx.preset, mode: vpnCtx.mode === 'relevo' ? I18N.t('sim.req.vpnRelay') : I18N.t('sim.req.vpnDirect') }) : (protocol === 'HTTP' && tcpOpened) ? I18N.t('sim.req.ackGet', { s: source.name, d: destination.name }) : info.reqTxt(source, destination);
@@ -4656,10 +4829,103 @@
             }
             if (save) { try { localStorage.setItem('netsim-panel-' + name, visible ? '1' : '0'); } catch (_) { } }
         }
+        // ===== Ventana de propiedades del cable (doble clic sobre el cable) =====
+        let cableModalEdit = null;
+        function closeCableModal() { const el = document.getElementById('cable-modal'); if (el) el.remove(); cableModalEdit = null; }
+        function openCableModal(fromId, toId) {
+            const conn = connBetween(fromId, toId); if (!conn || conn.type === 'wifi') return;
+            closeCableModal(); cableModalEdit = { from: conn.from, to: conn.to };
+            const a = state.devices.find(d => d.id === conn.from), b = state.devices.find(d => d.id === conn.to), s = cableSpec(conn);
+            const fiberOk = hasFiberPort(a) && hasFiberPort(b), noPort = !hasFiberPort(a) ? a : b;
+            const opts = Object.keys(CABLE_TYPES).map(k => {
+                const T = CABLE_TYPES[k], fiber = T.medium === 'fiber';
+                const name = fiber ? I18N.t(k === 'fiberMM' ? 'cable.fiberMM' : 'cable.fiberSM') : 'UTP/STP ' + T.label;
+                const disabled = fiber && !fiberOk && k !== s.type;
+                return `<option value="${k}" ${k === s.type ? 'selected' : ''} ${disabled ? 'disabled' : ''}>${name} · ${fmtSpeed(T.speed)}${disabled ? ' · ' + I18N.t('cable.noFiberOpt', { name: noPort.name }) : ''}</option>`;
+            }).join('');
+            const el = document.createElement('div');
+            el.id = 'cable-modal'; el.className = 'nsx-backdrop';
+            el.addEventListener('mousedown', e => { if (e.target === el) closeCableModal(); });
+            const field = 'w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 nsx-field';
+            el.innerHTML = `
+                <div class="w-full max-w-md bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden">
+                    <div class="flex items-center justify-between px-5 py-4 border-b border-slate-800">
+                        <div><div class="text-sm font-bold text-slate-100"><i class="fa-solid fa-plug text-sky-400 mr-2"></i>${I18N.t('cable.title')}</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">${escapeHtml(a.name)} ↔ ${escapeHtml(b.name)}</div></div>
+                        <button onclick="closeCableModal()" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                    <div class="px-5 py-4 space-y-3 text-xs">
+                        <label class="block"><span class="text-slate-400">${I18N.t('cable.type')}</span><select id="cb-type" class="${field} mt-1" oninput="updateCableSummary()">${opts}</select></label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <label class="block"><span class="text-slate-400">${I18N.t('cable.shield')}</span><select id="cb-shield" class="${field} mt-1" oninput="updateCableSummary()"><option value="utp" ${s.shield !== 'stp' ? 'selected' : ''}>${I18N.t('cable.shieldUtp')}</option><option value="stp" ${s.shield === 'stp' ? 'selected' : ''}>${I18N.t('cable.shieldStp')}</option></select></label>
+                            <label class="block"><span class="text-slate-400">${I18N.t('cable.length')}</span><input id="cb-len" type="number" min="1" max="20000" step="1" value="${s.length}" class="${field} mt-1" oninput="updateCableSummary()"></label>
+                        </div>
+                        <label class="flex items-center gap-2 text-slate-200 cursor-pointer"><input id="cb-noise" type="checkbox" ${s.interference ? 'checked' : ''} onchange="updateCableSummary()"> ${I18N.t('cable.interference')}</label>
+                        <label class="flex items-center gap-2 text-slate-200 cursor-pointer"><input id="cb-broken" type="checkbox" ${conn.broken ? 'checked' : ''} onchange="updateCableSummary()"> ${I18N.t('dev.conn.broken')}</label>
+                        <div id="cb-summary" class="rounded-xl bg-slate-950 border border-slate-800 p-3 space-y-1"></div>
+                    </div>
+                    <div class="flex items-center justify-between gap-2 px-5 py-4 border-t border-slate-800">
+                        <button onclick="removeCableFromModal()" class="px-3 py-2 rounded-lg bg-rose-950/60 hover:bg-rose-900 border border-rose-800 text-rose-300 text-xs"><i class="fa-solid fa-scissors mr-1"></i>${I18N.t('cable.remove')}</button>
+                        <div class="flex gap-2"><button onclick="closeCableModal()" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs">${I18N.t('cable.cancel')}</button>
+                        <button onclick="applyCableModal()" class="nsx-btn-primary px-4 py-2 rounded-lg font-semibold text-xs">${I18N.t('cable.apply')}</button></div>
+                    </div>
+                </div>`;
+            document.body.appendChild(el); updateCableSummary();
+        }
+        function readCableDraft() {
+            const type = document.getElementById('cb-type').value, T = CABLE_TYPES[type], sh = document.getElementById('cb-shield');
+            sh.disabled = T.medium === 'fiber' || !!T.stpOnly; if (T.stpOnly) sh.value = 'stp';
+            return { type, shield: T.medium === 'fiber' ? null : sh.value, length: Number(document.getElementById('cb-len').value),
+                interference: document.getElementById('cb-noise').checked, broken: document.getElementById('cb-broken').checked };
+        }
+        function updateCableSummary() {
+            if (!cableModalEdit || !document.getElementById('cb-summary')) return;
+            const d = readCableDraft();
+            const probe = { from: cableModalEdit.from, to: cableModalEdit.to, type: 'ethernet', cable: { type: d.type, shield: d.shield, length: d.length, interference: d.interference }, broken: d.broken };
+            const li = linkInfo(probe), T = li.spec.T;
+            const row = (k, v, cls) => `<div class="flex justify-between gap-3"><span class="text-slate-400">${k}</span><span class="${cls || 'text-slate-100'} font-semibold text-right">${v}</span></div>`;
+            const warn = [];
+            if (!(d.length > 0)) warn.push(['rose', I18N.t('cable.invalidLen')]);
+            if (li.reason === 'broken') warn.push(['rose', I18N.t('dev.conn.broken')]);
+            if (li.reason === 'tooLong') warn.push(['rose', I18N.t('cable.warnTooLong', { len: li.spec.length, max: T.maxLen })]);
+            if (li.reason === 'noFiberPort') warn.push(['rose', I18N.t('cable.warnNoFiber', { name: (!hasFiberPort(li.a) ? li.a : li.b).name })]);
+            if (li.noisy) warn.push(['amber', I18N.t('cable.warnNoise')]);
+            if (li.spec.type === 'cat6' && li.spec.length > T.fastLen) warn.push(['amber', I18N.t('cable.warnFast', { len: T.fastLen })]);
+            const limitTxt = li.down ? '' : li.limit === 'noise' ? I18N.t('cable.limitNoise') : li.limit === 'portA' || li.limit === 'portB' ? I18N.t('cable.limitPort', { name: (li.limit === 'portA' ? li.a : li.b).name }) : I18N.t('cable.limitCable');
+            document.getElementById('cb-summary').innerHTML =
+                row(I18N.t('cable.sumCable'), fmtSpeed(li.cableSpeed)) +
+                row(I18N.t('cable.sumPorts'), `${escapeHtml(li.a.name)}: ${fmtSpeed(li.pa)} · ${escapeHtml(li.b.name)}: ${fmtSpeed(li.pb)}`) +
+                row(I18N.t('cable.sumRange'), `${T.maxLen} m`) +
+                row(I18N.t('cable.sumLink'), li.down ? '—' : `${fmtSpeed(li.speed)} <span class="text-slate-400" style="font-weight:400">(${limitTxt})</span>`, li.down ? 'text-rose-400' : 'text-emerald-400') +
+                warn.map(([c, t]) => `<div class="text-${c}-400 pt-1"><i class="fa-solid fa-triangle-exclamation mr-1"></i>${t}</div>`).join('');
+        }
+        function applyCableModal() {
+            if (!cableModalEdit) return;
+            const conn = connBetween(cableModalEdit.from, cableModalEdit.to), d = readCableDraft();
+            if (!conn) { closeCableModal(); return; }
+            if (!(d.length > 0)) { showToast(I18N.t('cable.invalidLen'), 'warning'); return; }
+            conn.cable = Object.assign({ type: d.type, length: d.length }, d.shield ? { shield: d.shield } : {}, d.interference ? { interference: true } : {});
+            if (d.broken) conn.broken = true; else delete conn.broken;
+            closeCableModal(); reevaluateNetworkState();
+            const li = linkInfo(conn);
+            showToast(li.down ? I18N.t('toast.cableUpdatedDown') : I18N.t('toast.cableUpdated', { type: cableTypeLabel(li.spec), len: li.spec.length, speed: fmtSpeed(li.speed) }), li.down ? 'warning' : 'success');
+        }
+        function removeCableFromModal() { const e = cableModalEdit; closeCableModal(); if (e) deleteCable(e.from, e.to); }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.getElementById('cable-modal')) closeCableModal(); });
+        function toggleCableLabels() {
+            state.showCableLabels = !state.showCableLabels;
+            try { localStorage.setItem('netsim-cable-labels', state.showCableLabels ? '1' : '0'); } catch (_) { }
+            renderCables();
+        }
         function togglePanel(name) {
             const panel = document.getElementById(panelIds[name]);
             setPanelVisible(name, panel && panel.style.display === 'none');
         }
+        function restoreCableLabels() {
+            let v = '1'; try { v = localStorage.getItem('netsim-cable-labels') || '1'; } catch (_) { }
+            state.showCableLabels = v !== '0';
+        }
+        restoreCableLabels();
         function restorePanels() {
             ['devices', 'sim'].forEach(n => {
                 let v = '1';

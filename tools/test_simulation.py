@@ -11,7 +11,9 @@ Qué comprueba, abriendo index.html con file:// y sin internet:
      (caso del PC con IP fija en otra red que la del router WiFi).
   3. Actividades de fallas físicas (cable dañado, adaptador WiFi, contraseña): empiezan fallando, el diagnóstico
      dice la causa correcta, se resuelven con el arreglo indicado y después la simulación funciona.
-  4. Sin errores de JavaScript.
+  4. Cables (Cat 5 a 7, UTP/STP, fibra): velocidad real, alcance, puertos de fibra, interferencia, actividades de cableado
+     y la ventana de propiedades del cable (doble clic).
+  5. Sin errores de JavaScript.
 Sale con código distinto de 0 si algo falla.
 """
 import json, pathlib, sys
@@ -109,6 +111,70 @@ with sync_playwright() as p:
         ids = pg.evaluate("Object.fromEntries(state.devices.map(d => [d.name, d.id]))")
         r = pg.evaluate(RUN, [ids['PC_A1'], ids['PC_A2'], 'ICMP']); check(sorted(r['red']) == sorted(['PC_A2', 'Switch_A']), f"[{mode}] cable dañado: deben marcarse sus dos extremos y fue {r['red']}")
         r = pg.evaluate(RUN, [ids['PC_A1'], ids['PC_B1'], 'ICMP']); check(r['ok'], f"[{mode}] un cable dañado en PC_A2 no debe afectar a PC_A1 -> PC_B1")
+
+    # ---- Cables: tipo, velocidad, alcance y puertos ----
+    for mode in ('advanced', 'simple'):
+        pg.evaluate("loadDemoTwoNetworks(); renderDevices(); renderCables(); updateTrafficSelectors(); document.getElementById('traffic-mode').value = '%s'; applySimMode(false)" % mode)
+        def link(a, b, cable):
+            return pg.evaluate("""([a, b, cable]) => { const A = state.devices.find(d => d.name === a), B = state.devices.find(d => d.name === b); const c = connBetween(A.id, B.id);
+                c.cable = cable; const li = linkInfo(c); return { speed: li.speed, reason: li.reason, limit: li.limit }; }""", [a, b, cable])
+        CASES = [  # (extremo A, extremo B, cable, velocidad esperada, motivo de caída)
+            ('PC_A1', 'Switch_A', {'type': 'cat5', 'length': 10}, 100, None),
+            ('PC_A1', 'Switch_A', {'type': 'cat5e', 'length': 10}, 1000, None),
+            ('PC_A1', 'Switch_A', {'type': 'cat6', 'length': 30}, 1000, None),      # 10G del cable, pero el puerto del PC es de 1G
+            ('PC_A1', 'Switch_A', {'type': 'cat6', 'length': 150}, 0, 'tooLong'),
+            ('PC_A1', 'Switch_A', {'type': 'fiberSM', 'length': 10}, 0, 'noFiberPort'),  # el PC no tiene puerto de fibra
+            ('PC_A1', 'Switch_A', {'type': 'cat6', 'length': 25, 'interference': True}, 10, None),
+            ('PC_A1', 'Switch_A', {'type': 'cat6', 'length': 25, 'interference': True, 'shield': 'stp'}, 1000, None),
+            ('PC_A1', 'Switch_A', {'type': 'cat7', 'length': 25, 'interference': True}, 1000, None),
+            ('Router_Central', 'Switch_A', {'type': 'cat6a', 'length': 80}, 1000, None),   # cobre: los puertos son de 1G
+            ('Router_Central', 'Switch_A', {'type': 'fiberMM', 'length': 250}, 10000, None),
+            ('Router_Central', 'Switch_A', {'type': 'fiberMM', 'length': 350}, 0, 'tooLong'),
+            ('Router_Central', 'Switch_A', {'type': 'fiberSM', 'length': 5000}, 10000, None),
+        ]
+        for ea, eb, cable, speed, reason in CASES:
+            r = link(ea, eb, cable)
+            check(r['speed'] == speed and r['reason'] == reason, f"[{mode}] cable {cable} entre {ea} y {eb}: esperado {speed} Mbps/{reason} y fue {r}")
+        pg.evaluate("loadDemoTwoNetworks(); renderDevices(); renderCables();")
+    # un cable demasiado largo corta el camino; con fibra vuelve a funcionar
+    pg.evaluate("loadDemoTwoNetworks(); renderDevices(); renderCables(); updateTrafficSelectors(); document.getElementById('traffic-mode').value = 'advanced'; applySimMode(false)")
+    ids = pg.evaluate("Object.fromEntries(state.devices.map(d => [d.name, d.id]))")
+    pg.evaluate("([a, b]) => { connBetween(a, b).cable = { type: 'cat6', length: 150 }; reevaluateNetworkState(); }", [ids['Router_Central'], ids['Switch_B']])
+    r = pg.evaluate(RUN, [ids['PC_A1'], ids['PC_B1'], 'ICMP']); check(not r['ok'] and 'Router_Central' in r['red'] and 'Switch_B' in r['red'], f"cable de 150 m: debe fallar y marcar sus dos extremos ({r})")
+    pg.evaluate("([a, b]) => { connBetween(a, b).cable = { type: 'fiberSM', length: 150 }; reevaluateNetworkState(); }", [ids['Router_Central'], ids['Switch_B']])
+    r = pg.evaluate(RUN, [ids['PC_A1'], ids['PC_B1'], 'ICMP']); check(r['ok'], 'con fibra el enlace de 150 m debe funcionar')
+    # actividades de cableado: empiezan fallando, el mensaje dice la causa y se resuelven con el arreglo indicado
+    SW = lambda a, b, cab: "{ const n = window.__n; connBetween(n.%s.id, n.%s.id).cable = %s; reevaluateNetworkState(); }" % (a, b, cab)
+    CAB_STEPS = {
+        24: [('Cat 5', SW('swA', 'a1', "{ type: 'cat5e', length: 10 }"))],
+        25: [('mide 150 m', SW('r', 'swB', "{ type: 'fiberSM', length: 150 }"))],
+        26: [('interferencia', SW('swA', 'a2', "{ type: 'cat6', length: 25, interference: true, shield: 'stp' }"))],
+        27: [('mide 150 m', SW('r', 'swB', "{ type: 'fiberSM', length: 150 }")), ('interferencia', SW('swB', 'b1', "{ type: 'cat6', length: 25, interference: true, shield: 'stp' }")), ('Cat 5', SW('swA', 'a1', "{ type: 'cat5e', length: 10 }"))],
+    }
+    for mode in ('advanced', 'simple'):
+        for idx, steps in CAB_STEPS.items():
+            pg.evaluate("i => { const g = ACTIVITIES[i].build(); const ids = Object.fromEntries(state.devices.map(d => [d.name, d]));"
+                        " window.__n = { r: ids.Router_Central, swA: ids.Switch_A, swB: ids.Switch_B, a1: ids.PC_A1, a2: ids.PC_A2, b1: ids.PC_B1 };"
+                        " renderDevices(); renderCables(); updateTrafficSelectors(); document.getElementById('traffic-mode').value = '%s'; applySimMode(false);"
+                        " window.__g = g.map(([a, b, s]) => [a.id, b.id, s]); }" % mode, idx)
+            for n, (expected, fix) in enumerate(steps):
+                f = pg.evaluate("(() => { const f = failureFor(window.__g); return f ? f.m : null; })()")
+                check(f is not None and expected in f, f"[{mode}] actividad {idx + 1}, paso {n + 1}: el mensaje debía contener «{expected}» y fue: {f}")
+                pg.evaluate(fix)
+            f = pg.evaluate("(() => { const f = failureFor(window.__g); return f ? f.m : null; })()")
+            check(f is None, f"[{mode}] actividad {idx + 1}: tras los arreglos todavía falla: {f}")
+            r = pg.evaluate(RUN, [pg.evaluate("window.__g[0][0]"), pg.evaluate("window.__g[0][1]"), 'ICMP']); check(r['ok'], f"[{mode}] actividad {idx + 1}: la simulación debía funcionar tras los arreglos")
+    # interfaz: el doble clic abre la ventana del cable, un clic simple no borra
+    pg.evaluate("loadDemoTwoNetworks(); renderDevices(); renderCables();")
+    n0 = pg.evaluate("state.connections.length")
+    pg.evaluate("setToolMode('select')")
+    pg.dispatch_event('#network-svg g:has(line[stroke]) >> nth=0', 'click')
+    check(pg.evaluate("state.connections.length") == n0, 'un clic simple sobre un cable no debe eliminarlo')
+    pg.dispatch_event('#network-svg g:has(line[stroke]) >> nth=0', 'dblclick')
+    check(pg.evaluate("!!document.getElementById('cable-modal')"), 'el doble clic sobre el cable debe abrir la ventana de propiedades')
+    pg.evaluate("document.getElementById('tour-overlay')?.remove(); typeof endTour === 'function' && endTour()")
+    pg.select_option('#cb-type', 'cat6a'); pg.fill('#cb-len', '40'); pg.click("#cable-modal button:has-text('Aplicar')", force=True)
+    check(pg.evaluate("!document.getElementById('cable-modal') && state.connections.some(c => c.cable && c.cable.type === 'cat6a' && c.cable.length === 40)"), 'Aplicar debe guardar el tipo y la longitud del cable')
     check(not errs, 'errores de JavaScript: ' + '; '.join(errs[:3]))
     b.close()
 
